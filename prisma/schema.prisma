@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Student {
+  id        String   @id @default(cuid())
+  googleId  String   @unique
+  name      String
+  email     String   @unique
+  image     String?
+  createdAt DateTime @default(now())
+
+  profile           StudentProfile?
+  performances      Performance[]
+  interactions      AiInteraction[]
+  studyInteractions StudyInteraction[]
+}
+
+model StudentProfile {
+  id             String   @id @default(cuid())
+  studentId      String   @unique
+  learningStyle  String
+  goal           String
+  hardSubject    String
+  helpPreference String
+  studyTime      String
+  feedbackStyle  String
+  schoolYear     String
+  completedAt    DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model Performance {
+  id           String   @id @default(cuid())
+  studentId    String
+  courseId     String
+  courseName   String
+  activityName String
+  score        Float
+  feedback     String
+  submittedAt  DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model AiInteraction {
+  id          String   @id @default(cuid())
+  studentId   String
+  courseId    String
+  courseName  String
+  prompt      String
+  response    String
+  fingerprint String
+  createdAt   DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model StudyInteraction {
+  id         String   @id @default(cuid())
+  studentId  String
+  courseId   String
+  courseName String
+  type       String   // "darwin" | "revisao" | "simulado"
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id])
+}
