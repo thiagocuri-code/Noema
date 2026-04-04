@@ -66,13 +66,13 @@ function initials(name: string) {
 }
 
 const PROFILE_LABELS: { key: keyof StudentProfile; icon: string; label: string }[] = [
-  { key: "learningStyle", icon: "🧠", label: "Aprende melhor" },
-  { key: "goal", icon: "🎯", label: "Objetivo" },
+  { key: "learningStyle", icon: "🧠", label: "Perfil" },
+  { key: "goal", icon: "🎯", label: "Objetivo / Área" },
   { key: "hardSubject", icon: "📚", label: "Maior dificuldade" },
-  { key: "helpPreference", icon: "💡", label: "Quando trava" },
-  { key: "studyTime", icon: "⏱️", label: "Tempo de estudo" },
-  { key: "feedbackStyle", icon: "💬", label: "Estilo de feedback" },
-  { key: "schoolYear", icon: "🎓", label: "Ano escolar" },
+  { key: "schoolYear", icon: "💪", label: "Maior facilidade" },
+  { key: "helpPreference", icon: "💡", label: "Formato de ajuda" },
+  { key: "studyTime", icon: "📖", label: "Estilo de aprendizagem" },
+  { key: "feedbackStyle", icon: "💬", label: "Tom do feedback" },
 ]
 
 // ── Progress bar ───────────────────────────────────────────────────────────────

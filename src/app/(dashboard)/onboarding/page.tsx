@@ -6,107 +6,98 @@ import { useSession } from "next-auth/react"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Profile {
-  learningStyle: string
-  goal: string
-  hardSubject: string
-  helpPreference: string
-  studyTime: string
-  feedbackStyle: string
-  schoolYear: string
+  learningStyle: string   // Perfil: Auditivo / Visual / Sinestésico
+  goal: string            // Área + detalhe: "Exatas > Engenharia da Computação"
+  hardSubject: string     // Matéria com mais dificuldade (do Classroom)
+  helpPreference: string  // Formato de ajuda
+  studyTime: string       // Estilo de aprendizagem (reused field)
+  feedbackStyle: string   // Tom do feedback
+  schoolYear: string      // Matéria com mais facilidade (reused field)
   completedAt: string
 }
 
-type Answers = Partial<Omit<Profile, "completedAt">> & { goalOther?: string }
+type Answers = Partial<Omit<Profile, "completedAt">>
 
-// ── Questions config ──────────────────────────────────────────────────────────
-const QUESTIONS = [
+// ── Goal sub-areas ─────────────────────────────────────────────────────────────
+const GOAL_AREAS: {
+  label: string
+  icon: string
+  courses: string[]
+}[] = [
   {
-    key: "learningStyle" as const,
-    question: "Como você aprende melhor?",
-    options: [
-      { label: "Vendo exemplos visuais", icon: "👁️" },
-      { label: "Lendo explicações detalhadas", icon: "📖" },
-      { label: "Resolvendo exercícios", icon: "✏️" },
-      { label: "Ouvindo alguém explicar", icon: "🎧" },
+    label: "Exatas",
+    icon: "🔬",
+    courses: [
+      "Engenharia Civil",
+      "Engenharia Mecânica",
+      "Engenharia da Computação",
+      "Engenharia Elétrica",
+      "Engenharia Química",
+      "Ciência da Computação",
+      "Matemática",
+      "Física",
+      "Estatística",
+      "Arquitetura",
     ],
-    multi: false,
   },
   {
-    key: "goal" as const,
-    question: "Qual é o seu objetivo após o ensino médio?",
-    options: [
-      { label: "Medicina", icon: "🩺" },
-      { label: "Engenharia", icon: "⚙️" },
-      { label: "Direito", icon: "⚖️" },
-      { label: "Ciências Exatas", icon: "🔬" },
-      { label: "Ciências Humanas", icon: "🏛️" },
-      { label: "Ciências Biológicas", icon: "🧬" },
-      { label: "Ainda não sei", icon: "🤷" },
+    label: "Humanas",
+    icon: "🏛️",
+    courses: [
+      "Direito",
+      "Psicologia",
+      "Administração",
+      "Economia",
+      "Ciências Sociais",
+      "Relações Internacionais",
+      "Jornalismo",
+      "Publicidade",
+      "Pedagogia",
+      "Filosofia",
+      "História",
     ],
-    hasOther: true,
-    multi: false,
   },
   {
-    key: "hardSubject" as const,
-    question: "Qual matéria você tem mais dificuldade hoje?",
-    options: [
-      { label: "Matemática", icon: "📐" },
-      { label: "Física", icon: "⚡" },
-      { label: "Química", icon: "🧪" },
-      { label: "Biologia", icon: "🦠" },
-      { label: "Português", icon: "📝" },
-      { label: "História", icon: "🏺" },
-      { label: "Geografia", icon: "🌍" },
-      { label: "Inglês", icon: "🇺🇸" },
+    label: "Biológicas",
+    icon: "🧬",
+    courses: [
+      "Medicina",
+      "Enfermagem",
+      "Odontologia",
+      "Biomedicina",
+      "Farmácia",
+      "Nutrição",
+      "Biologia",
+      "Fisioterapia",
+      "Educação Física",
+      "Veterinária",
     ],
-    multi: false,
   },
   {
-    key: "helpPreference" as const,
-    question: "Quando você trava em um exercício, o que prefere?",
-    options: [
-      { label: "Uma dica pequena para continuar sozinho", icon: "💡" },
-      { label: "Uma explicação passo a passo", icon: "🪜" },
-      { label: "Ver exemplos parecidos", icon: "📋" },
-      { label: "Só a resposta para conferir", icon: "✅" },
-    ],
-    multi: false,
+    label: "Não sei ainda",
+    icon: "🤷",
+    courses: [],
+  },
+]
+
+// ── Profile type descriptions ──────────────────────────────────────────────────
+const PROFILE_TYPES = [
+  {
+    label: "Visual",
+    icon: "👁️",
+    desc: "Aprende melhor com imagens, diagramas, mapas mentais e cores.",
   },
   {
-    key: "studyTime" as const,
-    question: "Quanto tempo por dia você consegue estudar?",
-    options: [
-      { label: "Menos de 1 hora", icon: "⏱️" },
-      { label: "1 a 2 horas", icon: "🕐" },
-      { label: "2 a 4 horas", icon: "🕑" },
-      { label: "Mais de 4 horas", icon: "🕓" },
-    ],
-    multi: false,
+    label: "Auditivo",
+    icon: "🎧",
+    desc: "Aprende melhor ouvindo explicações, podcasts e discussões.",
   },
   {
-    key: "feedbackStyle" as const,
-    question: "Como você prefere receber feedback?",
-    options: [
-      { label: "Direto e objetivo", icon: "🎯" },
-      { label: "Com bastante encorajamento", icon: "🌟" },
-      { label: "Muito detalhado", icon: "🔍" },
-      { label: "Depende do momento", icon: "🎭" },
-    ],
-    multi: false,
+    label: "Sinestésico",
+    icon: "🤲",
+    desc: "Aprende melhor praticando, experimentando e fazendo exercícios.",
   },
-  {
-    key: "schoolYear" as const,
-    question: "Em qual ano do ensino médio você está?",
-    options: [
-      { label: "1º ano", icon: "1️⃣" },
-      { label: "2º ano", icon: "2️⃣" },
-      { label: "3º ano", icon: "3️⃣" },
-      { label: "Já terminei", icon: "🎓" },
-      { label: "Cursinho pré-vestibular", icon: "📚" },
-    ],
-    multi: false,
-  },
-] as const
+]
 
 const DRAFT_KEY = "trix_profile_draft"
 const PROFILE_KEY = "trix_profile"
@@ -118,9 +109,17 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<"intro" | "quiz" | "done">("intro")
   const [currentQ, setCurrentQ] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
-  const [goalOther, setGoalOther] = useState("")
-  const [animDir, setAnimDir] = useState<"enter" | "exit">("enter")
   const [visible, setVisible] = useState(true)
+
+  // Goal sub-selection state
+  const [goalArea, setGoalArea] = useState<string | null>(null)
+  const [goalCourse, setGoalCourse] = useState<string | null>(null)
+
+  // Classroom courses for difficulty/ease questions
+  const [classroomCourses, setClassroomCourses] = useState<string[]>([])
+  const [coursesLoading, setCoursesLoading] = useState(false)
+
+  const TOTAL_QUESTIONS = 6
 
   // Load draft on mount
   useEffect(() => {
@@ -129,7 +128,8 @@ export default function OnboardingPage() {
       if (draft) {
         const parsed = JSON.parse(draft)
         setAnswers(parsed.answers ?? {})
-        setGoalOther(parsed.goalOther ?? "")
+        setGoalArea(parsed.goalArea ?? null)
+        setGoalCourse(parsed.goalCourse ?? null)
         if (typeof parsed.currentQ === "number") {
           setCurrentQ(parsed.currentQ)
           setStep("quiz")
@@ -138,24 +138,34 @@ export default function OnboardingPage() {
     } catch { /* ignore */ }
   }, [])
 
-  // Save draft on every answer change
+  // Fetch Classroom courses when entering quiz
+  useEffect(() => {
+    if (step !== "quiz" || !session?.accessToken) return
+    setCoursesLoading(true)
+    fetch(`/api/classroom/courses?accessToken=${session.accessToken}`)
+      .then(r => r.json())
+      .then(data => {
+        const names = (data.courses ?? []).map((c: { name: string }) => c.name)
+        setClassroomCourses(names)
+      })
+      .catch(() => {})
+      .finally(() => setCoursesLoading(false))
+  }, [step, session?.accessToken])
+
+  // Save draft on every change
   useEffect(() => {
     if (step !== "quiz") return
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers, goalOther, currentQ }))
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers, goalArea, goalCourse, currentQ }))
     } catch { /* ignore */ }
-  }, [answers, goalOther, currentQ, step])
+  }, [answers, goalArea, goalCourse, currentQ, step])
 
-  function goToQuiz() {
-    setStep("quiz")
-  }
-
-  function selectOption(key: keyof Answers, value: string) {
+  function selectAnswer(key: keyof Answers, value: string) {
     setAnswers(prev => ({ ...prev, [key]: value }))
   }
 
   function nextQuestion() {
-    if (currentQ < QUESTIONS.length - 1) {
+    if (currentQ < TOTAL_QUESTIONS - 1) {
       setVisible(false)
       setTimeout(() => {
         setCurrentQ(prev => prev + 1)
@@ -176,22 +186,21 @@ export default function OnboardingPage() {
   }
 
   function finishQuiz() {
-    const q = QUESTIONS[currentQ]
     const goalValue =
-      q.key === "goal" && answers.goal === undefined && goalOther
-        ? goalOther
-        : answers.goal === "Outro" && goalOther
-          ? goalOther
-          : answers.goal
+      goalArea === "Não sei ainda"
+        ? "Não sei ainda"
+        : goalCourse
+          ? `${goalArea} > ${goalCourse}`
+          : goalArea ?? ""
 
     const profile: Profile = {
       learningStyle: answers.learningStyle ?? "",
-      goal: goalValue ?? "",
+      goal: goalValue,
       hardSubject: answers.hardSubject ?? "",
       helpPreference: answers.helpPreference ?? "",
-      studyTime: answers.studyTime ?? "",
+      studyTime: answers.studyTime ?? "",       // stores learning method
       feedbackStyle: answers.feedbackStyle ?? "",
-      schoolYear: answers.schoolYear ?? "",
+      schoolYear: answers.schoolYear ?? "",     // stores easy subject
       completedAt: new Date().toISOString(),
     }
 
@@ -200,25 +209,31 @@ export default function OnboardingPage() {
       localStorage.removeItem(DRAFT_KEY)
     } catch { /* ignore */ }
 
-    // Save to Supabase (fire-and-forget — don't block UI)
     const googleId = (session as any)?.googleId
     if (googleId) {
       fetch("/api/profile/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ profile, googleId }),
-      }).catch(() => { /* ignore network errors */ })
+      }).catch(() => {})
     }
 
     setStep("done")
   }
 
-  const q = QUESTIONS[currentQ]
-  const currentAnswer = answers[q?.key as keyof Answers] as string | undefined
-  const canProceed =
-    q?.key === "goal"
-      ? (currentAnswer && currentAnswer !== "Outro") || (currentAnswer === "Outro" && goalOther.trim().length > 0) || currentAnswer !== undefined
-      : !!currentAnswer
+  // ── Can proceed logic per question ─────────────────────────────────────────
+  function canProceed(): boolean {
+    switch (currentQ) {
+      case 0: return !!answers.learningStyle
+      case 1: return goalArea === "Não sei ainda" || !!goalCourse
+      case 2: return !!answers.hardSubject
+      case 3: return !!answers.schoolYear
+      case 4: return !!answers.helpPreference
+      // case 5 handles both studyTime and feedbackStyle in a combined way
+      case 5: return !!answers.feedbackStyle
+      default: return false
+    }
+  }
 
   // ── Intro ──────────────────────────────────────────────────────────────────
   if (step === "intro") {
@@ -237,17 +252,17 @@ export default function OnboardingPage() {
             </h1>
             <p className="text-base leading-relaxed text-gray-500">
               Responder{" "}
-              <span className="font-semibold text-[#6C47FF]">7 perguntas</span>{" "}
+              <span className="font-semibold text-[#6C47FF]">6 perguntas</span>{" "}
               permite que a Noema personalize completamente o jeito que ela te ensina.
               Leva menos de 2 minutos.
             </p>
           </div>
 
           <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
-            {["7 perguntas", "2 minutos", "100% seu"].map((item, i) => (
+            {["6 perguntas", "2 minutos", "100% seu"].map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-1">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#6C47FF]/10">
-                  <span className="text-xs font-bold text-[#6C47FF]">{["7", "2", "★"][i]}</span>
+                  <span className="text-xs font-bold text-[#6C47FF]">{["6", "2", "★"][i]}</span>
                 </div>
                 <span>{item}</span>
               </div>
@@ -255,7 +270,7 @@ export default function OnboardingPage() {
           </div>
 
           <button
-            onClick={goToQuiz}
+            onClick={() => setStep("quiz")}
             className="w-full rounded-2xl bg-[#6C47FF] py-4 font-['Sora',sans-serif] text-base font-semibold text-white shadow-lg shadow-[#6C47FF]/30 transition-all hover:bg-[#5a3de0] hover:shadow-[#6C47FF]/40 active:scale-[0.98]"
           >
             Vamos lá →
@@ -304,7 +319,307 @@ export default function OnboardingPage() {
   }
 
   // ── Quiz ───────────────────────────────────────────────────────────────────
-  const progress = ((currentQ + 1) / QUESTIONS.length) * 100
+  const progress = ((currentQ + 1) / TOTAL_QUESTIONS) * 100
+
+  // Render the current question content
+  function renderQuestion() {
+    switch (currentQ) {
+      // ── Q1: Perfil do Estudante ──────────────────────────────────────────
+      case 0:
+        return (
+          <>
+            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+              Qual é o seu perfil de estudante?
+            </h2>
+            <div className="space-y-3">
+              {PROFILE_TYPES.map(pt => {
+                const selected = answers.learningStyle === pt.label
+                return (
+                  <button
+                    key={pt.label}
+                    onClick={() => selectAnswer("learningStyle", pt.label)}
+                    className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
+                      selected
+                        ? "border-[#6C47FF] bg-[#6C47FF]/8"
+                        : "border-gray-200 bg-white hover:border-[#6C47FF]/40"
+                    }`}
+                  >
+                    <span className="text-3xl">{pt.icon}</span>
+                    <div>
+                      <p className={`text-sm font-bold ${selected ? "text-[#6C47FF]" : "text-[#1a1a2e]"}`}>
+                        {pt.label}
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-500 leading-relaxed">
+                        {pt.desc}
+                      </p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )
+
+      // ── Q2: Objetivo / Área ──────────────────────────────────────────────
+      case 1:
+        const selectedArea = GOAL_AREAS.find(a => a.label === goalArea)
+        return (
+          <>
+            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+              Qual área você pretende seguir?
+            </h2>
+
+            {/* Step 1: Choose area */}
+            <div className="grid grid-cols-2 gap-3">
+              {GOAL_AREAS.map(area => {
+                const selected = goalArea === area.label
+                return (
+                  <button
+                    key={area.label}
+                    onClick={() => {
+                      setGoalArea(area.label)
+                      setGoalCourse(null)
+                      if (area.courses.length === 0) {
+                        // "Não sei ainda" — no sub-selection needed
+                      }
+                    }}
+                    className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all active:scale-[0.97] ${
+                      selected
+                        ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                    }`}
+                  >
+                    <span className="text-2xl">{area.icon}</span>
+                    <span className="text-sm font-medium">{area.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Step 2: Choose specific course */}
+            {selectedArea && selectedArea.courses.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                  Selecione o curso
+                </p>
+                <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                  {selectedArea.courses.map(course => {
+                    const selected = goalCourse === course
+                    return (
+                      <button
+                        key={course}
+                        onClick={() => setGoalCourse(course)}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                          selected
+                            ? "border-[#6C47FF] bg-[#6C47FF]/10 text-[#6C47FF]"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-[#6C47FF]/50"
+                        }`}
+                      >
+                        {course}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        )
+
+      // ── Q3: Maior dificuldade (do Classroom) ────────────────────────────
+      case 2:
+        return (
+          <>
+            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+              Qual matéria você tem mais dificuldade?
+            </h2>
+            <p className="text-center text-xs text-gray-400">
+              Baseado nas suas turmas do Google Classroom
+            </p>
+            {coursesLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#6C47FF] border-t-transparent" />
+              </div>
+            ) : classroomCourses.length > 0 ? (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {classroomCourses.map(course => {
+                  const selected = answers.hardSubject === course
+                  return (
+                    <button
+                      key={course}
+                      onClick={() => selectAnswer("hardSubject", course)}
+                      className={`rounded-2xl border-2 px-4 py-3 text-sm font-medium transition-all active:scale-[0.97] ${
+                        selected
+                          ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                      }`}
+                    >
+                      {course}
+                    </button>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+                Nenhuma turma encontrada no Classroom.
+              </div>
+            )}
+          </>
+        )
+
+      // ── Q4: Maior facilidade (do Classroom) ─────────────────────────────
+      case 3:
+        return (
+          <>
+            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+              E qual matéria é mais fácil pra você?
+            </h2>
+            <p className="text-center text-xs text-gray-400">
+              Baseado nas suas turmas do Google Classroom
+            </p>
+            {coursesLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#6C47FF] border-t-transparent" />
+              </div>
+            ) : classroomCourses.length > 0 ? (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {classroomCourses.map(course => {
+                  const selected = answers.schoolYear === course
+                  return (
+                    <button
+                      key={course}
+                      onClick={() => selectAnswer("schoolYear", course)}
+                      className={`rounded-2xl border-2 px-4 py-3 text-sm font-medium transition-all active:scale-[0.97] ${
+                        selected
+                          ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                      }`}
+                    >
+                      {course}
+                    </button>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+                Nenhuma turma encontrada no Classroom.
+              </div>
+            )}
+          </>
+        )
+
+      // ── Q5: Formato de ajuda + Estilo de aprendizagem ───────────────────
+      case 4:
+        return (
+          <>
+            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+              Quando trava, o que prefere?
+            </h2>
+            <div className="space-y-3">
+              {[
+                { label: "Resumo rápido", icon: "⚡", desc: "Um resumo direto do que precisa saber" },
+                { label: "Passo a passo", icon: "🪜", desc: "Explicação detalhada, etapa por etapa" },
+                { label: "Dicas até a resposta", icon: "💡", desc: "Pequenas dicas que guiam até você resolver sozinho" },
+              ].map(opt => {
+                const selected = answers.helpPreference === opt.label
+                return (
+                  <button
+                    key={opt.label}
+                    onClick={() => selectAnswer("helpPreference", opt.label)}
+                    className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
+                      selected
+                        ? "border-[#6C47FF] bg-[#6C47FF]/8"
+                        : "border-gray-200 bg-white hover:border-[#6C47FF]/40"
+                    }`}
+                  >
+                    <span className="text-2xl">{opt.icon}</span>
+                    <div>
+                      <p className={`text-sm font-bold ${selected ? "text-[#6C47FF]" : "text-[#1a1a2e]"}`}>
+                        {opt.label}
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-500">{opt.desc}</p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Learning style sub-section */}
+            {answers.helpPreference && (
+              <div className="space-y-3 pt-2">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide text-center">
+                  Como prefere aprender?
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: "Exemplos", icon: "📋" },
+                    { label: "Analogias", icon: "🔗" },
+                    { label: "Teoria direta", icon: "📖" },
+                    { label: "Exercícios", icon: "✏️" },
+                  ].map(opt => {
+                    const selected = answers.studyTime === opt.label
+                    return (
+                      <button
+                        key={opt.label}
+                        onClick={() => selectAnswer("studyTime", opt.label)}
+                        className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-3 text-center transition-all active:scale-[0.97] ${
+                          selected
+                            ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                        }`}
+                      >
+                        <span className="text-xl">{opt.icon}</span>
+                        <span className="text-xs font-medium">{opt.label}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </>
+        )
+
+      // ── Q6: Tom do feedback ─────────────────────────────────────────────
+      case 5:
+        return (
+          <>
+            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+              Qual tom de feedback você prefere?
+            </h2>
+            <div className="space-y-3">
+              {[
+                { label: "Direto e crítico", icon: "🎯", desc: "Sem rodeios. Me diz onde errei e como melhorar." },
+                { label: "Motivador", icon: "🌟", desc: "Celebra os acertos e me encoraja nos erros." },
+                { label: "Equilibrado", icon: "⚖️", desc: "Um pouco de cada, dependendo da situação." },
+              ].map(opt => {
+                const selected = answers.feedbackStyle === opt.label
+                return (
+                  <button
+                    key={opt.label}
+                    onClick={() => selectAnswer("feedbackStyle", opt.label)}
+                    className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
+                      selected
+                        ? "border-[#6C47FF] bg-[#6C47FF]/8"
+                        : "border-gray-200 bg-white hover:border-[#6C47FF]/40"
+                    }`}
+                  >
+                    <span className="text-2xl">{opt.icon}</span>
+                    <div>
+                      <p className={`text-sm font-bold ${selected ? "text-[#6C47FF]" : "text-[#1a1a2e]"}`}>
+                        {opt.label}
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-500">{opt.desc}</p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )
+
+      default:
+        return null
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8F7FF]">
@@ -313,7 +628,7 @@ export default function OnboardingPage() {
         <div className="mx-auto max-w-lg space-y-2">
           <div className="flex items-center justify-between text-xs text-gray-400">
             <span className="font-medium text-[#6C47FF]">
-              {currentQ + 1} de {QUESTIONS.length}
+              {currentQ + 1} de {TOTAL_QUESTIONS}
             </span>
             <button
               onClick={() => router.push("/dashboard/student")}
@@ -340,56 +655,7 @@ export default function OnboardingPage() {
             transform: visible ? "translateX(0)" : "translateX(40px)",
           }}
         >
-          <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
-            {q.question}
-          </h2>
-
-          <div className="grid grid-cols-2 gap-3">
-            {q.options.map((opt) => {
-              const selected = currentAnswer === opt.label
-              return (
-                <button
-                  key={opt.label}
-                  onClick={() => selectOption(q.key as keyof Answers, opt.label)}
-                  className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all active:scale-[0.97] ${
-                    selected
-                      ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
-                  }`}
-                >
-                  <span className="text-2xl">{opt.icon}</span>
-                  <span className="text-sm font-medium leading-tight">{opt.label}</span>
-                </button>
-              )
-            })}
-
-            {/* "hasOther" extra option for goal question */}
-            {"hasOther" in q && q.hasOther && (
-              <button
-                onClick={() => selectOption(q.key as keyof Answers, "Outro")}
-                className={`col-span-2 flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all active:scale-[0.97] ${
-                  currentAnswer === "Outro"
-                    ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
-                }`}
-              >
-                <span className="text-2xl">✏️</span>
-                <span className="text-sm font-medium">Outro</span>
-              </button>
-            )}
-          </div>
-
-          {/* "Outro" text field */}
-          {"hasOther" in q && q.hasOther && currentAnswer === "Outro" && (
-            <input
-              type="text"
-              value={goalOther}
-              onChange={e => setGoalOther(e.target.value)}
-              placeholder="Qual é o seu objetivo?"
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#6C47FF] focus:ring-1 focus:ring-[#6C47FF]/30"
-              autoFocus
-            />
-          )}
+          {renderQuestion()}
 
           {/* Navigation */}
           <div className="flex items-center gap-3 pt-2">
@@ -403,10 +669,10 @@ export default function OnboardingPage() {
             )}
             <button
               onClick={nextQuestion}
-              disabled={!canProceed}
+              disabled={!canProceed()}
               className="flex-1 rounded-xl bg-[#6C47FF] py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#5a3de0] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {currentQ < QUESTIONS.length - 1 ? "Próxima →" : "Concluir →"}
+              {currentQ < TOTAL_QUESTIONS - 1 ? "Próxima →" : "Concluir →"}
             </button>
           </div>
         </div>

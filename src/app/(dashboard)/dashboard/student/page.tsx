@@ -80,52 +80,52 @@ const PROFILE_FIELDS: {
 }[] = [
   {
     key: "learningStyle",
-    label: "Estilo de aprendizado",
+    label: "Perfil de estudante",
     icon: "🧠",
-    question: "Como você aprende melhor?",
-    options: ["Vendo exemplos visuais", "Lendo explicações detalhadas", "Resolvendo exercícios", "Ouvindo alguém explicar"],
+    question: "Qual é o seu perfil?",
+    options: ["Visual", "Auditivo", "Sinestésico"],
   },
   {
     key: "goal",
-    label: "Objetivo",
+    label: "Objetivo / Área",
     icon: "🎯",
-    question: "Qual é o seu objetivo?",
-    options: ["Medicina", "Engenharia", "Direito", "Ciências Exatas", "Ciências Humanas", "Ciências Biológicas", "Ainda não sei"],
+    question: "Qual área pretende seguir?",
+    options: [],  // complex field — read-only in modal
   },
   {
     key: "hardSubject",
     label: "Maior dificuldade",
     icon: "📚",
     question: "Qual matéria tem mais dificuldade?",
-    options: ["Matemática", "Física", "Química", "Biologia", "Português", "História", "Geografia", "Inglês"],
-  },
-  {
-    key: "helpPreference",
-    label: "Preferência de ajuda",
-    icon: "💡",
-    question: "Quando trava, o que prefere?",
-    options: ["Uma dica pequena para continuar sozinho", "Uma explicação passo a passo", "Ver exemplos parecidos", "Só a resposta para conferir"],
-  },
-  {
-    key: "studyTime",
-    label: "Tempo de estudo",
-    icon: "⏱️",
-    question: "Quanto tempo estuda por dia?",
-    options: ["Menos de 1 hora", "1 a 2 horas", "2 a 4 horas", "Mais de 4 horas"],
-  },
-  {
-    key: "feedbackStyle",
-    label: "Estilo de feedback",
-    icon: "💬",
-    question: "Como prefere receber feedback?",
-    options: ["Direto e objetivo", "Com bastante encorajamento", "Muito detalhado", "Depende do momento"],
+    options: [],  // from Classroom — read-only in modal
   },
   {
     key: "schoolYear",
-    label: "Ano escolar",
-    icon: "🎓",
-    question: "Em qual ano está?",
-    options: ["1º ano", "2º ano", "3º ano", "Já terminei", "Cursinho pré-vestibular"],
+    label: "Maior facilidade",
+    icon: "💪",
+    question: "Qual matéria tem mais facilidade?",
+    options: [],  // from Classroom — read-only in modal
+  },
+  {
+    key: "helpPreference",
+    label: "Formato de ajuda",
+    icon: "💡",
+    question: "Quando trava, o que prefere?",
+    options: ["Resumo rápido", "Passo a passo", "Dicas até a resposta"],
+  },
+  {
+    key: "studyTime",
+    label: "Estilo de aprendizagem",
+    icon: "📖",
+    question: "Como prefere aprender?",
+    options: ["Exemplos", "Analogias", "Teoria direta", "Exercícios"],
+  },
+  {
+    key: "feedbackStyle",
+    label: "Tom do feedback",
+    icon: "💬",
+    question: "Como prefere receber feedback?",
+    options: ["Direto e crítico", "Motivador", "Equilibrado"],
   },
 ]
 
