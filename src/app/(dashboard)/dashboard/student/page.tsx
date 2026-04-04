@@ -77,6 +77,7 @@ const PROFILE_FIELDS: {
   icon: string
   question: string
   options: string[]
+  readonly?: boolean
 }[] = [
   {
     key: "learningStyle",
@@ -90,21 +91,23 @@ const PROFILE_FIELDS: {
     label: "Objetivo / Área",
     icon: "🎯",
     question: "Qual área pretende seguir?",
-    options: [],  // complex field — read-only in modal
+    options: ["Exatas", "Humanas", "Biológicas", "Não sei ainda"],
   },
   {
     key: "hardSubject",
     label: "Maior dificuldade",
     icon: "📚",
     question: "Qual matéria tem mais dificuldade?",
-    options: [],  // from Classroom — read-only in modal
+    options: [],  // from Classroom — not editable in modal
+    readonly: true,
   },
   {
     key: "schoolYear",
     label: "Maior facilidade",
     icon: "💪",
     question: "Qual matéria tem mais facilidade?",
-    options: [],  // from Classroom — read-only in modal
+    options: [],  // from Classroom — not editable in modal
+    readonly: true,
   },
   {
     key: "helpPreference",
@@ -191,16 +194,18 @@ function ProfileModal({
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setEditingKey(isEditing ? null : field.key)}
-                    className={`flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-all ${
-                      isEditing
-                        ? "border-[#6C47FF] bg-[#6C47FF] text-white"
-                        : "border-gray-200 bg-white text-gray-500 hover:border-[#6C47FF] hover:text-[#6C47FF]"
-                    }`}
-                  >
-                    {isEditing ? "Cancelar" : "Editar"}
-                  </button>
+                  {!field.readonly && (
+                    <button
+                      onClick={() => setEditingKey(isEditing ? null : field.key)}
+                      className={`flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                        isEditing
+                          ? "border-[#6C47FF] bg-[#6C47FF] text-white"
+                          : "border-gray-200 bg-white text-gray-500 hover:border-[#6C47FF] hover:text-[#6C47FF]"
+                      }`}
+                    >
+                      {isEditing ? "Cancelar" : "Editar"}
+                    </button>
+                  )}
                 </div>
 
                 {isEditing && (
