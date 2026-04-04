@@ -35,24 +35,20 @@ export const authOptions = {
         token.refreshToken = account.refresh_token
         token.googleId = account.providerAccountId
 
-        // Upsert student in DB (fire-and-forget — don't block login on DB errors)
-        try {
-          await prisma.student.upsert({
-            where: { googleId: account.providerAccountId },
-            update: {
-              name: profile.name ?? "",
-              image: profile.picture ?? null,
-            },
-            create: {
-              googleId: account.providerAccountId,
-              name: profile.name ?? "",
-              email: profile.email ?? "",
-              image: profile.picture ?? null,
-            },
-          })
-        } catch (err) {
-          console.error("[NextAuth] DB upsert failed:", err)
-        }
+        // Fire-and-forget DB upsert — never block login
+        prisma.student.upsert({
+          where: { googleId: account.providerAccountId },
+          update: {
+            name: profile.name ?? "",
+            image: profile.picture ?? null,
+          },
+          create: {
+            googleId: account.providerAccountId,
+            name: profile.name ?? "",
+            email: profile.email ?? "",
+            image: profile.picture ?? null,
+          },
+        }).catch(err => console.error("[NextAuth] DB upsert failed:", err))
       }
       return token
     },
@@ -65,6 +61,7 @@ export const authOptions = {
   session: { strategy: "jwt" as const },
   pages: { signIn: "/login" },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: true,
 }
 
 const handler = NextAuth(authOptions)
