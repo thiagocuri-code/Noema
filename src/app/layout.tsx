@@ -8,6 +8,9 @@ const sora = Sora({ subsets: ["latin"], variable: "--font-sora" })
 export const metadata: Metadata = {
   title: "Noema — IA que ensina. Não que faz.",
   description: "Plataforma de IA educacional ética.",
+  verification: {
+    google: "W2-at-f5XzdUlTtDXg1QFl4q8J7v3YETTWPOcUfsh8s",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
