@@ -62,6 +62,19 @@ export const authOptions = {
       return session
     },
   },
+  events: {
+    async signIn(message: any) {
+      console.log("[NextAuth] event:signIn", message?.user?.email)
+    },
+  },
+  logger: {
+    error(code: any, metadata: any) {
+      console.error("[NextAuth] ERROR", code, JSON.stringify(metadata, null, 2))
+    },
+    warn(code: any) {
+      console.warn("[NextAuth] WARN", code)
+    },
+  },
   session: { strategy: "jwt" as const },
   pages: { signIn: "/login", error: "/error" },
   secret: process.env.NEXTAUTH_SECRET,
