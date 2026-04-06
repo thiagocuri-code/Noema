@@ -21,11 +21,12 @@ export async function POST(req: Request) {
     ? `\nFONTES SELECIONADAS: ${selectedFileNames.join(", ")}\nCrie as questões baseando-se EXCLUSIVAMENTE no conteúdo fornecido abaixo. As questões devem ser diretamente derivadas do material — não invente conceitos que não estejam no conteúdo.\n`
     : ""
 
+  const contentOnlyRule = `\nREGRA CRÍTICA: Crie questões APENAS sobre o conteúdo acadêmico/matéria. NÃO crie questões sobre datas de entrega, avisos do professor, quando o conteúdo foi ensinado, prazos, ou informações administrativas. Apenas conceitos, definições, fórmulas, teorias e conhecimento da disciplina.\n`
+
   const prompt = `Você é um professor especializado em criar provas estilo ENEM sobre "${courseName}".
 Crie um simulado com EXATAMENTE ${questionCount} questões de múltipla escolha baseadas no conteúdo abaixo.
 ${langNote}
-${sourceBlock}
-
+${sourceBlock}${contentOnlyRule}
 Responda APENAS com JSON válido (sem texto antes ou depois):
 [
   {

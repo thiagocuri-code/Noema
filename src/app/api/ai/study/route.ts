@@ -21,12 +21,13 @@ export async function POST(req: Request) {
     ? `\nFONTES SELECIONADAS PELO ALUNO: ${selectedFileNames.join(", ")}\nIMPORTANTE: Use APENAS o conteúdo fornecido abaixo como fonte principal. Se algum tópico não estiver coberto pelo material, mencione claramente antes de complementar com conhecimento geral.\n`
     : ""
 
+  const contentOnlyRule = `\nREGRA CRÍTICA: Foque EXCLUSIVAMENTE no conteúdo acadêmico/matéria. NÃO inclua informações sobre datas de entrega, avisos do professor, quando o conteúdo foi ensinado, prazos, ou informações administrativas. Apenas conceitos, definições, fórmulas, teorias e conhecimento da disciplina.\n`
+
   const prompts: Record<string, string> = {
     resumo: `Você é um tutor educacional especializado em criar resumos para o ENEM.
 Crie um RESUMO DETALHADO do conteúdo abaixo sobre "${courseName}".
 ${langNote}
-${sourceBlock}
-
+${sourceBlock}${contentOnlyRule}
 FORMATO:
 - Use títulos e subtítulos (# e ##)
 - Use listas com marcadores para pontos-chave
@@ -40,8 +41,7 @@ ${content.slice(0, 12000)}`,
     flashcards: `Você é um tutor educacional criando flashcards de estudo ativo sobre "${courseName}".
 Crie exatamente 10 flashcards com base no conteúdo abaixo.
 ${langNote}
-${sourceBlock}
-
+${sourceBlock}${contentOnlyRule}
 Responda APENAS com JSON válido (sem texto antes ou depois):
 [
   {"front": "pergunta ou conceito", "back": "resposta ou definição"},
@@ -54,8 +54,7 @@ ${content.slice(0, 12000)}`,
     mapa: `Você é um tutor educacional criando um mapa mental sobre "${courseName}".
 Crie um MAPA MENTAL em formato de texto estruturado com base no conteúdo abaixo.
 ${langNote}
-${sourceBlock}
-
+${sourceBlock}${contentOnlyRule}
 FORMATO:
 - Tópico central no topo (use ★)
 - Use indentação (2 espaços por nível) para hierarquia
@@ -69,8 +68,7 @@ ${content.slice(0, 12000)}`,
     guia: `Você é um tutor educacional criando um guia de estudo para o ENEM sobre "${courseName}".
 Crie um GUIA DE ESTUDO estruturado com base no conteúdo abaixo.
 ${langNote}
-${sourceBlock}
-
+${sourceBlock}${contentOnlyRule}
 FORMATO:
 - Divida em etapas numeradas de estudo
 - Seções: Conceitos Essenciais, Pontos de Atenção, Dicas para a Prova

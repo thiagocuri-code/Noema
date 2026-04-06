@@ -325,14 +325,13 @@ export default function ClassroomPage() {
 
         const baseContext = [
           ...asgn.map(a => `[Atividade] ${a.title}${a.description ? ": " + a.description : ""}`),
-          ...ann.map(a => `[Aviso] ${a.text}`),
           ...mat.map(m => `[Material] ${m.title}${m.description ? ": " + m.description : ""}`),
         ].join("\n")
 
+        // Only index material and assignment files (not announcements)
         const allFiles: DriveFile[] = [
           ...mat.flatMap(m => m.driveFiles ?? []),
           ...asgn.flatMap(a => a.driveFiles ?? []),
-          ...ann.flatMap(a => a.driveFiles ?? []),
         ]
 
         if (allFiles.length === 0) { setCourseContext(baseContext); return }
@@ -436,8 +435,9 @@ export default function ClassroomPage() {
 
   // ── Study helpers ──────────────────────────────────────────────────────────
   function getSelectedContext(ids: Set<string>) {
-    if (ids.size === 0 || fileContents.length === 0) return courseContext
-    const parts = fileContents.filter(f => ids.has(f.id)).map(f => `=== ${f.title} ===\n${f.text}`)
+    if (fileContents.length === 0) return courseContext
+    const selected = ids.size > 0 ? fileContents.filter(f => ids.has(f.id)) : fileContents
+    const parts = selected.map(f => `=== ${f.title} ===\n${f.text}`)
     return parts.length > 0 ? parts.join("\n\n") : courseContext
   }
 
