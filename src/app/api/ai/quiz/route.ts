@@ -6,7 +6,7 @@ import OpenAI from "openai"
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 export async function POST(req: Request) {
-  const { content, courseName, questionCount = 5, lang } = await req.json()
+  const { content, courseName, questionCount = 5, lang, selectedFileNames } = await req.json()
 
   if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "cole-sua-chave-aqui") {
     return Response.json({ error: "OPENAI_API_KEY não configurada." }, { status: 500 })
@@ -17,9 +17,14 @@ export async function POST(req: Request) {
       ? "IMPORTANT: Write the entire quiz in English."
       : "Escreva o simulado inteiramente em português."
 
+  const sourceBlock = selectedFileNames?.length
+    ? `\nFONTES SELECIONADAS: ${selectedFileNames.join(", ")}\nCrie as questões baseando-se EXCLUSIVAMENTE no conteúdo fornecido abaixo. As questões devem ser diretamente derivadas do material — não invente conceitos que não estejam no conteúdo.\n`
+    : ""
+
   const prompt = `Você é um professor especializado em criar provas estilo ENEM sobre "${courseName}".
 Crie um simulado com EXATAMENTE ${questionCount} questões de múltipla escolha baseadas no conteúdo abaixo.
 ${langNote}
+${sourceBlock}
 
 Responda APENAS com JSON válido (sem texto antes ou depois):
 [

@@ -8,7 +8,7 @@ import { useLang, LangToggle } from "@/lib/lang-context"
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Message { role: "user" | "assistant"; content: string }
 interface DriveFile { id: string; title: string }
-interface FileContent { id: string; title: string; text: string }
+interface FileContent { id: string; title: string; text: string; mimeType?: string }
 interface Assignment {
   id: string; title: string; description?: string
   dueDate?: { year: number; month: number; day: number }
@@ -73,6 +73,17 @@ function ScoreRing({ pct, color, size = 64 }: { pct: number; color: string; size
 
 const COLORS = ["#0a1a4a", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#f97316"]
 
+// ── File type helpers ─────────────────────────────────────────────────────────
+function getFileType(mimeType?: string): { label: string; color: string } {
+  if (!mimeType) return { label: "Arquivo", color: "bg-gray-100 text-gray-500" }
+  if (mimeType.includes("pdf")) return { label: "PDF", color: "bg-red-100 text-red-600" }
+  if (mimeType.includes("document") || mimeType.includes("word")) return { label: "Docs", color: "bg-blue-100 text-blue-600" }
+  if (mimeType.includes("presentation") || mimeType.includes("powerpoint")) return { label: "Slides", color: "bg-orange-100 text-orange-600" }
+  if (mimeType.includes("spreadsheet") || mimeType.includes("excel")) return { label: "Sheets", color: "bg-green-100 text-green-600" }
+  if (mimeType.includes("text")) return { label: "TXT", color: "bg-gray-100 text-gray-500" }
+  return { label: "Arquivo", color: "bg-gray-100 text-gray-500" }
+}
+
 // ── Content Selector ──────────────────────────────────────────────────────────
 function ContentSelector({
   fileContents, ids, setIds, t,
@@ -82,43 +93,105 @@ function ContentSelector({
   setIds: (s: Set<string>) => void
   t: (pt: string, en: string) => string
 }) {
+  const [search, setSearch] = useState("")
   if (fileContents.length === 0) return null
+
+  const filtered = search.trim()
+    ? fileContents.filter(f => f.title.toLowerCase().includes(search.toLowerCase()))
+    : fileContents
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          {t("Conteúdo selecionado", "Selected content")}
-        </p>
-        <div className="flex gap-2">
-          <button onClick={() => setIds(new Set(fileContents.map(f => f.id)))} className="text-xs text-[#0a1a4a] hover:underline">
+    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            {t("Materiais do professor", "Teacher materials")}
+          </span>
+          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">
+            {ids.size}/{fileContents.length} {t("selecionados", "selected")}
+          </span>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={() => setIds(new Set(fileContents.map(f => f.id)))} className="text-xs font-medium text-[#4169D4] hover:underline">
             {t("Todos", "All")}
           </button>
-          <span className="text-gray-300">|</span>
-          <button onClick={() => setIds(new Set())} className="text-xs text-gray-400 hover:underline">
+          <button onClick={() => setIds(new Set())} className="text-xs font-medium text-gray-400 hover:underline">
             {t("Nenhum", "None")}
           </button>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {fileContents.map(f => {
+
+      {/* Search */}
+      <div className="border-b border-gray-100 px-4 py-2">
+        <div className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2">
+          <svg className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder={t("Buscar arquivo...", "Search file...")}
+            className="flex-1 bg-transparent text-xs outline-none placeholder:text-gray-400"
+          />
+          {search && (
+            <button onClick={() => setSearch("")} className="text-gray-400 hover:text-gray-600">
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* File list */}
+      <div className="max-h-48 overflow-y-auto divide-y divide-gray-50">
+        {filtered.length === 0 ? (
+          <p className="py-4 text-center text-xs text-gray-400">{t("Nenhum arquivo encontrado", "No files found")}</p>
+        ) : filtered.map(f => {
           const selected = ids.has(f.id)
+          const { label, color } = getFileType(f.mimeType)
           return (
-            <button key={f.id} onClick={() => {
-              const next = new Set(ids)
-              if (selected) next.delete(f.id); else next.add(f.id)
-              setIds(next)
-            }}
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all ${selected ? "border-[#0a1a4a] bg-[#0a1a4a]/8 text-[#0a1a4a]" : "border-gray-200 bg-white text-gray-400 hover:border-gray-300"}`}
+            <button
+              key={f.id}
+              onClick={() => {
+                const next = new Set(ids)
+                if (selected) next.delete(f.id); else next.add(f.id)
+                setIds(next)
+              }}
+              className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${selected ? "bg-[#4169D4]/5" : "hover:bg-gray-50"}`}
             >
-              <svg className="h-3 w-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              {/* Checkbox */}
+              <div className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-all ${selected ? "border-[#4169D4] bg-[#4169D4]" : "border-gray-300 bg-white"}`}>
+                {selected && (
+                  <svg className="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              {/* File icon */}
+              <svg className={`h-4 w-4 flex-shrink-0 ${selected ? "text-[#4169D4]" : "text-gray-400"}`} fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
               </svg>
-              {f.title.length > 32 ? f.title.slice(0, 30) + "…" : f.title}
+              {/* Title */}
+              <span className={`flex-1 truncate text-xs font-medium ${selected ? "text-[#071245]" : "text-gray-600"}`}>
+                {f.title}
+              </span>
+              {/* Type badge */}
+              <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold ${color}`}>
+                {label}
+              </span>
             </button>
           )
         })}
       </div>
-      {ids.size === 0 && <p className="mt-2 text-xs text-amber-600">{t("Selecione ao menos um arquivo.", "Select at least one file.")}</p>}
+
+      {ids.size === 0 && (
+        <div className="border-t border-amber-100 bg-amber-50 px-4 py-2">
+          <p className="text-xs text-amber-600">{t("Selecione ao menos um arquivo para usar como base.", "Select at least one file to use as context.")}</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -172,9 +245,11 @@ export default function ClassroomPage() {
   const [currentCard, setCurrentCard] = useState(0)
   const [cardFlipped, setCardFlipped] = useState(false)
   const [studyGenerated, setStudyGenerated] = useState(false)
+  const [studyUsedFiles, setStudyUsedFiles] = useState<string[]>([])
 
   // ── Quiz ──────────────────────────────────────────────────────────────────
   const [selectedQuizFileIds, setSelectedQuizFileIds] = useState<Set<string>>(new Set())
+  const [quizUsedFiles, setQuizUsedFiles] = useState<string[]>([])
   const [questionCount, setQuestionCount] = useState(5)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>([])
@@ -269,7 +344,7 @@ export default function ClassroomPage() {
             const d = await res.json()
             if (d.text && d.text.trim().length > 20) {
               fileTexts.push(`=== ${d.name} ===\n${d.text}`)
-              collected.push({ id: file.id, title: d.name ?? file.title, text: d.text })
+              collected.push({ id: file.id, title: d.name ?? file.title, text: d.text, mimeType: d.mimeType })
             }
           } catch { /* skip */ }
           setIndexedCount(prev => prev + 1)
@@ -367,12 +442,16 @@ export default function ClassroomPage() {
   async function generateStudy() {
     const content = getSelectedContext(selectedFileIds)
     if (!content) return
+    const usedFiles = selectedFileIds.size > 0
+      ? fileContents.filter(f => selectedFileIds.has(f.id)).map(f => f.title)
+      : fileContents.map(f => f.title)
+    setStudyUsedFiles(usedFiles)
     setLoadingStudy(true); setStudyResult(""); setStudyFlashcards([]); setStudyGenerated(false)
     try {
       const res = await fetch("/api/ai/study", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: studyType, content, courseName, lang }),
+        body: JSON.stringify({ type: studyType, content, courseName, lang, selectedFileNames: usedFiles }),
       })
       const data = await res.json()
       if (studyType === "flashcards") {
@@ -395,13 +474,17 @@ export default function ClassroomPage() {
   async function generateQuiz() {
     const content = getSelectedContext(selectedQuizFileIds)
     if (!content) return
+    const usedFiles = selectedQuizFileIds.size > 0
+      ? fileContents.filter(f => selectedQuizFileIds.has(f.id)).map(f => f.title)
+      : fileContents.map(f => f.title)
+    setQuizUsedFiles(usedFiles)
     setLoadingQuiz(true); setQuizQuestions([]); setQuizAnswers([]); setQuizRevealed([])
     setCurrentQuestion(0); setQuizFinished(false); setQuizGenerated(false); setQuizSaved(false)
     try {
       const res = await fetch("/api/ai/quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, courseName, questionCount, lang }),
+        body: JSON.stringify({ content, courseName, questionCount, lang, selectedFileNames: usedFiles }),
       })
       const data = await res.json()
       const qs: QuizQuestion[] = data.questions ?? []
@@ -725,6 +808,17 @@ export default function ClassroomPage() {
                   ← {t("Gerar outro", "Generate another")}
                 </button>
               </div>
+              {studyUsedFiles.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5 rounded-lg bg-[#4169D4]/5 border border-[#4169D4]/20 px-3 py-2">
+                  <span className="text-xs font-semibold text-[#4169D4]">{t("Baseado em:", "Based on:")}</span>
+                  {studyUsedFiles.map((name, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 rounded-md bg-white border border-[#4169D4]/20 px-2 py-0.5 text-xs text-[#071245]">
+                      <svg className="h-3 w-3 text-[#4169D4]" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
+                      {name.length > 35 ? name.slice(0, 33) + "…" : name}
+                    </span>
+                  ))}
+                </div>
+              )}
               {studyType === "flashcards" && studyFlashcards.length > 0 ? (
                 <div className="flex flex-col items-center gap-4">
                   <p className="text-xs text-gray-400">{t(`Cartão ${currentCard + 1} de ${studyFlashcards.length}`, `Card ${currentCard + 1} of ${studyFlashcards.length}`)}</p>
@@ -832,17 +926,30 @@ export default function ClassroomPage() {
 
       return (
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-5 py-3">
-            <div className="flex items-center gap-3">
-              <button onClick={() => { setMode("hub"); setQuizGenerated(false) }} className="text-xs text-gray-400 hover:text-gray-600">← {t("Sair", "Exit")}</button>
-              <div className="h-4 w-px bg-gray-200" />
-              <h2 className="text-sm font-bold text-[#1a1a2e]">📝 {t(`Questão ${currentQuestion + 1} de ${quizQuestions.length}`, `Question ${currentQuestion + 1} of ${quizQuestions.length}`)}</h2>
+          <div className="flex flex-shrink-0 flex-col border-b border-gray-200 bg-white px-5 py-3 gap-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button onClick={() => { setMode("hub"); setQuizGenerated(false) }} className="text-xs text-gray-400 hover:text-gray-600">← {t("Sair", "Exit")}</button>
+                <div className="h-4 w-px bg-gray-200" />
+                <h2 className="text-sm font-bold text-[#1a1a2e]">📝 {t(`Questão ${currentQuestion + 1} de ${quizQuestions.length}`, `Question ${currentQuestion + 1} of ${quizQuestions.length}`)}</h2>
+              </div>
+              <div className="flex gap-1">
+                {quizQuestions.map((_, i) => (
+                  <div key={i} className={`h-2 w-2 rounded-full ${i < currentQuestion ? quizAnswers[i] === quizQuestions[i].correct ? "bg-green-500" : "bg-red-400" : i === currentQuestion ? "bg-[#22c55e]" : "bg-gray-200"}`} />
+                ))}
+              </div>
             </div>
-            <div className="flex gap-1">
-              {quizQuestions.map((_, i) => (
-                <div key={i} className={`h-2 w-2 rounded-full ${i < currentQuestion ? quizAnswers[i] === quizQuestions[i].correct ? "bg-green-500" : "bg-red-400" : i === currentQuestion ? "bg-[#22c55e]" : "bg-gray-200"}`} />
-              ))}
-            </div>
+            {quizUsedFiles.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[10px] font-semibold text-[#4169D4]">{t("Baseado em:", "Based on:")}</span>
+                {quizUsedFiles.map((name, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 rounded bg-[#4169D4]/8 px-1.5 py-0.5 text-[10px] text-[#071245]">
+                    <svg className="h-2.5 w-2.5 text-[#4169D4]" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
+                    {name.length > 30 ? name.slice(0, 28) + "…" : name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto p-5">

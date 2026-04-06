@@ -6,7 +6,7 @@ import OpenAI from "openai"
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 export async function POST(req: Request) {
-  const { type, content, courseName, lang } = await req.json()
+  const { type, content, courseName, lang, selectedFileNames } = await req.json()
 
   if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "cole-sua-chave-aqui") {
     return Response.json({ error: "OPENAI_API_KEY não configurada." }, { status: 500 })
@@ -17,10 +17,15 @@ export async function POST(req: Request) {
       ? "IMPORTANT: Respond entirely in English."
       : "Responda inteiramente em português."
 
+  const sourceBlock = selectedFileNames?.length
+    ? `\nFONTES SELECIONADAS PELO ALUNO: ${selectedFileNames.join(", ")}\nIMPORTANTE: Use APENAS o conteúdo fornecido abaixo como fonte principal. Se algum tópico não estiver coberto pelo material, mencione claramente antes de complementar com conhecimento geral.\n`
+    : ""
+
   const prompts: Record<string, string> = {
     resumo: `Você é um tutor educacional especializado em criar resumos para o ENEM.
 Crie um RESUMO DETALHADO do conteúdo abaixo sobre "${courseName}".
 ${langNote}
+${sourceBlock}
 
 FORMATO:
 - Use títulos e subtítulos (# e ##)
@@ -35,6 +40,7 @@ ${content.slice(0, 12000)}`,
     flashcards: `Você é um tutor educacional criando flashcards de estudo ativo sobre "${courseName}".
 Crie exatamente 10 flashcards com base no conteúdo abaixo.
 ${langNote}
+${sourceBlock}
 
 Responda APENAS com JSON válido (sem texto antes ou depois):
 [
@@ -48,6 +54,7 @@ ${content.slice(0, 12000)}`,
     mapa: `Você é um tutor educacional criando um mapa mental sobre "${courseName}".
 Crie um MAPA MENTAL em formato de texto estruturado com base no conteúdo abaixo.
 ${langNote}
+${sourceBlock}
 
 FORMATO:
 - Tópico central no topo (use ★)
@@ -62,6 +69,7 @@ ${content.slice(0, 12000)}`,
     guia: `Você é um tutor educacional criando um guia de estudo para o ENEM sobre "${courseName}".
 Crie um GUIA DE ESTUDO estruturado com base no conteúdo abaixo.
 ${langNote}
+${sourceBlock}
 
 FORMATO:
 - Divida em etapas numeradas de estudo
