@@ -81,6 +81,52 @@ const COLORS = [
 const ICONS = ["📐", "⚡", "📖", "🧬", "🌍", "🎨", "💻", "📊"]
 const PROFILE_KEY = "trix_profile"
 
+const SUBJECT_TRANSLATIONS: Record<string, string> = {
+  "SOCIOLOGIA": "Sociology",
+  "QUÍMICA": "Chemistry",
+  "MATEMÁTICA": "Mathematics",
+  "LÍNGUA PORTUGUESA": "Portuguese Language",
+  "HISTÓRIA": "History",
+  "GEOGRAFIA": "Geography",
+  "FÍSICA": "Physics",
+  "BIOLOGIA": "Biology",
+  "FILOSOFIA": "Philosophy",
+  "INGLÊS": "English",
+  "EDUCAÇÃO FÍSICA": "Physical Education",
+  "ARTES": "Arts",
+  "ARTE": "Arts",
+  "REDAÇÃO": "Writing",
+  "LITERATURA": "Literature",
+  "ESPANHOL": "Spanish",
+  "PROJETO DE VIDA": "Life Project",
+  "PROJETO VITRINE": "Showcase Project",
+  "PROJETO INTERDISCIPLINAR": "Interdisciplinary Project",
+  "MERCADO FINANCEIRO": "Financial Market",
+  "EMPREENDEDORISMO": "Entrepreneurship",
+  "INFORMÁTICA": "Computer Science",
+  "PROGRAMAÇÃO": "Programming",
+  "ROBÓTICA": "Robotics",
+  "MÚSICA": "Music",
+}
+
+function translateCourseName(name: string, lang: string): string {
+  if (lang !== "en") return name
+  // Try to match the subject part after prefix like "3F-" or "3º ANO -"
+  const cleaned = name.replace(/^\d+[ºª°]?\s*(ANO\s*)?[-–—]?\s*/i, "").replace(/^\d+[A-Z][-–—]\s*/i, "").trim()
+  // Direct match
+  if (SUBJECT_TRANSLATIONS[cleaned.toUpperCase()]) {
+    const prefix = name.slice(0, name.length - cleaned.length)
+    return prefix + SUBJECT_TRANSLATIONS[cleaned.toUpperCase()]
+  }
+  // Partial match — check if any key is contained in the name
+  for (const [pt, en] of Object.entries(SUBJECT_TRANSLATIONS)) {
+    if (name.toUpperCase().includes(pt)) {
+      return name.toUpperCase().replace(pt, en)
+    }
+  }
+  return name
+}
+
 const PROFILE_FIELDS: {
   key: keyof Profile
   label: string
@@ -259,7 +305,7 @@ function ProfileModal({
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function StudentDashboard() {
   const { data: session } = useSession()
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const router = useRouter()
   const [courses, setCourses] = useState<Course[]>([])
   const [loading, setLoading] = useState(true)
@@ -487,7 +533,7 @@ export default function StudentDashboard() {
                           {icon}
                         </div>
                         <h3 className="font-[var(--font-heading)] text-base font-bold text-[#1a1a2e] group-hover:text-[#0a1a4a] transition-colors line-clamp-2 pr-10">
-                          {course.name}
+                          {translateCourseName(course.name, lang)}
                         </h3>
                         {course.section && (
                           <p className="mt-1 text-sm text-gray-500">{course.section}</p>
