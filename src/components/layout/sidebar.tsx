@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { AthenaLogo } from "@/components/shared/athena-logo"
 
 const studentLinks = [
   { href: "/dashboard/student", label: "Minhas Turmas", icon: "📚" },
@@ -27,12 +28,9 @@ export function Sidebar({ role }: { role: string }) {
         : studentLinks
 
   return (
-    <aside className="hidden md:flex w-64 flex-col border-r border-gray-200 bg-white">
-      <div className="flex h-16 items-center gap-2 px-6 border-b border-gray-200">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6C47FF]">
-          <span className="text-sm font-bold text-white">N</span>
-        </div>
-        <span className="text-lg font-bold text-[#1a1a2e]">Noema</span>
+    <aside className="hidden md:flex w-64 flex-col border-r border-[#E5E7EB] bg-white">
+      <div className="flex py-4 items-center px-6 border-b border-[#E5E7EB]">
+        <AthenaLogo variant="full" size="md" />
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {links.map((link) => (
@@ -42,7 +40,7 @@ export function Sidebar({ role }: { role: string }) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
               pathname === link.href || pathname.startsWith(link.href + "/")
-                ? "bg-[#6C47FF]/10 text-[#6C47FF] font-medium"
+                ? "bg-[#0a1a4a]/10 text-[#0a1a4a] font-medium"
                 : "text-gray-600 hover:bg-gray-100"
             )}
           >

@@ -1,13 +1,11 @@
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-[#F8F7FF] px-4 py-12">
+    <div className="min-h-screen bg-white px-4 py-8 sm:py-12 overflow-x-hidden">
       <div className="mx-auto max-w-3xl space-y-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#6C47FF]">
-            <span className="text-lg font-bold text-white">N</span>
-          </div>
-          <h1 className="font-['Sora',sans-serif] text-3xl font-bold text-[#1a1a2e]">
-            Noema — Politica de Privacidade
+          <img src="/athena-full.png" alt="athena" className="h-16 sm:h-20 object-contain" />
+          <h1 className="font-[var(--font-heading)] text-2xl sm:text-3xl font-bold text-[#0A1A4A]">
+            Política de Privacidade
           </h1>
         </div>
 
@@ -17,17 +15,17 @@ export default function PrivacyPolicy() {
 
         <div className="space-y-6 text-sm leading-relaxed text-gray-700">
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">1. Introdução</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">1. Introdução</h2>
             <p>
-              A Noema é uma plataforma educacional que utiliza inteligência artificial para
+              A athena é uma plataforma educacional que utiliza inteligência artificial para
               personalizar a experiência de aprendizado de estudantes do ensino médio. Esta
               política descreve quais dados coletamos, como os utilizamos e como os protegemos.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">2. Dados que coletamos</h2>
-            <p>Ao utilizar a Noema, coletamos os seguintes dados:</p>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">2. Dados que coletamos</h2>
+            <p>Ao utilizar a athena, coletamos os seguintes dados:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
               <li>
                 <strong>Dados da conta Google:</strong> nome, email e foto de perfil,
@@ -51,7 +49,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">3. Como usamos os dados</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">3. Como usamos os dados</h2>
             <ul className="list-disc space-y-1 pl-6">
               <li>
                 <strong>Personalização:</strong> adaptar o conteúdo, feedback e método
@@ -59,7 +57,7 @@ export default function PrivacyPolicy() {
               </li>
               <li>
                 <strong>Integração com Classroom:</strong> exibir as turmas, tarefas e
-                avisos do aluno dentro da plataforma Noema.
+                avisos do aluno dentro da plataforma athena.
               </li>
               <li>
                 <strong>Acompanhamento de desempenho:</strong> gerar relatórios de
@@ -73,9 +71,9 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">4. Uso de dados do Google</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">4. Uso de dados do Google</h2>
             <p>
-              A Noema acessa dados do Google Classroom exclusivamente para fins
+              A athena acessa dados do Google Classroom exclusivamente para fins
               educacionais. Especificamente:
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
@@ -95,13 +93,13 @@ export default function PrivacyPolicy() {
             <p className="mt-2">
               Nenhum dado do Google é vendido, compartilhado com terceiros para fins
               publicitários ou utilizado fora do contexto educacional descrito acima.
-              Os dados são acessados em modo somente leitura — a Noema nunca cria,
+              Os dados são acessados em modo somente leitura — a athena nunca cria,
               modifica ou exclui conteúdo no Google Classroom do usuário.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">5. Armazenamento e segurança</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">5. Armazenamento e segurança</h2>
             <p>
               Os dados são armazenados em servidores seguros (Supabase/PostgreSQL) com
               criptografia em trânsito (TLS) e em repouso. Tokens de acesso do Google
@@ -111,7 +109,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">6. Compartilhamento de dados</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">6. Compartilhamento de dados</h2>
             <p>
               Não vendemos, alugamos ou compartilhamos dados pessoais com terceiros,
               exceto:
@@ -130,43 +128,43 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">7. Direitos do usuário</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">7. Direitos do usuário</h2>
             <p>O usuário pode a qualquer momento:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Revogar o acesso da Noema à sua conta Google em <a href="https://myaccount.google.com/permissions" className="text-[#6C47FF] underline" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a></li>
+              <li>Revogar o acesso da athena à sua conta Google em <a href="https://myaccount.google.com/permissions" className="text-[#1B3B8A] underline" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a></li>
               <li>Solicitar a exclusão de seus dados enviando email para o contato abaixo</li>
               <li>Editar seu perfil de aprendizado a qualquer momento na plataforma</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">8. Menores de idade</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">8. Menores de idade</h2>
             <p>
-              A Noema é destinada a estudantes do ensino médio. O uso da plataforma por
-              menores de 18 anos deve ser consentido por um responsável legal. A Noema
+              A athena é destinada a estudantes do ensino médio. O uso da plataforma por
+              menores de 18 anos deve ser consentido por um responsável legal. A athena
               está em conformidade com a Lei Geral de Proteção de Dados (LGPD) no que
               diz respeito ao tratamento de dados de menores.
             </p>
           </section>
 
           <section>
-            <h2 className="mb-2 text-lg font-bold text-[#1a1a2e]">9. Contato</h2>
+            <h2 className="mb-2 text-base sm:text-lg font-bold text-[#0A1A4A]">9. Contato</h2>
             <p>
               Para dúvidas, solicitações ou exercício de direitos relacionados a esta
               política, entre em contato:
             </p>
-            <p className="mt-2 font-semibold text-[#1a1a2e]">
+            <p className="mt-2 font-semibold text-[#0A1A4A]">
               Email: thiago10374@edu.sebrae.com.br
             </p>
           </section>
         </div>
 
-        <div className="border-t border-gray-200 pt-6">
+        <div className="border-t border-[#E5E7EB] pt-6">
           <a
             href="/"
-            className="text-sm font-medium text-[#6C47FF] hover:underline"
+            className="text-sm font-medium text-[#1B3B8A] hover:underline"
           >
-            ← Voltar para a Noema
+            ← Voltar para a athena
           </a>
         </div>
       </div>

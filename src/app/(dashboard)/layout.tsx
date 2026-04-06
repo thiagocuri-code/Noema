@@ -15,11 +15,9 @@ function Guard({ children }: { children: React.ReactNode }) {
 
   if (status === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8F7FF]">
+      <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#6C47FF]">
-            <span className="font-bold text-white text-lg">N</span>
-          </div>
+          <img src="/athena-symbol.png" alt="athena" className="h-24 sm:h-32 object-contain" />
           <p className="text-sm text-gray-400 animate-pulse">Carregando...</p>
         </div>
       </div>
