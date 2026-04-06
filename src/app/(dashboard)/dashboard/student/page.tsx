@@ -68,7 +68,16 @@ interface Profile {
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
-const COLORS = ["#0a1a4a", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#f97316"]
+const COLORS = [
+  { accent: "#071245", bg: "#eef1fb" },
+  { accent: "#0ea5e9", bg: "#f0f9ff" },
+  { accent: "#22c55e", bg: "#ecfdf5" },
+  { accent: "#f59e0b", bg: "#fffbeb" },
+  { accent: "#ef4444", bg: "#fef2f2" },
+  { accent: "#8b5cf6", bg: "#f5f3ff" },
+  { accent: "#14b8a6", bg: "#f0fdfa" },
+  { accent: "#f97316", bg: "#fff7ed" },
+]
 const ICONS = ["📐", "⚡", "📖", "🧬", "🌍", "🎨", "💻", "📊"]
 const PROFILE_KEY = "trix_profile"
 
@@ -465,15 +474,15 @@ export default function StudentDashboard() {
                   const icon = ICONS[i % ICONS.length]
                   return (
                     <Link key={course.id} href={`/dashboard/student/${course.id}`}>
-                      <div className="group relative cursor-pointer rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
-                        <div className="absolute left-0 top-0 h-1 w-full rounded-t-2xl" style={{ backgroundColor: color }} />
+                      <div className="group relative cursor-pointer rounded-2xl border border-gray-200 p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg" style={{ backgroundColor: color.bg }}>
+                        <div className="absolute left-0 top-0 h-1 w-full rounded-t-2xl" style={{ backgroundColor: color.accent }} />
                         {/* Score ring — top right */}
                         <div className="absolute right-4 top-4">
                           <ScoreRing avg={perfSummary[course.id]?.avgScore ?? null} />
                         </div>
                         <div
                           className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl text-xl"
-                          style={{ backgroundColor: color + "18" }}
+                          style={{ backgroundColor: color.accent + "18" }}
                         >
                           {icon}
                         </div>
@@ -485,7 +494,7 @@ export default function StudentDashboard() {
                         )}
                         <div className="mt-4 flex items-center justify-between">
                           <span className="text-xs text-gray-400">Google Classroom</span>
-                          <span className="text-xs font-medium" style={{ color }}>
+                          <span className="text-xs font-medium" style={{ color: color.accent }}>
                             {t("Entrar →", "Enter →")}
                           </span>
                         </div>
