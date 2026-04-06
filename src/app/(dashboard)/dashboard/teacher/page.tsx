@@ -1,5 +1,6 @@
 "use client"
 
+import { AthenaLogo } from "@/components/shared/athena-logo"
 import { useSession, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
 import {
@@ -27,7 +28,7 @@ interface AssignmentGroup {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const COLORS = ["#6C47FF", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"]
+const COLORS = ["#0a1a4a", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"]
 const STATE_LABEL: Record<string, string> = {
   NEW: "Não iniciado",
   CREATED: "Em andamento",
@@ -39,7 +40,7 @@ const STATE_COLOR: Record<string, string> = {
   NEW: "#e5e7eb",
   CREATED: "#fbbf24",
   TURNED_IN: "#22c55e",
-  RETURNED: "#6C47FF",
+  RETURNED: "#0a1a4a",
   RECLAIMED_BY_STUDENT: "#ef4444",
 }
 
@@ -65,7 +66,7 @@ function StatCard({ label, value, sub, color }: { label: string; value: string |
   )
 }
 
-function ProgressBar({ value, color = "#6C47FF" }: { value: number; color?: string }) {
+function ProgressBar({ value, color = "#0a1a4a" }: { value: number; color?: string }) {
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
@@ -164,20 +165,18 @@ export default function TeacherDashboard() {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#F8F7FF]">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Topbar */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6C47FF]">
-              <span className="text-sm font-bold text-white">N</span>
-            </div>
-            <span className="font-['Sora',sans-serif] text-lg font-bold text-[#1a1a2e]">Noema</span>
+        <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <AthenaLogo variant="full" size="md" />
+
             <span className="hidden sm:block text-xs text-gray-400 border border-gray-200 rounded-full px-2 py-0.5">Painel do Professor</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {session?.user?.image && (
-              <img src={session.user.image} alt="" className="h-8 w-8 rounded-full ring-2 ring-[#6C47FF]/20" />
+              <img src={session.user.image} alt="" className="h-7 w-7 sm:h-8 sm:w-8 rounded-full ring-2 ring-[#0a1a4a]/20" />
             )}
             <span className="hidden text-sm font-medium text-gray-700 sm:block">
               {session?.user?.name?.split(" ")[0]}
@@ -194,7 +193,7 @@ export default function TeacherDashboard() {
         {/* Page title + course selector */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-['Sora',sans-serif] text-2xl font-bold text-[#1a1a2e]">Desempenho da Turma</h1>
+            <h1 className="font-[var(--font-heading)] text-2xl font-bold text-[#1a1a2e]">Desempenho da Turma</h1>
             <p className="mt-1 text-sm text-gray-500">Acompanhe entregas, engajamento e uso da IA por aluno.</p>
           </div>
           {!loadingCourses && courses.length > 0 && (
@@ -204,7 +203,7 @@ export default function TeacherDashboard() {
                 const c = courses.find((c) => c.id === e.target.value)
                 if (c) setSelectedCourse(c)
               }}
-              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-[#1a1a2e] outline-none focus:border-[#6C47FF] focus:ring-1 focus:ring-[#6C47FF]/30"
+              className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-[#1a1a2e] outline-none focus:border-[#0a1a4a] focus:ring-1 focus:ring-[#0a1a4a]/30"
             >
               {courses.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -227,7 +226,7 @@ export default function TeacherDashboard() {
           <>
             {/* ── Stat cards ── */}
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <StatCard label="Alunos" value={students.length} sub="matriculados" color="#6C47FF" />
+              <StatCard label="Alunos" value={students.length} sub="matriculados" color="#0a1a4a" />
               <StatCard
                 label="Atividades"
                 value={totalAssignments}
@@ -267,7 +266,7 @@ export default function TeacherDashboard() {
               <div className="grid gap-6 lg:grid-cols-3">
                 {/* Bar chart — entregas por atividade */}
                 <div className="lg:col-span-2 rounded-2xl border border-gray-200 bg-white p-6">
-                  <h2 className="font-['Sora',sans-serif] text-sm font-bold text-[#1a1a2e] mb-4">
+                  <h2 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e] mb-4">
                     Entregas por Atividade
                   </h2>
                   <ResponsiveContainer width="100%" height={220}>
@@ -287,7 +286,7 @@ export default function TeacherDashboard() {
 
                 {/* Pie chart — status geral */}
                 <div className="rounded-2xl border border-gray-200 bg-white p-6">
-                  <h2 className="font-['Sora',sans-serif] text-sm font-bold text-[#1a1a2e] mb-4">
+                  <h2 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e] mb-4">
                     Status Geral das Submissões
                   </h2>
                   {pieData.length > 0 ? (
@@ -312,7 +311,7 @@ export default function TeacherDashboard() {
             {/* ── Student table ── */}
             <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h2 className="font-['Sora',sans-serif] text-sm font-bold text-[#1a1a2e]">
+                <h2 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e]">
                   Desempenho por Aluno
                 </h2>
                 <span className="text-xs text-gray-400">{students.length} aluno{students.length !== 1 ? "s" : ""}</span>
@@ -331,10 +330,10 @@ export default function TeacherDashboard() {
                         {/* Row */}
                         <button
                           onClick={() => setSelectedStudent(isSelected ? null : student)}
-                          className={`w-full flex items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-gray-50 ${isSelected ? "bg-[#6C47FF]/5" : ""}`}
+                          className={`w-full flex items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-gray-50 ${isSelected ? "bg-[#0a1a4a]/5" : ""}`}
                         >
                           {/* Avatar */}
-                          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#6C47FF]/10 text-xs font-bold text-[#6C47FF]">
+                          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#0a1a4a]/10 text-xs font-bold text-[#0a1a4a]">
                             {student.profile?.photoUrl
                               ? <img src={student.profile.photoUrl} className="h-9 w-9 rounded-full object-cover" alt="" />
                               : avatar(student.profile?.name?.fullName ?? "?")}
@@ -363,22 +362,22 @@ export default function TeacherDashboard() {
                           {/* Avg grade */}
                           <div className="text-center w-16">
                             <p className="text-xs text-gray-400">Nota média</p>
-                            <p className={`text-sm font-bold ${avgGrade ? "text-[#6C47FF]" : "text-gray-300"}`}>
+                            <p className={`text-sm font-bold ${avgGrade ? "text-[#0a1a4a]" : "text-gray-300"}`}>
                               {avgGrade ?? "—"}
                             </p>
                           </div>
 
                           {/* Expand chevron */}
-                          <svg className={`h-4 w-4 text-gray-300 transition-transform flex-shrink-0 ${isSelected ? "rotate-180 text-[#6C47FF]" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className={`h-4 w-4 text-gray-300 transition-transform flex-shrink-0 ${isSelected ? "rotate-180 text-[#0a1a4a]" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </button>
 
                         {/* Expanded: assignment detail */}
                         {isSelected && (
-                          <div className="px-6 pb-5 bg-[#6C47FF]/[0.03]">
-                            <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-                              <table className="w-full text-sm">
+                          <div className="px-3 sm:px-6 pb-5 bg-[#0a1a4a]/[0.03]">
+                            <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+                              <table className="w-full text-sm min-w-[400px]">
                                 <thead>
                                   <tr className="bg-gray-50 text-left text-xs text-gray-400">
                                     <th className="px-4 py-2.5 font-medium">Atividade</th>
@@ -398,7 +397,7 @@ export default function TeacherDashboard() {
                                           {STATE_LABEL[r.state] ?? r.state}
                                         </span>
                                       </td>
-                                      <td className="px-4 py-3 font-bold text-[#6C47FF]">
+                                      <td className="px-4 py-3 font-bold text-[#0a1a4a]">
                                         {r.grade != null ? r.grade : <span className="text-gray-300 font-normal">—</span>}
                                       </td>
                                     </tr>

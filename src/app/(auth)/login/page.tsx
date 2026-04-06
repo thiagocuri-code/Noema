@@ -2,28 +2,26 @@
 
 import { signIn } from "next-auth/react"
 import { SessionProvider } from "next-auth/react"
+import { AthenaLogo } from "@/components/shared/athena-logo"
 
 function LoginContent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F8F7FF]">
-      <div className="w-full max-w-sm space-y-8 px-4 text-center">
+    <div className="flex min-h-screen items-center justify-center bg-white px-4 sm:px-6">
+      <div className="w-full max-w-sm space-y-8 text-center">
         {/* Logo */}
         <div className="space-y-3">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-[#6C47FF] shadow-lg shadow-[#6C47FF]/30">
-            <span className="font-['Sora',sans-serif] text-3xl font-bold text-white">N</span>
+          <div className="flex justify-center">
+            <AthenaLogo variant="full" size="xl" />
           </div>
-          <div>
-            <h1 className="font-['Sora',sans-serif] text-4xl font-bold text-[#1a1a2e]">Noema</h1>
-            <p className="mt-1 text-sm text-gray-400 font-medium tracking-wide">
-              IA que ensina. Não que faz.
-            </p>
-          </div>
+          <p className="text-sm text-gray-400 font-medium tracking-wide">
+            understand the how, not just what
+          </p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm space-y-6">
+        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 sm:p-8 shadow-sm space-y-6">
           <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-[#1a1a2e]">Bem-vindo</h2>
+            <h2 className="text-lg font-semibold text-[#071245]">Bem-vindo</h2>
             <p className="text-sm text-gray-500">
               Entre com sua conta Google para acessar suas turmas
             </p>
@@ -31,7 +29,7 @@ function LoginContent() {
 
           <button
             onClick={() => signIn("google", { callbackUrl: "/dashboard/student" })}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-[#1a1a2e] shadow-sm transition-all hover:bg-gray-50 hover:shadow-md active:scale-95"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-sm font-medium text-[#1a1a2e] shadow-sm transition-all hover:bg-gray-50 hover:shadow-md active:scale-95"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

@@ -50,8 +50,8 @@ export default function AcessoPage() {
         {/* ── Topbar ── */}
         <nav className="border-b border-[#E5E7EB] bg-white">
           <div className="mx-auto flex py-3 max-w-4xl items-center justify-between px-6">
-            <img src="/athena-full.png" alt="athena" className="h-16 sm:h-20 object-contain" />
-            <Link href="/landing" className="text-sm font-medium text-gray-500 hover:text-[#1E3A7A]">
+            <img src="/athena-logo.png" alt="athena" className="h-8 w-auto object-contain" />
+            <Link href="/landing" className="text-sm font-medium text-gray-500 hover:text-[#071245]">
               ← Voltar
             </Link>
           </div>
@@ -64,7 +64,7 @@ export default function AcessoPage() {
               ✓ Plataforma segura
             </span>
 
-            <h1 className="font-[var(--font-heading)] text-2xl sm:text-3xl font-bold text-[#1E3A7A] lg:text-[40px] leading-tight">
+            <h1 className="font-[var(--font-heading)] text-2xl sm:text-3xl font-bold text-[#071245] lg:text-[40px] leading-tight">
               Você está a um passo<br />de acessar a athena
             </h1>
 
@@ -77,11 +77,11 @@ export default function AcessoPage() {
         {/* ── Bloco de aviso ── */}
         <section className="mx-auto max-w-3xl px-6 pb-16">
           <FadeIn>
-            <div className="rounded-2xl border-2 border-[#5BB3F0]/40 bg-[#C5E4F8]/15 p-6 sm:p-8 md:p-10 space-y-6">
+            <div className="rounded-2xl border-2 border-[#6B8EC4]/40 bg-[#F0F4FF]/15 p-6 sm:p-8 md:p-10 space-y-6">
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 <span className="text-3xl">🔒</span>
                 <div className="space-y-4">
-                  <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1E3A7A]">
+                  <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#071245]">
                     Por que aparece um aviso do Google?
                   </h2>
                   <div className="space-y-4 text-sm leading-relaxed text-gray-700">
@@ -91,11 +91,11 @@ export default function AcessoPage() {
                     <p>
                       Isso acontece porque a athena está em fase de acesso antecipado — o processo de verificação do Google leva semanas e ainda está em andamento.
                     </p>
-                    <p className="font-semibold text-[#1E3A7A]">
+                    <p className="font-semibold text-[#071245]">
                       Isso NÃO significa que o app é perigoso.
                     </p>
                     <div className="rounded-xl bg-white p-5 border border-[#E5E7EB]">
-                      <p className="font-semibold text-[#1E3A7A] mb-3">A athena:</p>
+                      <p className="font-semibold text-[#071245] mb-3">A athena:</p>
                       <ul className="space-y-2">
                         {[
                           "Não armazena sua senha do Google",
@@ -118,10 +118,10 @@ export default function AcessoPage() {
         </section>
 
         {/* ── Passo a passo ── */}
-        <section className="bg-[#C5E4F8]/20 py-10 sm:py-16">
+        <section className="bg-[#F0F4FF]/20 py-10 sm:py-16">
           <div className="mx-auto max-w-3xl px-6">
             <FadeIn className="text-center mb-12">
-              <h2 className="font-[var(--font-heading)] text-2xl font-bold text-[#1E3A7A] sm:text-3xl">
+              <h2 className="font-[var(--font-heading)] text-2xl font-bold text-[#071245] sm:text-3xl">
                 Como acessar em 3 passos
               </h2>
             </FadeIn>
@@ -135,10 +135,10 @@ export default function AcessoPage() {
                 <FadeIn key={item.step}>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#3D5FC0] text-lg font-bold text-white">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#4169D4] text-lg font-bold text-white">
                         {item.step}
                       </div>
-                      <h3 className="font-[var(--font-heading)] text-lg font-bold text-[#1E3A7A]">
+                      <h3 className="font-[var(--font-heading)] text-lg font-bold text-[#071245]">
                         Passo {item.step}
                       </h3>
                     </div>
@@ -165,13 +165,13 @@ export default function AcessoPage() {
         <section className="py-10 sm:py-16">
           <div className="mx-auto max-w-xl px-6 text-center">
             <FadeIn className="space-y-6">
-              <h2 className="font-[var(--font-heading)] text-2xl font-bold text-[#1E3A7A] sm:text-3xl">
+              <h2 className="font-[var(--font-heading)] text-2xl font-bold text-[#071245] sm:text-3xl">
                 Pronto para começar?
               </h2>
 
               <Link
                 href="/login"
-                className="inline-block w-full max-w-sm rounded-2xl bg-[#3D5FC0] px-10 py-4 font-[var(--font-heading)] text-base font-bold text-white shadow-lg shadow-[#3D5FC0]/25 transition-all hover:bg-[#1E3A7A] active:scale-[0.97]"
+                className="inline-block w-full max-w-sm rounded-2xl bg-[#4169D4] px-10 py-4 font-[var(--font-heading)] text-base font-bold text-white shadow-lg shadow-[#4169D4]/25 transition-all hover:bg-[#071245] active:scale-[0.97]"
               >
                 Acessar a athena agora →
               </Link>
@@ -188,7 +188,7 @@ export default function AcessoPage() {
           <div className="mx-auto max-w-4xl px-6 text-center">
             <p className="text-xs text-gray-400">
               © 2026 athena. Todos os direitos reservados. ·{" "}
-              <Link href="/privacy" className="hover:text-[#3D5FC0] underline">Política de Privacidade</Link>
+              <Link href="/privacy" className="hover:text-[#4169D4] underline">Política de Privacidade</Link>
             </p>
           </div>
         </footer>

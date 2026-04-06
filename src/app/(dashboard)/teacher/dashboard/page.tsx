@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { AthenaLogo } from "@/components/shared/athena-logo"
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer,
@@ -124,11 +125,11 @@ function StudentDrawer({
       {/* Drawer */}
       <div
         ref={ref}
-        className="relative z-10 flex h-full w-full max-w-md flex-col bg-white shadow-2xl overflow-y-auto"
+        className="relative z-10 flex h-full w-full max-w-[100vw] sm:max-w-md flex-col bg-white shadow-2xl overflow-y-auto"
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white px-6 py-4">
-          <h2 className="font-['Sora',sans-serif] text-sm font-bold text-[#1a1a2e]">
+          <h2 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e]">
             Perfil do Aluno
           </h2>
           <button
@@ -146,15 +147,15 @@ function StudentDrawer({
               <img
                 src={student.image}
                 alt={student.name}
-                className="h-16 w-16 rounded-full object-cover ring-2 ring-[#6C47FF]/20"
+                className="h-16 w-16 rounded-full object-cover ring-2 ring-[#0a1a4a]/20"
               />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#6C47FF]/10 text-lg font-bold text-[#6C47FF]">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#0a1a4a]/10 text-lg font-bold text-[#0a1a4a]">
                 {initials(student.name)}
               </div>
             )}
             <div>
-              <p className="font-['Sora',sans-serif] text-base font-bold text-[#1a1a2e]">
+              <p className="font-[var(--font-heading)] text-base font-bold text-[#1a1a2e]">
                 {student.name}
               </p>
               <p className="text-xs text-gray-400">{student.email}</p>
@@ -229,9 +230,9 @@ function StudentDrawer({
                     <Line
                       type="monotone"
                       dataKey="nota"
-                      stroke="#6C47FF"
+                      stroke="#0a1a4a"
                       strokeWidth={2}
-                      dot={{ fill: "#6C47FF", r: 3 }}
+                      dot={{ fill: "#0a1a4a", r: 3 }}
                       activeDot={{ r: 5 }}
                     />
                   </LineChart>
@@ -340,7 +341,7 @@ export default function TeacherDashboardReal() {
 
   // ── Render ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#F8F7FF]">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Drawer */}
       {selectedStudent && (
         <StudentDrawer
@@ -351,42 +352,37 @@ export default function TeacherDashboardReal() {
 
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6C47FF]">
-              <span className="text-sm font-bold text-white">N</span>
-            </div>
-            <span className="font-['Sora',sans-serif] text-lg font-bold text-[#1a1a2e]">
-              Noema
-            </span>
+        <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <AthenaLogo variant="full" size="md" />
             <span className="hidden sm:block rounded-full border border-gray-200 px-2.5 py-0.5 text-xs text-gray-400">
               Painel do Professor
             </span>
           </div>
           <a
             href="/dashboard/student"
-            className="text-xs text-gray-400 hover:text-gray-600"
+            className="text-xs text-gray-400 hover:text-gray-600 flex-shrink-0"
           >
             ← Painel do Aluno
           </a>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-8 space-y-8">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
         <div>
-          <h1 className="font-['Sora',sans-serif] text-2xl font-bold text-[#1a1a2e]">
+          <h1 className="font-[var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1a1a2e]">
             Alunos da Plataforma
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Dados reais de todos os alunos cadastrados na Noema.
+            Dados reais de todos os alunos cadastrados na athena.
           </p>
         </div>
 
         {/* Loading */}
         {loading && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {[1, 2, 3, 4].map(i => (
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6">
+              {[1, 2, 3, 4, 5, 6].map(i => (
                 <div key={i} className="h-24 animate-pulse rounded-2xl bg-gray-200" />
               ))}
             </div>
@@ -404,13 +400,13 @@ export default function TeacherDashboardReal() {
         {!loading && !error && (
           <>
             {/* ── Metric cards ── */}
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6">
               {[
                 {
                   label: "Alunos",
                   value: totalStudents,
                   sub: "cadastrados",
-                  color: "#6C47FF",
+                  color: "#0a1a4a",
                 },
                 {
                   label: "Com perfil",
@@ -445,13 +441,13 @@ export default function TeacherDashboardReal() {
               ].map(card => (
                 <div
                   key={card.label}
-                  className="rounded-2xl border border-gray-200 bg-white p-5"
+                  className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5"
                 >
                   <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
                     {card.label}
                   </p>
                   <p
-                    className="mt-1 text-3xl font-bold"
+                    className="mt-1 text-2xl sm:text-3xl font-bold"
                     style={{ color: card.color }}
                   >
                     {card.value}
@@ -479,8 +475,8 @@ export default function TeacherDashboardReal() {
               <>
                 {/* ── Course filter + table ── */}
                 <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
-                  <div className="flex items-center justify-between gap-4 border-b border-gray-100 px-6 py-4">
-                    <h2 className="font-['Sora',sans-serif] text-sm font-bold text-[#1a1a2e]">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-gray-100 px-4 sm:px-6 py-4">
+                    <h2 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e]">
                       Desempenho por Aluno
                     </h2>
                     <div className="flex items-center gap-3">
@@ -491,7 +487,7 @@ export default function TeacherDashboardReal() {
                         <select
                           value={filterCourse}
                           onChange={e => setFilterCourse(e.target.value)}
-                          className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#1a1a2e] outline-none focus:border-[#6C47FF]"
+                          className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-[#1a1a2e] outline-none focus:border-[#0a1a4a]"
                         >
                           <option value="all">Todas as turmas</option>
                           {allCourses.map(c => (
@@ -504,8 +500,9 @@ export default function TeacherDashboardReal() {
                     </div>
                   </div>
 
+                  <div className="overflow-x-auto">
                   {/* Table header */}
-                  <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_auto] gap-3 border-b border-gray-50 bg-gray-50 px-6 py-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                  <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_auto] gap-3 border-b border-gray-50 bg-gray-50 px-4 sm:px-6 py-3 text-xs font-semibold uppercase tracking-wide text-gray-400 min-w-[640px]">
                     <span>Aluno</span>
                     <span>Ano</span>
                     <span>Objetivo</span>
@@ -538,7 +535,7 @@ export default function TeacherDashboardReal() {
                       return (
                         <div
                           key={student.id}
-                          className="grid grid-cols-1 gap-3 px-6 py-4 sm:grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_auto] sm:items-center"
+                          className="grid grid-cols-1 gap-3 px-4 sm:px-6 py-4 sm:grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_auto] sm:items-center sm:min-w-[640px]"
                         >
                           {/* Identity */}
                           <div className="flex items-center gap-3">
@@ -549,7 +546,7 @@ export default function TeacherDashboardReal() {
                                 className="h-9 w-9 flex-shrink-0 rounded-full object-cover ring-1 ring-gray-200"
                               />
                             ) : (
-                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#6C47FF]/10 text-xs font-bold text-[#6C47FF]">
+                              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#0a1a4a]/10 text-xs font-bold text-[#0a1a4a]">
                                 {initials(student.name)}
                               </div>
                             )}
@@ -564,45 +561,54 @@ export default function TeacherDashboardReal() {
                           </div>
 
                           {/* Year */}
-                          <p className="text-xs text-gray-600">
+                          <p className="text-xs text-gray-600 hidden sm:block">
                             {student.profile?.schoolYear ?? <span className="text-gray-300">—</span>}
                           </p>
 
                           {/* Goal */}
-                          <p className="text-xs text-gray-600 truncate">
+                          <p className="text-xs text-gray-600 truncate hidden sm:block">
                             {student.profile?.goal ?? <span className="text-gray-300">—</span>}
                           </p>
 
+                          {/* Mobile compact stats */}
+                          <div className="flex flex-wrap items-center gap-3 sm:hidden">
+                            <span className="text-xs"><span className="text-gray-400">Simulados:</span> <span className="font-bold text-[#8b5cf6]">{perfs.length}</span></span>
+                            <span className="text-xs"><span className="text-gray-400">Média:</span> <span className="font-bold" style={{ color: avgS !== null ? avgColor(avgS) : "#d1d5db" }}>{avgS !== null ? avgS.toFixed(0) + "%" : "—"}</span></span>
+                            <span className="text-xs"><span className="text-gray-400">Revisões:</span> <span className="font-bold text-[#14b8a6]">{revisoes}</span></span>
+                            <span className="text-xs"><span className="text-gray-400">Darwin:</span> <span className="font-bold text-[#f97316]">{darwinMsgs}</span></span>
+                          </div>
+
                           {/* Simulados count */}
-                          <p className="text-sm font-bold text-[#8b5cf6]">
+                          <p className="text-sm font-bold text-[#8b5cf6] hidden sm:block">
                             {perfs.length > 0 ? perfs.length : <span className="text-xs font-normal text-gray-300">0</span>}
                           </p>
 
                           {/* Avg score */}
-                          <p className="text-sm font-bold" style={{ color: avgS !== null ? avgColor(avgS) : "#d1d5db" }}>
+                          <p className="text-sm font-bold hidden sm:block" style={{ color: avgS !== null ? avgColor(avgS) : "#d1d5db" }}>
                             {avgS !== null ? avgS.toFixed(0) + "%" : "—"}
                           </p>
 
                           {/* Revisões */}
-                          <p className="text-sm font-bold text-[#14b8a6]">
+                          <p className="text-sm font-bold text-[#14b8a6] hidden sm:block">
                             {revisoes > 0 ? revisoes : <span className="text-xs font-normal text-gray-300">0</span>}
                           </p>
 
                           {/* Darwin messages */}
-                          <p className="text-sm font-bold text-[#f97316]">
+                          <p className="text-sm font-bold text-[#f97316] hidden sm:block">
                             {darwinMsgs > 0 ? darwinMsgs : <span className="text-xs font-normal text-gray-300">0</span>}
                           </p>
 
                           {/* Ver button */}
                           <button
                             onClick={() => setSelectedStudent(student)}
-                            className="rounded-xl border border-[#6C47FF]/30 px-3 py-1.5 text-xs font-semibold text-[#6C47FF] transition-all hover:bg-[#6C47FF]/8"
+                            className="rounded-xl border border-[#0a1a4a]/30 px-3 py-1.5 text-xs font-semibold text-[#0a1a4a] transition-all hover:bg-[#0a1a4a]/8 w-full sm:w-auto"
                           >
                             Ver
                           </button>
                         </div>
                       )
                     })}
+                  </div>
                   </div>
                 </div>
               </>

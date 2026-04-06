@@ -20,14 +20,14 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>("pt")
 
   useEffect(() => {
-    const saved = localStorage.getItem("noema-lang") as Lang | null
+    const saved = localStorage.getItem("athena-lang") as Lang | null
     if (saved === "en" || saved === "pt") setLang(saved)
   }, [])
 
   function toggle() {
     setLang((prev) => {
       const next = prev === "pt" ? "en" : "pt"
-      localStorage.setItem("noema-lang", next)
+      localStorage.setItem("athena-lang", next)
       return next
     })
   }
@@ -53,7 +53,7 @@ export function LangToggle() {
   return (
     <button
       onClick={toggle}
-      className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm transition-all hover:border-[#6C47FF] hover:text-[#6C47FF] active:scale-95"
+      className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 shadow-sm transition-all hover:border-[#0a1a4a] hover:text-[#0a1a4a] active:scale-95"
       title={lang === "pt" ? "Switch to English" : "Mudar para Português"}
     >
       <span className="text-sm">{lang === "pt" ? "🇧🇷" : "🇺🇸"}</span>

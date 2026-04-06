@@ -8,7 +8,7 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-2xl font-bold text-[#1a1a2e]">Relatórios da Escola</h1>
         <p className="text-sm text-gray-500">
-          Visão geral de engajamento e uso da Noema.
+          Visão geral de engajamento e uso da athena.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
@@ -17,7 +17,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-sm text-gray-500">Total de alunos</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#6C47FF]">--</p>
+            <p className="text-2xl font-bold text-[#0a1a4a]">--</p>
           </CardContent>
         </Card>
         <Card>
@@ -27,7 +27,7 @@ export default function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#6C47FF]">--</p>
+            <p className="text-2xl font-bold text-[#0a1a4a]">--</p>
           </CardContent>
         </Card>
         <Card>
@@ -35,7 +35,7 @@ export default function AdminDashboard() {
             <CardTitle className="text-sm text-gray-500">Turmas ativas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#6C47FF]">--</p>
+            <p className="text-2xl font-bold text-[#0a1a4a]">--</p>
           </CardContent>
         </Card>
       </div>

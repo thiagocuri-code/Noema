@@ -3,7 +3,7 @@ export const MOCK_COURSES = [
     id: "matematica",
     name: "Matemática",
     subject: "Exatas",
-    color: "#6C47FF",
+    color: "#0a1a4a",
     teacher: "Prof. Carlos",
     pendingCount: 4,
     urgent: true,

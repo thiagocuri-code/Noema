@@ -18,7 +18,7 @@ export function AiChat({ courseId, courseName, courseContext, userId }: AiChatPr
     {
       role: "assistant",
       content:
-        "Olá! Sou a Noema, sua tutora para " +
+        "Olá! Sou o Darwin, seu tutor para " +
         courseName +
         ". Estou aqui para te ajudar a entender os conteúdos. O que você quer explorar hoje?",
     },
@@ -81,13 +81,13 @@ export function AiChat({ courseId, courseName, courseContext, userId }: AiChatPr
       <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
         <div>
           <h3 className="text-sm font-semibold text-[#1a1a2e]">
-            Noema — Tutora de {courseName}
+            Darwin — Tutor de {courseName}
           </h3>
         </div>
         <Badge
           variant="secondary"
-          className="bg-[#6C47FF]/10 text-[#6C47FF] text-xs cursor-help"
-          title="A Noema usa o método socrático: ela nunca dá respostas prontas, mas guia seu raciocínio com perguntas."
+          className="bg-[#0a1a4a]/10 text-[#0a1a4a] text-xs cursor-help"
+          title="O Darwin usa o método socrático: ele nunca dá respostas prontas, mas guia seu raciocínio com perguntas."
         >
           Método Socrático Ativo
         </Badge>
@@ -102,7 +102,7 @@ export function AiChat({ courseId, courseName, courseContext, userId }: AiChatPr
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
                 msg.role === "user"
-                  ? "bg-[#6C47FF] text-white rounded-br-md"
+                  ? "bg-[#0a1a4a] text-white rounded-br-md"
                   : "bg-gray-100 text-[#1a1a2e] rounded-bl-md"
               }`}
             >
@@ -118,7 +118,7 @@ export function AiChat({ courseId, courseName, courseContext, userId }: AiChatPr
                 <span className="animate-bounce" style={{ animationDelay: "0.1s" }}>.</span>
                 <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>.</span>
               </span>{" "}
-              Noema está pensando...
+              Darwin está pensando...
             </div>
           </div>
         )}
@@ -142,7 +142,7 @@ export function AiChat({ courseId, courseName, courseContext, userId }: AiChatPr
           <Button
             onClick={handleSend}
             disabled={!input.trim() || loading}
-            className="bg-[#6C47FF] hover:bg-[#5835e0] text-white px-6"
+            className="bg-[#071245] hover:bg-[#071245] text-white px-6"
           >
             Enviar
           </Button>

@@ -36,7 +36,7 @@ export function VerificationPanel() {
       <CardHeader>
         <CardTitle className="text-base">Verificação de Autoria</CardTitle>
         <p className="text-xs text-gray-500">
-          Cole um trecho de trabalho entregue para verificar se a Noema gerou este conteúdo.
+          Cole um trecho de trabalho entregue para verificar se a athena gerou este conteúdo.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -49,9 +49,9 @@ export function VerificationPanel() {
         <Button
           onClick={handleVerify}
           disabled={!text.trim() || loading}
-          className="bg-[#6C47FF] hover:bg-[#5835e0] text-white"
+          className="bg-[#071245] hover:bg-[#071245] text-white"
         >
-          {loading ? "Verificando..." : "Verificar com Noema"}
+          {loading ? "Verificando..." : "Verificar com athena"}
         </Button>
 
         {result && (
@@ -73,7 +73,7 @@ export function VerificationPanel() {
                     : "bg-green-100 text-green-700"
                 }
               >
-                {result.generated ? "Gerado pela Noema" : "Não gerado"}
+                {result.generated ? "Gerado pela athena" : "Não gerado"}
               </Badge>
             </div>
             <p className="text-sm text-gray-700">{result.message}</p>

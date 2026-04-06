@@ -53,13 +53,13 @@ export default function LandingPage() {
         {/* ━━━ NAVBAR ━━━ */}
         <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white/95 backdrop-blur-sm shadow-sm">
           <div className="mx-auto flex py-3 max-w-6xl items-center justify-between px-6">
-            <img src="/athena-full.png" alt="athena" className="h-32 sm:h-40 object-contain" />
+            <img src="/athena-logo.png" alt="athena" className="h-8 w-auto object-contain" />
             <div className="flex items-center gap-6">
-              <a href="#como-funciona" className="hidden text-sm font-medium text-gray-600 hover:text-[#1E3A7A] sm:block">Como funciona</a>
-              <a href="#para-escolas" className="hidden text-sm font-medium text-gray-600 hover:text-[#1E3A7A] sm:block">Para escolas</a>
+              <a href="#como-funciona" className="hidden text-sm font-medium text-gray-600 hover:text-[#071245] sm:block">Como funciona</a>
+              <a href="#para-escolas" className="hidden text-sm font-medium text-gray-600 hover:text-[#071245] sm:block">Para escolas</a>
               <Link
                 href="/acesso"
-                className="rounded-full bg-[#3D5FC0] px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-[#1E3A7A] active:scale-95"
+                className="rounded-full bg-[#4169D4] px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-[#071245] active:scale-95"
               >
                 Quero ter acesso →
               </Link>
@@ -71,11 +71,11 @@ export default function LandingPage() {
         <section className="mx-auto max-w-6xl px-6 py-12 sm:py-16 md:py-24">
           <div className="grid items-center gap-12 grid-cols-1 md:grid-cols-5">
             <div className="space-y-8 md:col-span-3">
-              <span className="inline-block rounded-full bg-[#C5E4F8] px-4 py-1.5 text-xs font-semibold text-[#1E3A7A]">
+              <span className="inline-block rounded-full bg-[#F0F4FF] px-4 py-1.5 text-xs font-semibold text-[#071245]">
                 Integrado ao Google Classroom
               </span>
 
-              <h1 className="font-[var(--font-heading)] text-3xl sm:text-4xl lg:text-[52px] font-bold leading-tight text-[#1E3A7A]">
+              <h1 className="font-[var(--font-heading)] text-3xl sm:text-4xl lg:text-[52px] font-bold leading-tight text-[#071245]">
                 Pare de copiar respostas.<br />
                 Comece a entender de verdade.
               </h1>
@@ -87,11 +87,11 @@ export default function LandingPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
                   href="/acesso"
-                  className="w-full sm:w-auto rounded-2xl bg-[#3D5FC0] px-8 py-4 text-center font-[var(--font-heading)] text-base font-semibold text-white shadow-lg shadow-[#3D5FC0]/25 transition-all hover:bg-[#1E3A7A] hover:shadow-[#1E3A7A]/30 active:scale-[0.97]"
+                  className="w-full sm:w-auto rounded-2xl bg-[#00E87A] px-8 py-4 text-center font-[var(--font-heading)] text-base font-semibold text-[#071245] shadow-lg shadow-[#00E87A]/25 transition-all hover:brightness-90 active:scale-[0.97]"
                 >
                   Quero aprender com a athena →
                 </Link>
-                <a href="#como-funciona" className="text-center text-sm font-medium text-gray-500 hover:text-[#3D5FC0]">
+                <a href="#como-funciona" className="text-center text-sm font-medium text-gray-500 hover:text-[#4169D4]">
                   Ver como funciona ↓
                 </a>
               </div>
@@ -104,7 +104,7 @@ export default function LandingPage() {
             </div>
 
             <div className="relative md:col-span-2">
-              <div className="rounded-2xl shadow-2xl shadow-[#1E3A7A]/10 overflow-hidden border border-gray-100 w-full">
+              <div className="rounded-2xl shadow-2xl shadow-[#071245]/10 overflow-hidden border border-gray-100 w-full">
                 <Image
                   src="/prints/dashboard-aluno.jpeg"
                   alt="Dashboard do aluno na athena"
@@ -114,7 +114,7 @@ export default function LandingPage() {
                   priority
                 />
               </div>
-              <div className="absolute -bottom-3 -right-3 rounded-full bg-[#C5E4F8] px-4 py-2 text-xs font-semibold text-[#1E3A7A] shadow-md">
+              <div className="absolute -bottom-3 -right-3 rounded-full bg-[#F0F4FF] px-4 py-2 text-xs font-semibold text-[#071245] shadow-md">
                 ✓ Seus materiais do professor
               </div>
             </div>
@@ -122,10 +122,10 @@ export default function LandingPage() {
         </section>
 
         {/* ━━━ PROBLEMA ━━━ */}
-        <section className="bg-[#C5E4F8]/30 py-12 sm:py-20">
+        <section className="bg-[#F0F4FF]/30 py-12 sm:py-20">
           <div className="mx-auto max-w-6xl px-6">
             <FadeIn className="text-center space-y-4 mb-14">
-              <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#1E3A7A] sm:text-4xl">
+              <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#071245] sm:text-4xl">
                 Você usa IA. Mas está de fato aprendendo?
               </h2>
               <p className="mx-auto max-w-2xl text-lg text-gray-600">
@@ -142,7 +142,7 @@ export default function LandingPage() {
                 <FadeIn key={i}>
                   <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 space-y-3 h-full">
                     <span className="text-3xl">{card.icon}</span>
-                    <h3 className="font-[var(--font-heading)] text-lg font-bold text-[#1E3A7A]">{card.title}</h3>
+                    <h3 className="font-[var(--font-heading)] text-lg font-bold text-[#071245]">{card.title}</h3>
                     <p className="text-sm leading-relaxed text-gray-600">{card.body}</p>
                   </div>
                 </FadeIn>
@@ -155,17 +155,17 @@ export default function LandingPage() {
         <section className="py-12 sm:py-20">
           <div className="mx-auto max-w-6xl px-6">
             <FadeIn className="mb-14 space-y-3">
-              <span className="inline-block rounded-full bg-[#C5E4F8] px-4 py-1.5 text-xs font-semibold text-[#1E3A7A]">
+              <span className="inline-block rounded-full bg-[#F0F4FF] px-4 py-1.5 text-xs font-semibold text-[#071245]">
                 Como a athena é diferente
               </span>
-              <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#1E3A7A] sm:text-4xl">
+              <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#071245] sm:text-4xl">
                 IA que te ensina.<br />Não que faz por você.
               </h2>
             </FadeIn>
 
             <div className="grid items-center gap-12 grid-cols-1 md:grid-cols-2">
               <FadeIn>
-                <div className="rounded-2xl shadow-xl shadow-[#1E3A7A]/10 overflow-hidden border border-blue-100 w-full">
+                <div className="rounded-2xl shadow-xl shadow-[#071245]/10 overflow-hidden border border-blue-100 w-full">
                   <Image
                     src="/prints/conversa-darwin.jpeg"
                     alt="Conversa com o Darwin — tutor socrático"
@@ -184,11 +184,11 @@ export default function LandingPage() {
                   { title: "Sem cola, com rastreamento", body: "O professor consegue verificar se uma resposta foi gerada pela athena — e ver todo o raciocínio que aconteceu antes dela." },
                 ].map((item, i) => (
                   <div key={i} className="flex gap-4">
-                    <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#5BB3F0]/20">
-                      <span className="text-sm font-bold text-[#5BB3F0]">✦</span>
+                    <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#6B8EC4]/20">
+                      <span className="text-sm font-bold text-[#6B8EC4]">✦</span>
                     </div>
                     <div>
-                      <h4 className="font-[var(--font-heading)] text-base font-bold text-[#1E3A7A]">{item.title}</h4>
+                      <h4 className="font-[var(--font-heading)] text-base font-bold text-[#071245]">{item.title}</h4>
                       <p className="mt-1 text-sm leading-relaxed text-gray-600">{item.body}</p>
                     </div>
                   </div>
@@ -199,10 +199,10 @@ export default function LandingPage() {
         </section>
 
         {/* ━━━ COMO FUNCIONA ━━━ */}
-        <section id="como-funciona" className="bg-[#C5E4F8]/30 py-12 sm:py-20">
+        <section id="como-funciona" className="bg-[#F0F4FF]/30 py-12 sm:py-20">
           <div className="mx-auto max-w-6xl px-6">
             <FadeIn className="text-center mb-14">
-              <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#1E3A7A] sm:text-4xl">
+              <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#071245] sm:text-4xl">
                 Três formas de aprender mais em menos tempo
               </h2>
             </FadeIn>
@@ -216,7 +216,7 @@ export default function LandingPage() {
                 <FadeIn key={i}>
                   <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 space-y-5 h-full flex flex-col">
                     <span className="text-4xl">{card.icon}</span>
-                    <h3 className="font-[var(--font-heading)] text-lg font-bold text-[#1E3A7A]">{card.title}</h3>
+                    <h3 className="font-[var(--font-heading)] text-lg font-bold text-[#071245]">{card.title}</h3>
                     <p className="text-sm leading-relaxed text-gray-600 flex-1">{card.body}</p>
                     <div className="rounded-xl overflow-hidden shadow-md border border-gray-100 w-full mt-4">
                       <Image
@@ -239,10 +239,10 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl px-6">
             <div className="grid items-center gap-12 grid-cols-1 md:grid-cols-2">
               <FadeIn className="space-y-6">
-                <span className="inline-block rounded-full bg-[#C5E4F8] px-4 py-1.5 text-xs font-semibold text-[#1E3A7A]">
+                <span className="inline-block rounded-full bg-[#F0F4FF] px-4 py-1.5 text-xs font-semibold text-[#071245]">
                   Personalização real
                 </span>
-                <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#1E3A7A] sm:text-4xl">
+                <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#071245] sm:text-4xl">
                   A athena aprende<br />como você aprende
                 </h2>
                 <p className="text-base leading-relaxed text-gray-600">
@@ -256,7 +256,7 @@ export default function LandingPage() {
                     "Pode alterar seu perfil a qualquer momento",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#5BB3F0]/20 text-xs text-[#5BB3F0]">✓</span>
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#6B8EC4]/20 text-xs text-[#6B8EC4]">✓</span>
                       {item}
                     </li>
                   ))}
@@ -264,7 +264,7 @@ export default function LandingPage() {
               </FadeIn>
 
               <FadeIn>
-                <div className="rounded-2xl shadow-xl shadow-[#1E3A7A]/10 overflow-hidden border border-blue-100 w-full">
+                <div className="rounded-2xl shadow-xl shadow-[#071245]/10 overflow-hidden border border-blue-100 w-full">
                   <Image
                     src="/prints/personalizar-perfil.jpeg"
                     alt="Personalização do perfil de aprendizado"
@@ -278,40 +278,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ━━━ DEPOIMENTOS ━━━ */}
-        <section id="para-escolas" className="bg-[#C5E4F8]/30 py-12 sm:py-20">
-          <div className="mx-auto max-w-6xl px-6">
-            <FadeIn className="text-center mb-14">
-              <h2 className="font-[var(--font-heading)] text-3xl font-bold text-[#1E3A7A] sm:text-4xl">
-                O que professores dizem sobre IA e aprendizado
-              </h2>
-            </FadeIn>
-
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-              {[1, 2, 3].map((n) => (
-                <FadeIn key={n}>
-                  <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 space-y-4 h-full flex flex-col">
-                    <span className="text-4xl text-[#5BB3F0] leading-none">&ldquo;</span>
-                    <p className="flex-1 text-sm italic leading-relaxed text-gray-600">
-                      [ Depoimento {n} — adicionar texto aqui ]
-                    </p>
-                    <div className="border-t border-[#E5E7EB] pt-4">
-                      <p className="text-sm font-bold text-[#1E3A7A]">Nome do Professor</p>
-                      <p className="text-xs text-gray-500">Cargo / Escola</p>
-                    </div>
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
-
-            <p className="mt-8 text-center text-xs text-gray-400">
-              Depoimentos coletados durante pesquisa de validação do produto
-            </p>
-          </div>
-        </section>
-
         {/* ━━━ CTA FINAL ━━━ */}
-        <section className="bg-gradient-to-br from-[#1E3A7A] to-[#152D6E] py-12 sm:py-20">
+        <section className="bg-gradient-to-br from-[#071245] to-[#071245] py-12 sm:py-20">
           <div className="mx-auto max-w-3xl px-6 text-center">
             <FadeIn className="space-y-6">
               <h2 className="font-[var(--font-heading)] text-2xl sm:text-3xl lg:text-[44px] font-bold text-white leading-tight">
@@ -322,7 +290,7 @@ export default function LandingPage() {
               </p>
               <Link
                 href="/acesso"
-                className="inline-block rounded-2xl bg-[#5BB3F0] px-10 py-4 font-[var(--font-heading)] text-base font-bold text-[#1E3A7A] shadow-lg transition-all hover:bg-white hover:text-[#1E3A7A] active:scale-[0.97]"
+                className="inline-block rounded-2xl bg-[#00E87A] px-10 py-4 font-[var(--font-heading)] text-base font-bold text-[#071245] shadow-lg shadow-[#00E87A]/20 transition-all hover:brightness-90 active:scale-[0.97]"
               >
                 Quero ter acesso à athena →
               </Link>
@@ -334,11 +302,11 @@ export default function LandingPage() {
         </section>
 
         {/* ━━━ FOOTER ━━━ */}
-        <footer className="bg-[#1E3A7A] py-12">
+        <footer className="bg-[#071245] py-12">
           <div className="mx-auto max-w-6xl px-6">
             <div className="flex flex-col items-center gap-6 text-center">
               <div className="flex items-center gap-3">
-                <img src="/athena-symbol.png" alt="athena" className="h-32 sm:h-40 object-contain brightness-0 invert" />
+                <img src="/athena-logo.png" alt="athena" className="h-8 w-auto object-contain brightness-0 invert" />
                 <span className="text-lg font-bold text-white">athena</span>
               </div>
               <p className="text-sm text-white/60 italic">understand the how, not just what</p>

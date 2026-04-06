@@ -21,7 +21,7 @@ interface PerformanceChartProps {
   subjects: string[]
 }
 
-const COLORS = ["#6C47FF", "#22c55e", "#ef4444", "#f59e0b", "#3b82f6", "#8b5cf6"]
+const COLORS = ["#0a1a4a", "#22c55e", "#ef4444", "#f59e0b", "#3b82f6", "#8b5cf6"]
 
 export function PerformanceChart({ data, subjects }: PerformanceChartProps) {
   return (

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
 const COLORS = [
-  "bg-[#6C47FF]",
+  "bg-[#0a1a4a]",
   "bg-emerald-500",
   "bg-amber-500",
   "bg-rose-500",
@@ -42,7 +42,7 @@ export function ClassCard({
         <div className={`h-2 ${color}`} />
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between">
-            <CardTitle className="text-base font-semibold text-[#1a1a2e] group-hover:text-[#6C47FF] transition-colors">
+            <CardTitle className="text-base font-semibold text-[#1a1a2e] group-hover:text-[#0a1a4a] transition-colors">
               {name}
             </CardTitle>
             {urgent && (

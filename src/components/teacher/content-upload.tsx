@@ -42,7 +42,7 @@ export function SyncPanel({ accessToken }: SyncPanelProps) {
           <Button
             onClick={handleSync}
             disabled={syncing}
-            className="bg-[#6C47FF] hover:bg-[#5835e0] text-white"
+            className="bg-[#071245] hover:bg-[#071245] text-white"
           >
             {syncing ? "Sincronizando..." : "Sincronizar agora"}
           </Button>

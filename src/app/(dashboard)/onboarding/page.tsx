@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
+import { AthenaLogo } from "@/components/shared/athena-logo"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Profile {
@@ -238,22 +239,20 @@ export default function OnboardingPage() {
   // ── Intro ──────────────────────────────────────────────────────────────────
   if (step === "intro") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#F8F7FF] px-4">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
         <div className="w-full max-w-md space-y-8 text-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#6C47FF] shadow-lg shadow-[#6C47FF]/30">
-              <span className="font-['Sora',sans-serif] text-2xl font-bold text-white">N</span>
-            </div>
+            <AthenaLogo variant="full" size="lg" />
           </div>
 
           <div className="space-y-3">
-            <h1 className="font-['Sora',sans-serif] text-3xl font-bold text-[#1a1a2e]">
+            <h1 className="font-[var(--font-heading)] text-3xl font-bold text-[#1a1a2e]">
               Torne sua experiência única
             </h1>
             <p className="text-base leading-relaxed text-gray-500">
               Responder{" "}
-              <span className="font-semibold text-[#6C47FF]">6 perguntas</span>{" "}
-              permite que a Noema personalize completamente o jeito que ela te ensina.
+              <span className="font-semibold text-[#0a1a4a]">6 perguntas</span>{" "}
+              permite que a athena personalize completamente o jeito que ela te ensina.
               Leva menos de 2 minutos.
             </p>
           </div>
@@ -261,8 +260,8 @@ export default function OnboardingPage() {
           <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
             {["6 perguntas", "2 minutos", "100% seu"].map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-1">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#6C47FF]/10">
-                  <span className="text-xs font-bold text-[#6C47FF]">{["6", "2", "★"][i]}</span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0a1a4a]/10">
+                  <span className="text-xs font-bold text-[#0a1a4a]">{["6", "2", "★"][i]}</span>
                 </div>
                 <span>{item}</span>
               </div>
@@ -271,7 +270,7 @@ export default function OnboardingPage() {
 
           <button
             onClick={() => setStep("quiz")}
-            className="w-full rounded-2xl bg-[#6C47FF] py-4 font-['Sora',sans-serif] text-base font-semibold text-white shadow-lg shadow-[#6C47FF]/30 transition-all hover:bg-[#5a3de0] hover:shadow-[#6C47FF]/40 active:scale-[0.98]"
+            className="w-full rounded-2xl bg-[#0a1a4a] py-4 font-[var(--font-heading)] text-base font-semibold text-white shadow-lg shadow-[#0a1a4a]/30 transition-all hover:bg-[#071245] hover:shadow-[#0a1a4a]/40 active:scale-[0.98]"
           >
             Vamos lá →
           </button>
@@ -290,17 +289,17 @@ export default function OnboardingPage() {
   // ── Done ───────────────────────────────────────────────────────────────────
   if (step === "done") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-[#F8F7FF] px-4">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
         <div className="w-full max-w-md space-y-6 text-center">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#6C47FF]/10">
-            <svg className="h-12 w-12 text-[#6C47FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#0a1a4a]/10">
+            <svg className="h-12 w-12 text-[#0a1a4a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
 
           <div className="space-y-2">
-            <h1 className="font-['Sora',sans-serif] text-2xl font-bold text-[#1a1a2e]">
-              Pronto! A Noema já sabe como te ajudar.
+            <h1 className="font-[var(--font-heading)] text-2xl font-bold text-[#1a1a2e]">
+              Pronto! A athena já sabe como te ajudar.
             </h1>
             <p className="text-sm text-gray-500">
               Sua experiência foi personalizada com base nas suas respostas.
@@ -309,7 +308,7 @@ export default function OnboardingPage() {
 
           <button
             onClick={() => router.push("/dashboard/student")}
-            className="w-full rounded-2xl bg-[#6C47FF] py-4 font-['Sora',sans-serif] text-base font-semibold text-white shadow-lg shadow-[#6C47FF]/30 transition-all hover:bg-[#5a3de0] active:scale-[0.98]"
+            className="w-full rounded-2xl bg-[#0a1a4a] py-4 font-[var(--font-heading)] text-base font-semibold text-white shadow-lg shadow-[#0a1a4a]/30 transition-all hover:bg-[#071245] active:scale-[0.98]"
           >
             Acessar meu painel →
           </button>
@@ -328,7 +327,7 @@ export default function OnboardingPage() {
       case 0:
         return (
           <>
-            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+            <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1a1a2e] text-center">
               Qual é o seu perfil de estudante?
             </h2>
             <div className="space-y-3">
@@ -340,13 +339,13 @@ export default function OnboardingPage() {
                     onClick={() => selectAnswer("learningStyle", pt.label)}
                     className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
                       selected
-                        ? "border-[#6C47FF] bg-[#6C47FF]/8"
-                        : "border-gray-200 bg-white hover:border-[#6C47FF]/40"
+                        ? "border-[#0a1a4a] bg-[#0a1a4a]/8"
+                        : "border-gray-200 bg-white hover:border-[#0a1a4a]/40"
                     }`}
                   >
                     <span className="text-3xl">{pt.icon}</span>
                     <div>
-                      <p className={`text-sm font-bold ${selected ? "text-[#6C47FF]" : "text-[#1a1a2e]"}`}>
+                      <p className={`text-sm font-bold ${selected ? "text-[#0a1a4a]" : "text-[#1a1a2e]"}`}>
                         {pt.label}
                       </p>
                       <p className="mt-0.5 text-xs text-gray-500 leading-relaxed">
@@ -365,7 +364,7 @@ export default function OnboardingPage() {
         const selectedArea = GOAL_AREAS.find(a => a.label === goalArea)
         return (
           <>
-            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+            <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1a1a2e] text-center">
               Qual área você pretende seguir?
             </h2>
 
@@ -385,8 +384,8 @@ export default function OnboardingPage() {
                     }}
                     className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-4 text-center transition-all active:scale-[0.97] ${
                       selected
-                        ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
-                        : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                        ? "border-[#0a1a4a] bg-[#0a1a4a]/8 text-[#0a1a4a]"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-[#0a1a4a]/40"
                     }`}
                   >
                     <span className="text-2xl">{area.icon}</span>
@@ -411,8 +410,8 @@ export default function OnboardingPage() {
                         onClick={() => setGoalCourse(course)}
                         className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                           selected
-                            ? "border-[#6C47FF] bg-[#6C47FF]/10 text-[#6C47FF]"
-                            : "border-gray-200 bg-white text-gray-600 hover:border-[#6C47FF]/50"
+                            ? "border-[#0a1a4a] bg-[#0a1a4a]/10 text-[#0a1a4a]"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-[#0a1a4a]/50"
                         }`}
                       >
                         {course}
@@ -429,7 +428,7 @@ export default function OnboardingPage() {
       case 2:
         return (
           <>
-            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+            <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1a1a2e] text-center">
               Qual matéria você tem mais dificuldade?
             </h2>
             <p className="text-center text-xs text-gray-400">
@@ -437,7 +436,7 @@ export default function OnboardingPage() {
             </p>
             {coursesLoading ? (
               <div className="flex justify-center py-8">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#6C47FF] border-t-transparent" />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0a1a4a] border-t-transparent" />
               </div>
             ) : classroomCourses.length > 0 ? (
               <div className="flex flex-wrap gap-2 justify-center">
@@ -449,8 +448,8 @@ export default function OnboardingPage() {
                       onClick={() => selectAnswer("hardSubject", course)}
                       className={`rounded-2xl border-2 px-4 py-3 text-sm font-medium transition-all active:scale-[0.97] ${
                         selected
-                          ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                          ? "border-[#0a1a4a] bg-[#0a1a4a]/8 text-[#0a1a4a]"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-[#0a1a4a]/40"
                       }`}
                     >
                       {course}
@@ -470,7 +469,7 @@ export default function OnboardingPage() {
       case 3:
         return (
           <>
-            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+            <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1a1a2e] text-center">
               E qual matéria é mais fácil pra você?
             </h2>
             <p className="text-center text-xs text-gray-400">
@@ -478,7 +477,7 @@ export default function OnboardingPage() {
             </p>
             {coursesLoading ? (
               <div className="flex justify-center py-8">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#6C47FF] border-t-transparent" />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0a1a4a] border-t-transparent" />
               </div>
             ) : classroomCourses.length > 0 ? (
               <div className="flex flex-wrap gap-2 justify-center">
@@ -490,8 +489,8 @@ export default function OnboardingPage() {
                       onClick={() => selectAnswer("schoolYear", course)}
                       className={`rounded-2xl border-2 px-4 py-3 text-sm font-medium transition-all active:scale-[0.97] ${
                         selected
-                          ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                          ? "border-[#0a1a4a] bg-[#0a1a4a]/8 text-[#0a1a4a]"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-[#0a1a4a]/40"
                       }`}
                     >
                       {course}
@@ -511,7 +510,7 @@ export default function OnboardingPage() {
       case 4:
         return (
           <>
-            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+            <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1a1a2e] text-center">
               Quando trava, o que prefere?
             </h2>
             <div className="space-y-3">
@@ -527,13 +526,13 @@ export default function OnboardingPage() {
                     onClick={() => selectAnswer("helpPreference", opt.label)}
                     className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
                       selected
-                        ? "border-[#6C47FF] bg-[#6C47FF]/8"
-                        : "border-gray-200 bg-white hover:border-[#6C47FF]/40"
+                        ? "border-[#0a1a4a] bg-[#0a1a4a]/8"
+                        : "border-gray-200 bg-white hover:border-[#0a1a4a]/40"
                     }`}
                   >
                     <span className="text-2xl">{opt.icon}</span>
                     <div>
-                      <p className={`text-sm font-bold ${selected ? "text-[#6C47FF]" : "text-[#1a1a2e]"}`}>
+                      <p className={`text-sm font-bold ${selected ? "text-[#0a1a4a]" : "text-[#1a1a2e]"}`}>
                         {opt.label}
                       </p>
                       <p className="mt-0.5 text-xs text-gray-500">{opt.desc}</p>
@@ -563,8 +562,8 @@ export default function OnboardingPage() {
                         onClick={() => selectAnswer("studyTime", opt.label)}
                         className={`flex flex-col items-center gap-2 rounded-2xl border-2 p-3 text-center transition-all active:scale-[0.97] ${
                           selected
-                            ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]"
-                            : "border-gray-200 bg-white text-gray-700 hover:border-[#6C47FF]/40"
+                            ? "border-[#0a1a4a] bg-[#0a1a4a]/8 text-[#0a1a4a]"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-[#0a1a4a]/40"
                         }`}
                       >
                         <span className="text-xl">{opt.icon}</span>
@@ -582,7 +581,7 @@ export default function OnboardingPage() {
       case 5:
         return (
           <>
-            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e] text-center">
+            <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1a1a2e] text-center">
               Qual tom de feedback você prefere?
             </h2>
             <div className="space-y-3">
@@ -598,13 +597,13 @@ export default function OnboardingPage() {
                     onClick={() => selectAnswer("feedbackStyle", opt.label)}
                     className={`flex w-full items-start gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98] ${
                       selected
-                        ? "border-[#6C47FF] bg-[#6C47FF]/8"
-                        : "border-gray-200 bg-white hover:border-[#6C47FF]/40"
+                        ? "border-[#0a1a4a] bg-[#0a1a4a]/8"
+                        : "border-gray-200 bg-white hover:border-[#0a1a4a]/40"
                     }`}
                   >
                     <span className="text-2xl">{opt.icon}</span>
                     <div>
-                      <p className={`text-sm font-bold ${selected ? "text-[#6C47FF]" : "text-[#1a1a2e]"}`}>
+                      <p className={`text-sm font-bold ${selected ? "text-[#0a1a4a]" : "text-[#1a1a2e]"}`}>
                         {opt.label}
                       </p>
                       <p className="mt-0.5 text-xs text-gray-500">{opt.desc}</p>
@@ -622,12 +621,12 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F8F7FF]">
+    <div className="flex min-h-screen flex-col bg-white">
       {/* Top bar */}
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm px-6 py-4 border-b border-gray-100">
         <div className="mx-auto max-w-lg space-y-2">
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span className="font-medium text-[#6C47FF]">
+            <span className="font-medium text-[#0a1a4a]">
               {currentQ + 1} de {TOTAL_QUESTIONS}
             </span>
             <button
@@ -639,7 +638,7 @@ export default function OnboardingPage() {
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
             <div
-              className="h-full rounded-full bg-[#6C47FF] transition-all duration-500"
+              className="h-full rounded-full bg-[#0a1a4a] transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -670,7 +669,7 @@ export default function OnboardingPage() {
             <button
               onClick={nextQuestion}
               disabled={!canProceed()}
-              className="flex-1 rounded-xl bg-[#6C47FF] py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#5a3de0] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex-1 rounded-xl bg-[#0a1a4a] py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#071245] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {currentQ < TOTAL_QUESTIONS - 1 ? "Próxima →" : "Concluir →"}
             </button>

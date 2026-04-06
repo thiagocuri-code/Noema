@@ -71,7 +71,7 @@ function ScoreRing({ pct, color, size = 64 }: { pct: number; color: string; size
   )
 }
 
-const COLORS = ["#6C47FF", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#f97316"]
+const COLORS = ["#0a1a4a", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#f97316"]
 
 // ── Content Selector ──────────────────────────────────────────────────────────
 function ContentSelector({
@@ -90,7 +90,7 @@ function ContentSelector({
           {t("Conteúdo selecionado", "Selected content")}
         </p>
         <div className="flex gap-2">
-          <button onClick={() => setIds(new Set(fileContents.map(f => f.id)))} className="text-xs text-[#6C47FF] hover:underline">
+          <button onClick={() => setIds(new Set(fileContents.map(f => f.id)))} className="text-xs text-[#0a1a4a] hover:underline">
             {t("Todos", "All")}
           </button>
           <span className="text-gray-300">|</span>
@@ -108,7 +108,7 @@ function ContentSelector({
               if (selected) next.delete(f.id); else next.add(f.id)
               setIds(next)
             }}
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all ${selected ? "border-[#6C47FF] bg-[#6C47FF]/8 text-[#6C47FF]" : "border-gray-200 bg-white text-gray-400 hover:border-gray-300"}`}
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all ${selected ? "border-[#0a1a4a] bg-[#0a1a4a]/8 text-[#0a1a4a]" : "border-gray-200 bg-white text-gray-400 hover:border-gray-300"}`}
             >
               <svg className="h-3 w-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
@@ -134,7 +134,7 @@ export default function ClassroomPage() {
 
   // Course
   const [courseName, setCourseName] = useState("")
-  const [courseColor, setCourseColor] = useState("#6C47FF")
+  const [courseColor, setCourseColor] = useState("#0a1a4a")
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [materials, setMaterials] = useState<Material[]>([])
@@ -447,7 +447,7 @@ export default function ClassroomPage() {
       <div className="mx-auto w-full max-w-4xl mb-6">
         <div className="rounded-2xl border border-gray-200 bg-white p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-['Sora',sans-serif] text-sm font-bold text-[#1a1a2e]">
+            <h3 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e]">
               {t("Seu desempenho em", "Your progress in")} {courseName || "…"}
             </h3>
             {loadingPerf && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gray-300" />}
@@ -463,7 +463,7 @@ export default function ClassroomPage() {
           ) : (
             <>
               {/* Stats row */}
-              <div className="grid grid-cols-4 gap-3 mb-5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
                 {/* Score ring */}
                 <div className="flex flex-col items-center gap-1">
                   <div className="relative flex items-center justify-center">
@@ -475,7 +475,7 @@ export default function ClassroomPage() {
                   <span className="text-xs text-gray-400">{t("Média geral", "Avg score")}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-1">
-                  <span className="text-2xl font-bold text-[#6C47FF]">{coursePerf?.simulados.length ?? 0}</span>
+                  <span className="text-2xl font-bold text-[#0a1a4a]">{coursePerf?.simulados.length ?? 0}</span>
                   <span className="text-xs text-center text-gray-400">{t("Simulados", "Quizzes")}</span>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-1">
@@ -555,7 +555,7 @@ export default function ClassroomPage() {
           {courseName && renderPerfWidget()}
 
           <div className="mb-8 text-center">
-            <h2 className="font-['Sora',sans-serif] text-xl font-bold text-[#1a1a2e]">
+            <h2 className="font-[var(--font-heading)] text-xl font-bold text-[#1a1a2e]">
               {t("O que você quer fazer hoje?", "What would you like to do today?")}
             </h2>
             <p className="mt-1 text-sm text-gray-500">
@@ -572,7 +572,7 @@ export default function ClassroomPage() {
                 <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl text-3xl transition-transform group-hover:scale-110" style={{ backgroundColor: card.color + "18" }}>
                   {card.icon}
                 </div>
-                <h3 className="font-['Sora',sans-serif] text-base font-bold text-[#1a1a2e] transition-colors group-hover:text-[#6C47FF]">{card.title}</h3>
+                <h3 className="font-[var(--font-heading)] text-base font-bold text-[#1a1a2e] transition-colors group-hover:text-[#0a1a4a]">{card.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">{card.description}</p>
                 <div className="mt-5 flex items-center gap-1 text-xs font-semibold" style={{ color: card.color }}>
                   {t("Começar", "Start")} →
@@ -583,8 +583,8 @@ export default function ClassroomPage() {
 
           <div className="mt-6 flex items-center justify-center gap-2 text-sm">
             {indexingFiles ? (
-              <><span className="h-2 w-2 animate-pulse rounded-full bg-[#6C47FF]" />
-                <span className="text-[#6C47FF]">{t(`Indexando materiais ${indexedCount}/${totalFiles}…`, `Indexing materials ${indexedCount}/${totalFiles}…`)}</span></>
+              <><span className="h-2 w-2 animate-pulse rounded-full bg-[#0a1a4a]" />
+                <span className="text-[#0a1a4a]">{t(`Indexando materiais ${indexedCount}/${totalFiles}…`, `Indexing materials ${indexedCount}/${totalFiles}…`)}</span></>
             ) : indexedCount > 0 ? (
               <><svg className="h-4 w-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                 <span className="text-green-600">{t(`${indexedCount} arquivo${indexedCount !== 1 ? "s" : ""} indexado${indexedCount !== 1 ? "s" : ""} como contexto`, `${indexedCount} file${indexedCount !== 1 ? "s" : ""} indexed as context`)}</span></>
@@ -627,7 +627,7 @@ export default function ClassroomPage() {
               {msg.role === "assistant" && (
                 <div className="mr-2 mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white" style={{ backgroundColor: courseColor }}>D</div>
               )}
-              <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === "user" ? "rounded-tr-sm bg-[#6C47FF] text-white" : "rounded-tl-sm border border-gray-200 bg-white text-[#1a1a2e]"}`}>
+              <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === "user" ? "rounded-tr-sm bg-[#0a1a4a] text-white" : "rounded-tl-sm border border-gray-200 bg-white text-[#1a1a2e]"}`}>
                 {msg.content}
               </div>
               {msg.role === "user" && session?.user?.image && (
@@ -639,7 +639,7 @@ export default function ClassroomPage() {
             <div className="flex justify-start">
               <div className="mr-2 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white" style={{ backgroundColor: courseColor }}>D</div>
               <div className="rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-4 py-3">
-                <div className="flex gap-1">{[0, 150, 300].map(d => <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-[#6C47FF]" style={{ animationDelay: `${d}ms`, opacity: 0.4 + d / 600 }} />)}</div>
+                <div className="flex gap-1">{[0, 150, 300].map(d => <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-[#0a1a4a]" style={{ animationDelay: `${d}ms`, opacity: 0.4 + d / 600 }} />)}</div>
               </div>
             </div>
           )}
@@ -651,7 +651,7 @@ export default function ClassroomPage() {
             <textarea ref={textareaRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown}
               placeholder={indexingFiles ? t("Aguarde, indexando materiais…", "Please wait, indexing materials…") : t("Pergunte algo sobre a matéria...", "Ask something about the subject...")}
               disabled={indexingFiles} rows={1}
-              className="flex-1 resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#6C47FF] focus:bg-white focus:ring-1 focus:ring-[#6C47FF]/30 disabled:opacity-50"
+              className="flex-1 resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#0a1a4a] focus:bg-white focus:ring-1 focus:ring-[#0a1a4a]/30 disabled:opacity-50"
               style={{ height: "44px", minHeight: "44px", maxHeight: "120px" }}
             />
             <button onClick={sendMessage} disabled={!input.trim() || loadingChat || indexingFiles}
@@ -774,7 +774,7 @@ export default function ClassroomPage() {
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#22c55e]/10 text-4xl">
                 {score >= quizQuestions.length * 0.7 ? "🎉" : score >= quizQuestions.length * 0.5 ? "👍" : "💪"}
               </div>
-              <h2 className="font-['Sora',sans-serif] text-3xl font-bold" style={{ color: scoreColor(pct) }}>
+              <h2 className="font-[var(--font-heading)] text-3xl font-bold" style={{ color: scoreColor(pct) }}>
                 {pct}%
               </h2>
               <p className="text-sm font-medium text-gray-500 mt-1">
@@ -941,7 +941,7 @@ export default function ClassroomPage() {
         <div className="flex border-b border-gray-100">
           {(["materials", "assignments", "announcements"] as const).map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-3 text-xs font-medium transition-colors ${activeTab === tab ? "border-b-2 text-[#6C47FF]" : "text-gray-400 hover:text-gray-600"}`}
+              className={`flex-1 py-3 text-xs font-medium transition-colors ${activeTab === tab ? "border-b-2 text-[#0a1a4a]" : "text-gray-400 hover:text-gray-600"}`}
               style={activeTab === tab ? { borderBottomColor: courseColor } : {}}
             >
               {tab === "assignments" ? t("Atividades", "Assignments") : tab === "materials" ? t("Materiais", "Materials") : t("Avisos", "Announcements")}
@@ -961,14 +961,14 @@ export default function ClassroomPage() {
                   {(m.driveFiles ?? []).length > 0 && (
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {m.driveFiles!.map(f => (
-                        <span key={f.id} className="inline-flex items-center gap-1 rounded-md bg-[#6C47FF]/8 px-2 py-0.5 text-xs text-[#6C47FF]">
+                        <span key={f.id} className="inline-flex items-center gap-1 rounded-md bg-[#0a1a4a]/8 px-2 py-0.5 text-xs text-[#0a1a4a]">
                           <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
                           {f.title || t("Arquivo", "File")}
                         </span>
                       ))}
                     </div>
                   )}
-                  {m.alternateLink && <a href={m.alternateLink} target="_blank" rel="noopener noreferrer" className="text-xs text-[#6C47FF] hover:underline">{t("Abrir no Classroom ↗", "Open in Classroom ↗")}</a>}
+                  {m.alternateLink && <a href={m.alternateLink} target="_blank" rel="noopener noreferrer" className="text-xs text-[#0a1a4a] hover:underline">{t("Abrir no Classroom ↗", "Open in Classroom ↗")}</a>}
                 </div>
               ))
           )}
@@ -985,7 +985,7 @@ export default function ClassroomPage() {
                     {(a.driveFiles ?? []).length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {a.driveFiles!.map(f => (
-                          <span key={f.id} className="inline-flex items-center gap-1 rounded-md bg-[#6C47FF]/8 px-2 py-0.5 text-xs text-[#6C47FF]">
+                          <span key={f.id} className="inline-flex items-center gap-1 rounded-md bg-[#0a1a4a]/8 px-2 py-0.5 text-xs text-[#0a1a4a]">
                             <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
                             {f.title || t("Arquivo", "File")}
                           </span>
@@ -994,7 +994,7 @@ export default function ClassroomPage() {
                     )}
                     <div className="flex items-center justify-between pt-1">
                       {due && <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${due.cls}`}>{due.label}</span>}
-                      {a.alternateLink && <a href={a.alternateLink} target="_blank" rel="noopener noreferrer" className="text-xs text-[#6C47FF] hover:underline">{t("Abrir no Classroom ↗", "Open in Classroom ↗")}</a>}
+                      {a.alternateLink && <a href={a.alternateLink} target="_blank" rel="noopener noreferrer" className="text-xs text-[#0a1a4a] hover:underline">{t("Abrir no Classroom ↗", "Open in Classroom ↗")}</a>}
                     </div>
                   </div>
                 )
@@ -1020,9 +1020,9 @@ export default function ClassroomPage() {
   // ── MAIN RENDER ───────────────────────────────────────────────────────────
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="flex h-screen flex-col bg-[#F8F7FF]">
-      <header className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-3">
-        <div className="mx-auto flex max-w-7xl items-center gap-3">
+    <div className="flex h-screen flex-col bg-white overflow-x-hidden">
+      <header className="flex-shrink-0 border-b border-gray-200 bg-white px-4 sm:px-6 py-3">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 sm:gap-3">
           <button onClick={() => router.push("/dashboard/student")} className="text-sm text-gray-400 hover:text-gray-600">
             {t("← Voltar", "← Back")}
           </button>
@@ -1030,15 +1030,15 @@ export default function ClassroomPage() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white" style={{ backgroundColor: courseColor }}>
             {courseName.charAt(0) || "?"}
           </div>
-          <div>
-            <h1 className="font-['Sora',sans-serif] text-sm font-bold text-[#1a1a2e]">{courseName || t("Carregando...", "Loading...")}</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e] truncate">{courseName || t("Carregando...", "Loading...")}</h1>
             <p className="text-xs text-gray-400">Google Classroom</p>
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {indexingFiles && (
-              <div className="flex items-center gap-2 rounded-full bg-[#6C47FF]/8 px-3 py-1">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-[#6C47FF]" />
-                <span className="text-xs text-[#6C47FF]">{t(`Lendo materiais ${indexedCount}/${totalFiles}…`, `Reading materials ${indexedCount}/${totalFiles}…`)}</span>
+              <div className="flex items-center gap-2 rounded-full bg-[#0a1a4a]/8 px-3 py-1">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[#0a1a4a]" />
+                <span className="text-xs text-[#0a1a4a]">{t(`Lendo materiais ${indexedCount}/${totalFiles}…`, `Reading materials ${indexedCount}/${totalFiles}…`)}</span>
               </div>
             )}
             {!indexingFiles && indexedCount > 0 && mode === "hub" && (

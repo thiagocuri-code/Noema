@@ -41,7 +41,7 @@ export function AssignmentCard({ assignment }: { assignment: Assignment }) {
             href={assignment.alternateLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-[#6C47FF] hover:underline"
+            className="text-xs text-[#0a1a4a] hover:underline"
           >
             Abrir
           </a>

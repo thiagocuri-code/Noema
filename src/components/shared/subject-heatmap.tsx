@@ -13,10 +13,10 @@ interface SubjectHeatmapProps {
 function getIntensity(value: number, max: number) {
   if (value === 0) return "bg-gray-100"
   const ratio = value / max
-  if (ratio > 0.75) return "bg-[#6C47FF]"
-  if (ratio > 0.5) return "bg-[#6C47FF]/70"
-  if (ratio > 0.25) return "bg-[#6C47FF]/40"
-  return "bg-[#6C47FF]/20"
+  if (ratio > 0.75) return "bg-[#0a1a4a]"
+  if (ratio > 0.5) return "bg-[#0a1a4a]/70"
+  if (ratio > 0.25) return "bg-[#0a1a4a]/40"
+  return "bg-[#0a1a4a]/20"
 }
 
 export function SubjectHeatmap({ data, subjects }: SubjectHeatmapProps) {

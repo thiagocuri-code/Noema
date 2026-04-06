@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLang, LangToggle } from "@/lib/lang-context"
+import { AthenaLogo } from "@/components/shared/athena-logo"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Course {
@@ -67,7 +68,7 @@ interface Profile {
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
-const COLORS = ["#6C47FF", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#f97316"]
+const COLORS = ["#0a1a4a", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#f97316"]
 const ICONS = ["📐", "⚡", "📖", "🧬", "🌍", "🎨", "💻", "📊"]
 const PROFILE_KEY = "trix_profile"
 
@@ -162,7 +163,7 @@ function ProfileModal({
       <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-xl flex flex-col max-h-[90vh]">
         {/* Modal header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h2 className="font-['Sora',sans-serif] text-base font-bold text-[#1a1a2e]">
+          <h2 className="font-[var(--font-heading)] text-base font-bold text-[#1a1a2e]">
             Seu perfil de aprendizado
           </h2>
           <button
@@ -196,8 +197,8 @@ function ProfileModal({
                     onClick={() => setEditingKey(isEditing ? null : field.key)}
                     className={`flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-all ${
                       isEditing
-                        ? "border-[#6C47FF] bg-[#6C47FF] text-white"
-                        : "border-gray-200 bg-white text-gray-500 hover:border-[#6C47FF] hover:text-[#6C47FF]"
+                        ? "border-[#0a1a4a] bg-[#0a1a4a] text-white"
+                        : "border-gray-200 bg-white text-gray-500 hover:border-[#0a1a4a] hover:text-[#0a1a4a]"
                     }`}
                   >
                     {isEditing ? "Cancelar" : "Editar"}
@@ -212,8 +213,8 @@ function ProfileModal({
                         onClick={() => pickOption(field.key, opt)}
                         className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
                           draft[field.key] === opt
-                            ? "border-[#6C47FF] bg-[#6C47FF]/10 text-[#6C47FF]"
-                            : "border-gray-200 bg-white text-gray-600 hover:border-[#6C47FF]/50"
+                            ? "border-[#0a1a4a] bg-[#0a1a4a]/10 text-[#0a1a4a]"
+                            : "border-gray-200 bg-white text-gray-600 hover:border-[#0a1a4a]/50"
                         }`}
                       >
                         {opt}
@@ -236,7 +237,7 @@ function ProfileModal({
           </button>
           <button
             onClick={() => { onSave(draft); onClose() }}
-            className="flex-1 rounded-xl bg-[#6C47FF] py-2.5 text-sm font-semibold text-white hover:bg-[#5a3de0]"
+            className="flex-1 rounded-xl bg-[#0a1a4a] py-2.5 text-sm font-semibold text-white hover:bg-[#071245]"
           >
             Salvar alterações
           </button>
@@ -339,7 +340,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F7FF]">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       {/* Profile modal */}
       {showModal && profile && (
         <ProfileModal
@@ -351,19 +352,14 @@ export default function StudentDashboard() {
 
       {/* Topbar */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6C47FF]">
-              <span className="text-sm font-bold text-white">N</span>
-            </div>
-            <span className="font-['Sora',sans-serif] text-lg font-bold text-[#1a1a2e]">Noema</span>
-          </div>
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6 gap-2">
+          <AthenaLogo variant="full" size="md" />
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {/* Dynamic profile button */}
             {profile ? (
               <button
                 onClick={() => setShowModal(true)}
-                className="hidden sm:flex items-center gap-1.5 rounded-full border border-[#6C47FF] px-3 py-1.5 text-xs font-semibold text-[#6C47FF] transition-all hover:bg-[#6C47FF]/8"
+                className="hidden sm:flex items-center gap-1.5 rounded-full border border-[#0a1a4a] px-3 py-1.5 text-xs font-semibold text-[#0a1a4a] transition-all hover:bg-[#0a1a4a]/8"
               >
                 <span>👤</span>
                 {t("Seu perfil", "Your profile")}
@@ -371,7 +367,7 @@ export default function StudentDashboard() {
             ) : (
               <button
                 onClick={() => router.push("/onboarding")}
-                className="hidden sm:flex items-center gap-1.5 rounded-full border border-[#6C47FF] px-3 py-1.5 text-xs font-semibold text-[#6C47FF] transition-all hover:bg-[#6C47FF]/8"
+                className="hidden sm:flex items-center gap-1.5 rounded-full border border-[#0a1a4a] px-3 py-1.5 text-xs font-semibold text-[#0a1a4a] transition-all hover:bg-[#0a1a4a]/8"
               >
                 <span>✨</span>
                 {t("Complete seu perfil", "Complete your profile")}
@@ -382,15 +378,15 @@ export default function StudentDashboard() {
               <img
                 src={session.user.image}
                 alt="foto"
-                className="h-8 w-8 rounded-full ring-2 ring-[#6C47FF]/20"
+                className="h-8 w-8 flex-shrink-0 rounded-full ring-2 ring-[#0a1a4a]/20"
               />
             )}
-            <span className="hidden text-sm font-medium text-gray-700 sm:block">
+            <span className="hidden text-sm font-medium text-gray-700 sm:block truncate max-w-[120px]">
               {session?.user?.name?.split(" ")[0]}
             </span>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="text-xs text-gray-400 hover:text-gray-600"
+              className="flex-shrink-0 text-xs text-gray-400 hover:text-gray-600"
             >
               {t("Sair", "Sign out")}
             </button>
@@ -398,24 +394,24 @@ export default function StudentDashboard() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-8">
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-8">
         {/* Onboarding CTA banner — shown only when profile incomplete */}
         {!profile && !loading && (
-          <div className="mb-6 flex items-center justify-between rounded-2xl border border-[#6C47FF]/20 bg-[#6C47FF]/5 px-5 py-4">
+          <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-[#0a1a4a]/20 bg-[#0a1a4a]/5 px-4 sm:px-5 py-4">
             <div>
-              <p className="text-sm font-semibold text-[#6C47FF]">
+              <p className="text-sm font-semibold text-[#0a1a4a]">
                 ✨ {t("Personalize sua experiência", "Personalize your experience")}
               </p>
               <p className="mt-0.5 text-xs text-gray-500">
                 {t(
-                  "Responda 7 perguntas rápidas e deixe a Noema te ensinar do seu jeito.",
-                  "Answer 7 quick questions and let Noema teach you your way."
+                  "Responda 7 perguntas rápidas e deixe a athena te ensinar do seu jeito.",
+                  "Answer 7 quick questions and let athena teach you your way."
                 )}
               </p>
             </div>
             <button
               onClick={() => router.push("/onboarding")}
-              className="flex-shrink-0 rounded-xl bg-[#6C47FF] px-4 py-2 text-xs font-semibold text-white hover:bg-[#5a3de0]"
+              className="flex-shrink-0 rounded-xl bg-[#0a1a4a] px-4 py-2 text-xs font-semibold text-white hover:bg-[#071245]"
             >
               {t("Começar →", "Start →")}
             </button>
@@ -424,7 +420,7 @@ export default function StudentDashboard() {
 
         {/* Greeting */}
         <div className="mb-8">
-          <h1 className="font-['Sora',sans-serif] text-2xl font-bold text-[#1a1a2e]">
+          <h1 className="font-[var(--font-heading)] text-xl sm:text-2xl font-bold text-[#1a1a2e]">
             {t("Olá", "Hello")}, {session?.user?.name?.split(" ")[0]}! 👋
           </h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -481,7 +477,7 @@ export default function StudentDashboard() {
                         >
                           {icon}
                         </div>
-                        <h3 className="font-['Sora',sans-serif] text-base font-bold text-[#1a1a2e] group-hover:text-[#6C47FF] transition-colors line-clamp-2 pr-10">
+                        <h3 className="font-[var(--font-heading)] text-base font-bold text-[#1a1a2e] group-hover:text-[#0a1a4a] transition-colors line-clamp-2 pr-10">
                           {course.name}
                         </h3>
                         {course.section && (

@@ -13,7 +13,7 @@ interface ProgressRingProps {
 }
 
 export function ProgressRing({ value, label }: ProgressRingProps) {
-  const data = [{ name: label, value, fill: "#6C47FF" }]
+  const data = [{ name: label, value, fill: "#0a1a4a" }]
 
   return (
     <div className="flex flex-col items-center">
@@ -45,7 +45,7 @@ export function ProgressRing({ value, label }: ProgressRingProps) {
         </ResponsiveContainer>
       </div>
       <div className="mt-1 text-center">
-        <p className="text-lg font-bold text-[#6C47FF]">{value}%</p>
+        <p className="text-lg font-bold text-[#0a1a4a]">{value}%</p>
         <p className="text-xs text-gray-500">{label}</p>
       </div>
     </div>
