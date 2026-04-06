@@ -235,6 +235,8 @@ export default function ClassroomPage() {
   const [chatUserMessages, setChatUserMessages] = useState(0) // count for tracking
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [selectedChatFileIds, setSelectedChatFileIds] = useState<Set<string>>(new Set())
+  const [chatFilesOpen, setChatFilesOpen] = useState(false)
 
   // ── Study ─────────────────────────────────────────────────────────────────
   const [studyType, setStudyType] = useState<StudyType>("resumo")
@@ -352,7 +354,7 @@ export default function ClassroomPage() {
         setIndexingFiles(false)
         setFileContents(collected)
         const allIds = new Set(collected.map(f => f.id))
-        setSelectedFileIds(allIds); setSelectedQuizFileIds(new Set(allIds))
+        setSelectedFileIds(allIds); setSelectedQuizFileIds(new Set(allIds)); setSelectedChatFileIds(new Set(allIds))
         setCourseContext(fileTexts.length > 0 ? `${baseContext}\n\n--- CONTEÚDO DOS MATERIAIS ---\n${fileTexts.join("\n\n")}` : baseContext)
       })
       .catch(() => setLoadingContent(false))
@@ -399,7 +401,7 @@ export default function ClassroomPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: userMessage, courseName, courseContext,
+          message: userMessage, courseName, courseContext: getSelectedContext(selectedChatFileIds),
           history: messages.map(m => ({ role: m.role, content: m.content })),
           lang,
           profile: (() => { try { return JSON.parse(localStorage.getItem("trix_profile") ?? "{}") } catch { return {} } })(),
@@ -699,10 +701,26 @@ export default function ClassroomPage() {
               </p>
             </div>
           </div>
-          <span className="rounded-full px-3 py-1 text-xs font-medium text-white" style={{ backgroundColor: courseColor }}>
-            {t("Modo socrático", "Socratic mode")}
-          </span>
+          <div className="flex items-center gap-2">
+            {fileContents.length > 0 && (
+              <button onClick={() => setChatFilesOpen(prev => !prev)}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors ${chatFilesOpen ? "bg-[#4169D4] text-white" : "border border-gray-200 text-gray-500 hover:bg-gray-50"}`}
+              >
+                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
+                {selectedChatFileIds.size > 0 ? `${selectedChatFileIds.size}/${fileContents.length}` : t("Materiais", "Materials")}
+              </button>
+            )}
+            <span className="rounded-full px-3 py-1 text-xs font-medium text-white" style={{ backgroundColor: courseColor }}>
+              {t("Modo socrático", "Socratic mode")}
+            </span>
+          </div>
         </div>
+
+        {chatFilesOpen && fileContents.length > 0 && (
+          <div className="flex-shrink-0 border-b border-gray-200 px-5 py-3">
+            <ContentSelector fileContents={fileContents} ids={selectedChatFileIds} setIds={setSelectedChatFileIds} t={t} />
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto space-y-4 px-5 py-4">
           {messages.map((msg, i) => (
