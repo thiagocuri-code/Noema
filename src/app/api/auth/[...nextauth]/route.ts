@@ -29,6 +29,10 @@ export const authOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ account, profile }: { account: any; profile?: any }) {
+      console.log("[NextAuth] signIn callback", { provider: account?.provider, email: profile?.email })
+      return true
+    },
     async jwt({ token, account, profile }: { token: any; account: any; profile?: any }) {
       if (account && profile) {
         token.accessToken = account.access_token
@@ -59,7 +63,7 @@ export const authOptions = {
     },
   },
   session: { strategy: "jwt" as const },
-  pages: { signIn: "/login" },
+  pages: { signIn: "/login", error: "/error" },
   secret: process.env.NEXTAUTH_SECRET,
   debug: true,
 }
