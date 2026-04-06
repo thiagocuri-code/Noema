@@ -8,10 +8,10 @@ interface AthenaLogoProps {
 }
 
 const sizeMap = {
-  sm: "h-6",
-  md: "h-8",
-  lg: "h-12",
-  xl: "h-16",
+  sm: "h-12",
+  md: "h-16",
+  lg: "h-24",
+  xl: "h-32",
 } as const
 
 export function AthenaLogo({ variant = "full", size = "md", className = "" }: AthenaLogoProps) {
