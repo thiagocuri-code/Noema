@@ -50,7 +50,7 @@ export default function AcessoPage() {
         {/* ── Topbar ── */}
         <nav className="border-b border-[#E5E7EB] bg-white">
           <div className="mx-auto flex py-3 max-w-4xl items-center justify-between px-6">
-            <img src="/athena-logo.png" alt="athena" className="h-8 w-auto object-contain" />
+            <img src="/athena-logo.png" alt="athena" className="h-16 w-auto object-contain" />
             <Link href="/landing" className="text-sm font-medium text-gray-500 hover:text-[#071245]">
               ← Voltar
             </Link>

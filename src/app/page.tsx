@@ -6,7 +6,7 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-[#E5E7EB] bg-white">
         <div className="mx-auto flex py-3 max-w-5xl items-center justify-between px-6">
-          <img src="/athena-logo.png" alt="athena" className="h-8 w-auto object-contain" />
+          <img src="/athena-logo.png" alt="athena" className="h-16 w-auto object-contain" />
           <Link
             href="/login"
             className="rounded-xl bg-[#071245] px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-[#071245]"
@@ -20,7 +20,7 @@ export default function Home() {
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-10 sm:py-16 text-center">
         <div className="mx-auto max-w-2xl space-y-6">
           <div className="flex justify-center">
-            <img src="/athena-logo.png" alt="athena" className="h-12 w-auto object-contain" />
+            <img src="/athena-logo.png" alt="athena" className="h-24 w-auto object-contain" />
           </div>
 
           <h1 className="font-[var(--font-heading)] text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-[#071245]">

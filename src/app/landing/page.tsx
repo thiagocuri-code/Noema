@@ -53,7 +53,7 @@ export default function LandingPage() {
         {/* ━━━ NAVBAR ━━━ */}
         <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white/95 backdrop-blur-sm shadow-sm">
           <div className="mx-auto flex py-3 max-w-6xl items-center justify-between px-6">
-            <img src="/athena-logo.png" alt="athena" className="h-8 w-auto object-contain" />
+            <img src="/athena-logo.png" alt="athena" className="h-16 w-auto object-contain" />
             <div className="flex items-center gap-6">
               <a href="#como-funciona" className="hidden text-sm font-medium text-gray-600 hover:text-[#071245] sm:block">Como funciona</a>
               <a href="#para-escolas" className="hidden text-sm font-medium text-gray-600 hover:text-[#071245] sm:block">Para escolas</a>
