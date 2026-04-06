@@ -167,10 +167,10 @@ export default function LandingPage() {
               <FadeIn>
                 <div className="rounded-2xl shadow-xl shadow-[#1E3A7A]/10 overflow-hidden border border-blue-100 w-full">
                   <Image
-                    src="/prints/conversa-darwin.png"
+                    src="/prints/conversa-darwin.jpeg"
                     alt="Conversa com o Darwin — tutor socrático"
-                    width={1038}
-                    height={1666}
+                    width={676}
+                    height={1280}
                     className="w-full h-auto"
                   />
                 </div>
@@ -209,8 +209,8 @@ export default function LandingPage() {
 
             <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
               {[
-                { icon: "🤖", title: "Tire dúvidas sem receber respostas prontas", body: "Darwin usa o método socrático: ele guia seu raciocínio com perguntas até você entender o conceito. Não é sobre a resposta. É sobre o caminho.", src: "/prints/conversa-darwin.png", alt: "Chat com o Darwin", w: 1038, h: 1666 },
-                { icon: "📚", title: "Resumos, flashcards e mapas mentais em segundos", body: "Gere materiais de revisão personalizados com base no conteúdo exato do seu professor. Flashcards para memorizar, mapas mentais para visualizar, guias para a prova.", src: "/prints/revisar-materia.jpeg", alt: "Tela de revisão de matéria", w: 1121, h: 1280 },
+                { icon: "🤖", title: "Tire dúvidas sem receber respostas prontas", body: "Darwin usa o método socrático: ele guia seu raciocínio com perguntas até você entender o conceito. Não é sobre a resposta. É sobre o caminho.", src: "/prints/conversa-darwin.jpeg", alt: "Chat com o Darwin", w: 676, h: 1280 },
+                { icon: "📚", title: "Resumos, flashcards e mapas mentais em segundos", body: "Gere materiais de revisão personalizados com base no conteúdo exato do seu professor. Flashcards para memorizar, mapas mentais para visualizar, guias para a prova.", src: "/prints/revisar-materia.jpeg", alt: "Tela de revisão de matéria", w: 692, h: 1280 },
                 { icon: "📝", title: "Simulados estilo ENEM com correção inteligente", body: "Gere questões no estilo ENEM baseadas no conteúdo da sua aula. A athena corrige, explica cada erro e registra sua evolução ao longo do tempo.", src: "/prints/simulado.jpeg", alt: "Tela de simulado ENEM", w: 706, h: 1280 },
               ].map((card, i) => (
                 <FadeIn key={i}>
