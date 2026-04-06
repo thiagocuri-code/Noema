@@ -76,6 +76,8 @@ const COLORS = ["#0a1a4a", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"
 // ── File type helpers ─────────────────────────────────────────────────────────
 function getFileType(mimeType?: string): { label: string; color: string } {
   if (!mimeType) return { label: "Arquivo", color: "bg-gray-100 text-gray-500" }
+  if (mimeType === "text/material") return { label: "Material", color: "bg-purple-100 text-purple-600" }
+  if (mimeType === "text/assignment") return { label: "Atividade", color: "bg-indigo-100 text-indigo-600" }
   if (mimeType.includes("pdf")) return { label: "PDF", color: "bg-red-100 text-red-600" }
   if (mimeType.includes("document") || mimeType.includes("word")) return { label: "Docs", color: "bg-blue-100 text-blue-600" }
   if (mimeType.includes("presentation") || mimeType.includes("powerpoint")) return { label: "Slides", color: "bg-orange-100 text-orange-600" }
@@ -357,29 +359,58 @@ export default function ClassroomPage() {
           ...mat.map(m => `[Material] ${m.title}${m.description ? ": " + m.description : ""}`),
         ].join("\n")
 
-        // Only index material and assignment files (not announcements)
-        const allFiles: DriveFile[] = [
+        // Collect all selectable content items
+        const collected: FileContent[] = []
+        const fileTexts: string[] = []
+
+        // 1. Add materials with descriptions as selectable content
+        for (const m of mat) {
+          if (m.description && m.description.trim().length > 10) {
+            const id = `mat-${m.id}`
+            const text = `${m.title}\n\n${m.description}`
+            collected.push({ id, title: m.title, text, mimeType: "text/material" })
+            fileTexts.push(`=== ${m.title} ===\n${m.description}`)
+          }
+        }
+
+        // 2. Add assignments with descriptions as selectable content
+        for (const a of asgn) {
+          if (a.description && a.description.trim().length > 10) {
+            const id = `asgn-${a.id}`
+            const text = `${a.title}\n\n${a.description}`
+            collected.push({ id, title: a.title, text, mimeType: "text/assignment" })
+            fileTexts.push(`=== ${a.title} ===\n${a.description}`)
+          }
+        }
+
+        // 3. Index Drive files from materials and assignments
+        const allDriveFiles: DriveFile[] = [
           ...mat.flatMap(m => m.driveFiles ?? []),
           ...asgn.flatMap(a => a.driveFiles ?? []),
         ]
 
-        if (allFiles.length === 0) { setCourseContext(baseContext); return }
-        setIndexingFiles(true); setTotalFiles(allFiles.length)
-
-        const collected: FileContent[] = []
-        const fileTexts: string[] = []
-        for (const file of allFiles) {
-          try {
-            const res = await fetch(`/api/drive/content?accessToken=${session.accessToken}&fileId=${file.id}`)
-            const d = await res.json()
-            if (d.text && d.text.trim().length > 20) {
-              fileTexts.push(`=== ${d.name} ===\n${d.text}`)
-              collected.push({ id: file.id, title: d.name ?? file.title, text: d.text, mimeType: d.mimeType })
+        if (allDriveFiles.length > 0) {
+          setIndexingFiles(true); setTotalFiles(allDriveFiles.length)
+          for (const file of allDriveFiles) {
+            try {
+              const res = await fetch(`/api/drive/content?accessToken=${session.accessToken}&fileId=${file.id}`)
+              if (res.ok) {
+                const d = await res.json()
+                if (d.text && d.text.trim().length > 20) {
+                  fileTexts.push(`=== ${d.name ?? file.title} ===\n${d.text}`)
+                  collected.push({ id: file.id, title: d.name ?? file.title, text: d.text, mimeType: d.mimeType })
+                }
+              } else {
+                console.warn(`[indexing] Drive file ${file.id} (${file.title}) failed: ${res.status}`)
+              }
+            } catch (err) {
+              console.warn(`[indexing] Drive file ${file.id} error:`, err)
             }
-          } catch { /* skip */ }
-          setIndexedCount(prev => prev + 1)
+            setIndexedCount(prev => prev + 1)
+          }
+          setIndexingFiles(false)
         }
-        setIndexingFiles(false)
+
         setFileContents(collected)
         const allIds = new Set(collected.map(f => f.id))
         setSelectedFileIds(allIds); setSelectedQuizFileIds(new Set(allIds)); setSelectedChatFileIds(new Set(allIds))
