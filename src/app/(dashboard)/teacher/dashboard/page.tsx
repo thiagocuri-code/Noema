@@ -290,7 +290,70 @@ function StudentDrawer({
 }
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
+const TEACHER_PIN = "0000"
+
 export default function TeacherDashboardReal() {
+  const [unlocked, setUnlocked] = useState(false)
+  const [pin, setPin] = useState("")
+  const [pinError, setPinError] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem("teacher_unlocked") === "1") {
+      setUnlocked(true)
+    }
+  }, [])
+
+  if (!unlocked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="w-full max-w-xs space-y-6 text-center">
+          <div className="flex justify-center">
+            <AthenaLogo variant="full" size="lg" />
+          </div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#071245]/10">
+              <svg className="h-7 w-7 text-[#071245]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-bold text-[#071245]">Painel do Professor</h2>
+            <p className="text-sm text-gray-500">Digite a senha de acesso</p>
+            <input
+              type="password"
+              inputMode="numeric"
+              maxLength={4}
+              value={pin}
+              onChange={e => { setPin(e.target.value.replace(/\D/g, "")); setPinError(false) }}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  if (pin === TEACHER_PIN) {
+                    sessionStorage.setItem("teacher_unlocked", "1")
+                    setUnlocked(true)
+                  } else { setPinError(true) }
+                }
+              }}
+              placeholder="••••"
+              className={`w-full rounded-xl border px-4 py-3 text-center text-2xl font-bold tracking-[0.5em] outline-none transition ${pinError ? "border-red-400 bg-red-50" : "border-gray-200 focus:border-[#071245] focus:ring-1 focus:ring-[#071245]/30"}`}
+              autoFocus
+            />
+            {pinError && <p className="text-xs text-red-500">Senha incorreta</p>}
+            <button
+              onClick={() => {
+                if (pin === TEACHER_PIN) {
+                  sessionStorage.setItem("teacher_unlocked", "1")
+                  setUnlocked(true)
+                } else { setPinError(true) }
+              }}
+              className="w-full rounded-xl bg-[#071245] py-3 text-sm font-semibold text-white transition hover:bg-[#0a1a5a] active:scale-[0.98]"
+            >
+              Entrar
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
