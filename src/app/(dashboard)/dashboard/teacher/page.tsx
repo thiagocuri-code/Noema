@@ -85,12 +85,33 @@ export default function TeacherDashboard() {
   const [unlocked, setUnlocked] = useState(false)
   const [pin, setPin] = useState("")
   const [pinError, setPinError] = useState(false)
+  const [courses, setCourses] = useState<Course[]>([])
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
+  const [students, setStudents] = useState<Student[]>([])
+  const [assignmentGroups, setAssignmentGroups] = useState<AssignmentGroup[]>([])
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [loadingCourses, setLoadingCourses] = useState(true)
+  const [loadingDetails, setLoadingDetails] = useState(false)
 
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("teacher_unlocked") === "1") {
       setUnlocked(true)
     }
   }, [])
+
+  // Load courses
+  useEffect(() => {
+    if (!unlocked || !session?.accessToken) return
+    fetch(`/api/classroom/courses?accessToken=${session.accessToken}`)
+      .then((r) => r.json())
+      .then((d) => {
+        const list = (d.courses ?? []).map((c: any) => ({ id: c.id, name: c.name }))
+        setCourses(list)
+        if (list.length > 0) setSelectedCourse(list[0])
+        setLoadingCourses(false)
+      })
+      .catch(() => setLoadingCourses(false))
+  }, [unlocked, session?.accessToken])
 
   if (!unlocked) {
     return (
@@ -142,29 +163,6 @@ export default function TeacherDashboard() {
       </div>
     )
   }
-
-  const [courses, setCourses] = useState<Course[]>([])
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
-  const [students, setStudents] = useState<Student[]>([])
-  const [assignmentGroups, setAssignmentGroups] = useState<AssignmentGroup[]>([])
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-
-  const [loadingCourses, setLoadingCourses] = useState(true)
-  const [loadingDetails, setLoadingDetails] = useState(false)
-
-  // Load courses
-  useEffect(() => {
-    if (!session?.accessToken) return
-    fetch(`/api/classroom/courses?accessToken=${session.accessToken}`)
-      .then((r) => r.json())
-      .then((d) => {
-        const list = (d.courses ?? []).map((c: any) => ({ id: c.id, name: c.name }))
-        setCourses(list)
-        if (list.length > 0) setSelectedCourse(list[0])
-        setLoadingCourses(false)
-      })
-      .catch(() => setLoadingCourses(false))
-  }, [session?.accessToken])
 
   // Load students + submissions when course changes
   useEffect(() => {

@@ -296,12 +296,32 @@ export default function TeacherDashboardReal() {
   const [unlocked, setUnlocked] = useState(false)
   const [pin, setPin] = useState("")
   const [pinError, setPinError] = useState(false)
+  const [students, setStudents] = useState<Student[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [filterCourse, setFilterCourse] = useState("all")
 
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("teacher_unlocked") === "1") {
       setUnlocked(true)
     }
   }, [])
+
+  useEffect(() => {
+    if (!unlocked) return
+    fetch("/api/teacher/students?code=TRIX2026")
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) setError(data.error)
+        else setStudents(data.students ?? [])
+        setLoading(false)
+      })
+      .catch(() => {
+        setError("Erro ao carregar dados.")
+        setLoading(false)
+      })
+  }, [unlocked])
 
   if (!unlocked) {
     return (
@@ -353,26 +373,6 @@ export default function TeacherDashboardReal() {
       </div>
     )
   }
-
-  const [students, setStudents] = useState<Student[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-  const [filterCourse, setFilterCourse] = useState("all")
-
-  useEffect(() => {
-    fetch("/api/teacher/students?code=TRIX2026")
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) setError(data.error)
-        else setStudents(data.students ?? [])
-        setLoading(false)
-      })
-      .catch(() => {
-        setError("Erro ao carregar dados.")
-        setLoading(false)
-      })
-  }, [])
 
   // ── Derived metrics ──────────────────────────────────────────────────────
   const totalStudents = students.length
