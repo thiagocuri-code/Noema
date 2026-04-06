@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useRef, useEffect, useState } from "react"
 
@@ -127,9 +128,9 @@ export default function AcessoPage() {
 
             <div className="space-y-8">
               {[
-                { step: 1, print: "Adicionar print da tela de aviso do Google", text: "Clique em \"Configurações avançadas\" ou \"Mostrar informações avançadas\"" },
-                { step: 2, print: "Adicionar print do link 'Acessar athena'", text: "Clique em \"Ir para athena (não seguro)\" — o aviso é padrão do Google para apps em verificação" },
-                { step: 3, print: "Adicionar print da tela de permissões do Google", text: "Confirme as permissões — a athena só pede acesso de leitura aos seus cursos do Classroom" },
+                { step: 1, src: "/prints/aviso-google.jpeg", alt: "Tela de aviso do Google", w: 961, h: 1600, text: "Clique em \"Configurações avançadas\" ou \"Mostrar informações avançadas\"" },
+                { step: 2, src: "/prints/aviso-google-passo2.jpeg", alt: "Link para acessar a athena", w: 888, h: 1600, text: "Clique em \"Ir para athena (não seguro)\" — o aviso é padrão do Google para apps em verificação" },
+                { step: 3, src: "/prints/permissoes-google.jpeg", alt: "Tela de permissões do Google", w: 924, h: 1600, text: "Confirme as permissões — a athena só pede acesso de leitura aos seus cursos do Classroom" },
               ].map((item) => (
                 <FadeIn key={item.step}>
                   <div className="space-y-4">
@@ -141,7 +142,15 @@ export default function AcessoPage() {
                         Passo {item.step}
                       </h3>
                     </div>
-                    <PrintPlaceholder label={item.print} className="min-h-[160px] sm:min-h-[220px]" />
+                    <div className="rounded-xl overflow-hidden shadow-md border border-gray-200 w-full max-w-2xl mx-auto">
+                      <Image
+                        src={item.src}
+                        alt={item.alt}
+                        width={item.w}
+                        height={item.h}
+                        className="w-full h-auto"
+                      />
+                    </div>
                     <p className="text-sm text-gray-600 leading-relaxed pl-[52px]">
                       {item.text}
                     </p>

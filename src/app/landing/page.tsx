@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 
@@ -103,8 +104,15 @@ export default function LandingPage() {
             </div>
 
             <div className="relative md:col-span-2">
-              <div className="rounded-2xl shadow-2xl shadow-[#1E3A7A]/10 overflow-hidden border border-[#E5E7EB]">
-                <PrintPlaceholder label="Adicionar print do dashboard do aluno" className="min-h-[320px] sm:min-h-[400px]" />
+              <div className="rounded-2xl shadow-2xl shadow-[#1E3A7A]/10 overflow-hidden border border-gray-100 w-full">
+                <Image
+                  src="/prints/dashboard-aluno.jpeg"
+                  alt="Dashboard do aluno na athena"
+                  width={1179}
+                  height={1253}
+                  className="w-full h-auto"
+                  priority
+                />
               </div>
               <div className="absolute -bottom-3 -right-3 rounded-full bg-[#C5E4F8] px-4 py-2 text-xs font-semibold text-[#1E3A7A] shadow-md">
                 ✓ Seus materiais do professor
@@ -157,8 +165,14 @@ export default function LandingPage() {
 
             <div className="grid items-center gap-12 grid-cols-1 md:grid-cols-2">
               <FadeIn>
-                <div className="rounded-2xl shadow-xl shadow-[#1E3A7A]/10 overflow-hidden border border-[#E5E7EB]">
-                  <PrintPlaceholder label="Adicionar print do chat com Darwin" className="min-h-[350px]" />
+                <div className="rounded-2xl shadow-xl shadow-[#1E3A7A]/10 overflow-hidden border border-blue-100 w-full">
+                  <Image
+                    src="/prints/conversa-darwin.png"
+                    alt="Conversa com o Darwin — tutor socrático"
+                    width={1038}
+                    height={1666}
+                    className="w-full h-auto"
+                  />
                 </div>
               </FadeIn>
 
@@ -195,16 +209,24 @@ export default function LandingPage() {
 
             <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
               {[
-                { icon: "🤖", title: "Tire dúvidas sem receber respostas prontas", body: "Darwin usa o método socrático: ele guia seu raciocínio com perguntas até você entender o conceito. Não é sobre a resposta. É sobre o caminho.", print: "Adicionar print do chat com Darwin" },
-                { icon: "📚", title: "Resumos, flashcards e mapas mentais em segundos", body: "Gere materiais de revisão personalizados com base no conteúdo exato do seu professor. Flashcards para memorizar, mapas mentais para visualizar, guias para a prova.", print: "Adicionar print da tela de revisão" },
-                { icon: "📝", title: "Simulados estilo ENEM com correção inteligente", body: "Gere questões no estilo ENEM baseadas no conteúdo da sua aula. A athena corrige, explica cada erro e registra sua evolução ao longo do tempo.", print: "Adicionar print da tela de simulado" },
+                { icon: "🤖", title: "Tire dúvidas sem receber respostas prontas", body: "Darwin usa o método socrático: ele guia seu raciocínio com perguntas até você entender o conceito. Não é sobre a resposta. É sobre o caminho.", src: "/prints/conversa-darwin.png", alt: "Chat com o Darwin", w: 1038, h: 1666 },
+                { icon: "📚", title: "Resumos, flashcards e mapas mentais em segundos", body: "Gere materiais de revisão personalizados com base no conteúdo exato do seu professor. Flashcards para memorizar, mapas mentais para visualizar, guias para a prova.", src: "/prints/revisar-materia.jpeg", alt: "Tela de revisão de matéria", w: 1121, h: 1280 },
+                { icon: "📝", title: "Simulados estilo ENEM com correção inteligente", body: "Gere questões no estilo ENEM baseadas no conteúdo da sua aula. A athena corrige, explica cada erro e registra sua evolução ao longo do tempo.", src: "/prints/simulado.jpeg", alt: "Tela de simulado ENEM", w: 706, h: 1280 },
               ].map((card, i) => (
                 <FadeIn key={i}>
                   <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 space-y-5 h-full flex flex-col">
                     <span className="text-4xl">{card.icon}</span>
                     <h3 className="font-[var(--font-heading)] text-lg font-bold text-[#1E3A7A]">{card.title}</h3>
                     <p className="text-sm leading-relaxed text-gray-600 flex-1">{card.body}</p>
-                    <PrintPlaceholder label={card.print} className="min-h-[200px]" />
+                    <div className="rounded-xl overflow-hidden shadow-md border border-gray-100 w-full mt-4">
+                      <Image
+                        src={card.src}
+                        alt={card.alt}
+                        width={card.w}
+                        height={card.h}
+                        className="w-full h-auto"
+                      />
+                    </div>
                   </div>
                 </FadeIn>
               ))}
@@ -242,8 +264,14 @@ export default function LandingPage() {
               </FadeIn>
 
               <FadeIn>
-                <div className="rounded-2xl shadow-xl shadow-[#1E3A7A]/10 overflow-hidden border border-[#E5E7EB]">
-                  <PrintPlaceholder label="Adicionar print do onboarding ou modal de perfil" className="min-h-[350px]" />
+                <div className="rounded-2xl shadow-xl shadow-[#1E3A7A]/10 overflow-hidden border border-blue-100 w-full">
+                  <Image
+                    src="/prints/personalizar-perfil.jpeg"
+                    alt="Personalização do perfil de aprendizado"
+                    width={696}
+                    height={1280}
+                    className="w-full h-auto"
+                  />
                 </div>
               </FadeIn>
             </div>
