@@ -2,6 +2,8 @@ import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { prisma } from "@/lib/prisma"
 
+const NEXTAUTH_URL = process.env.NEXTAUTH_URL || "https://noema-woad.vercel.app"
+
 export const authOptions = {
   providers: [
     GoogleProvider({
@@ -61,10 +63,11 @@ export const authOptions = {
       session.googleId = token.googleId
       return session
     },
-  },
-  events: {
-    async signIn(message: any) {
-      console.log("[NextAuth] event:signIn", message?.user?.email)
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      // Ensure redirects stay on our domain
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     },
   },
   logger: {
@@ -78,7 +81,7 @@ export const authOptions = {
   session: { strategy: "jwt" as const },
   pages: { signIn: "/login", error: "/error" },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true,
+  debug: process.env.NODE_ENV === "development",
 }
 
 const handler = NextAuth(authOptions)

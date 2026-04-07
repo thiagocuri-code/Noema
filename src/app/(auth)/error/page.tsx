@@ -19,7 +19,8 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 function ErrorContent() {
   const searchParams = useSearchParams()
-  const error = searchParams.get("error") ?? "Default"
+  const rawError = searchParams.get("error")
+  const error = rawError && rawError !== "undefined" ? rawError : "Default"
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
@@ -29,16 +30,21 @@ function ErrorContent() {
           <p className="text-sm text-gray-500">
             {ERROR_MESSAGES[error] ?? ERROR_MESSAGES.Default}
           </p>
-          <p className="text-xs text-gray-400 font-mono mt-2">
-            Código: {error}
-          </p>
         </div>
-        <Link
-          href="/login"
-          className="inline-block rounded-xl bg-[#071245] px-6 py-3 text-sm font-medium text-white hover:bg-[#0a1a5a] transition-colors"
-        >
-          Tentar novamente
-        </Link>
+        <div className="space-y-3">
+          <Link
+            href="/login"
+            className="block rounded-xl bg-[#071245] px-6 py-3 text-sm font-medium text-white hover:bg-[#0a1a5a] transition-colors"
+          >
+            Tentar novamente
+          </Link>
+          <a
+            href="/api/auth/signin/google"
+            className="block rounded-xl border border-gray-200 px-6 py-3 text-sm font-medium text-[#071245] hover:bg-gray-50 transition-colors"
+          >
+            Login direto com Google
+          </a>
+        </div>
       </div>
     </div>
   )
