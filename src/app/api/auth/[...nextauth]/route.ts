@@ -4,6 +4,40 @@ import { prisma } from "@/lib/prisma"
 
 const NEXTAUTH_URL = process.env.NEXTAUTH_URL || "https://noema-woad.vercel.app"
 
+async function refreshAccessToken(token: any) {
+  try {
+    const res = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        grant_type: "refresh_token",
+        refresh_token: token.refreshToken,
+      }),
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      console.error("[NextAuth] Token refresh failed:", data)
+      return { ...token, error: "RefreshAccessTokenError" }
+    }
+
+    console.log("[NextAuth] Token refreshed successfully")
+    return {
+      ...token,
+      accessToken: data.access_token,
+      accessTokenExpires: Date.now() + (data.expires_in ?? 3600) * 1000,
+      // Google only returns a new refresh_token if the user re-consents
+      refreshToken: data.refresh_token ?? token.refreshToken,
+    }
+  } catch (err) {
+    console.error("[NextAuth] Token refresh error:", err)
+    return { ...token, error: "RefreshAccessTokenError" }
+  }
+}
+
 export const authOptions = {
   providers: [
     GoogleProvider({
@@ -36,9 +70,11 @@ export const authOptions = {
       return true
     },
     async jwt({ token, account, profile }: { token: any; account: any; profile?: any }) {
+      // First login — save tokens and expiration
       if (account && profile) {
         token.accessToken = account.access_token
         token.refreshToken = account.refresh_token
+        token.accessTokenExpires = Date.now() + (account.expires_in ?? 3600) * 1000
         token.googleId = account.providerAccountId
 
         // Fire-and-forget DB upsert — never block login
@@ -55,12 +91,26 @@ export const authOptions = {
             image: profile.picture ?? null,
           },
         }).catch(err => console.error("[NextAuth] DB upsert failed:", err))
+
+        return token
       }
+
+      // Token still valid — return as-is (with 5min buffer)
+      if (token.accessTokenExpires && Date.now() < token.accessTokenExpires - 5 * 60 * 1000) {
+        return token
+      }
+
+      // Token expired — refresh it
+      if (token.refreshToken) {
+        return refreshAccessToken(token)
+      }
+
       return token
     },
     async session({ session, token }: { session: any; token: any }) {
       session.accessToken = token.accessToken
       session.googleId = token.googleId
+      session.error = token.error
       return session
     },
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {

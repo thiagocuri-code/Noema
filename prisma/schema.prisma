@@ -20,6 +20,7 @@ model Student {
   performances      Performance[]
   interactions      AiInteraction[]
   studyInteractions StudyInteraction[]
+  examSessions      ExamSession[]
 }
 
 model StudentProfile {
@@ -73,4 +74,30 @@ model StudyInteraction {
   createdAt  DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id])
+}
+
+model ExamSession {
+  id                 String   @id @default(cuid())
+  studentId          String
+  courseId           String
+  courseName         String
+  title              String
+  examDate           DateTime?
+  fileIds            String[]
+  fileTitles         String[]
+  contextSnapshot    String   // full concatenated source text
+  topicsWeak         String[] // topics student struggled with
+  topicsStrong       String[] // topics student mastered
+  topicsReviewed     String[] // topics reviewed via study sessions
+  diagnosticScore    Float?   // 0-100, baseline
+  diagnosticAnswers  Json?    // raw diagnostic answers for audit
+  simuladoScores     Float[]  // history of simulado scores
+  revisionCount      Int      @default(0)
+  flashcardsStudied  Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
 }

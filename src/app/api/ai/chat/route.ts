@@ -20,10 +20,13 @@ REGRAS ABSOLUTAS:
 8. Se a resposta estiver nos materiais do professor → baseie-se neles e mencione o contexto
 9. Se não estiver nos materiais → informe claramente "Isso não está nos materiais da turma, mas posso te ajudar com base no meu conhecimento geral:" e então guie o raciocínio
 
-FORMATO:
-- Máximo 150 palavras por resposta
+FORMATO (Markdown):
+- Máximo 200 palavras por resposta
+- Use **negrito** para conceitos-chave e termos importantes
+- Use fórmulas LaTeX quando aplicável: $E = mc^2$ para inline
+- Use listas quando listar passos ou opções
 - Comece reconhecendo o que o aluno perguntou
-- Termine sempre com uma pergunta ou desafio de raciocínio
+- Termine sempre com uma **pergunta reflexiva** ou desafio de raciocínio (em itálico)
 
 Contexto da turma e materiais do professor:
 {CONTEXT}`
@@ -72,7 +75,7 @@ Use essas informações para personalizar COMPLETAMENTE seu tom, seus exemplos e
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages,
-      max_tokens: 350,
+      max_tokens: 500,
       temperature: 0.7,
     })
 

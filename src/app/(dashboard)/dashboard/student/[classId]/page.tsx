@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useState, useRef, useEffect, useCallback } from "react"
 import { useLang, LangToggle } from "@/lib/lang-context"
+import { MarkdownRenderer } from "@/components/shared/markdown-renderer"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Message { role: "user" | "assistant"; content: string }
@@ -29,6 +30,7 @@ interface CoursePerf {
 
 type Mode = "hub" | "chat" | "study" | "quiz"
 type StudyType = "resumo" | "flashcards" | "mapa" | "guia"
+type StudyDifficulty = "facil" | "medio" | "dificil"
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function getDueLabel(d: Assignment["dueDate"], t: (pt: string, en: string) => string) {
@@ -78,6 +80,8 @@ function getFileType(mimeType?: string): { label: string; color: string } {
   if (!mimeType) return { label: "Arquivo", color: "bg-gray-100 text-gray-500" }
   if (mimeType === "text/material") return { label: "Material", color: "bg-purple-100 text-purple-600" }
   if (mimeType === "text/assignment") return { label: "Atividade", color: "bg-indigo-100 text-indigo-600" }
+  if (mimeType === "text/announcement") return { label: "Conteúdo", color: "bg-amber-100 text-amber-600" }
+  if (mimeType === "text/notice") return { label: "Aviso", color: "bg-gray-100 text-gray-500" }
   if (mimeType.includes("pdf")) return { label: "PDF", color: "bg-red-100 text-red-600" }
   if (mimeType.includes("document") || mimeType.includes("word")) return { label: "Docs", color: "bg-blue-100 text-blue-600" }
   if (mimeType.includes("presentation") || mimeType.includes("powerpoint")) return { label: "Slides", color: "bg-orange-100 text-orange-600" }
@@ -227,6 +231,151 @@ function ContentSelector({
   )
 }
 
+// ── Mind Map Types ────────────────────────────────────────────────────────────
+interface MindMapNode {
+  id: string
+  label: string
+  color?: string
+  children: MindMapNode[]
+}
+interface MindMapData {
+  root: string
+  children: MindMapNode[]
+}
+
+// ── Mind Map Renderer ─────────────────────────────────────────────────────────
+const FALLBACK_COLORS = ["#3D5FC0", "#E67E22", "#27AE60", "#8E44AD", "#E74C3C", "#1ABC9C"]
+
+function MindMapRenderer({ data }: { data: MindMapData }) {
+  const W = 900, H = 640, cx = W / 2, cy = H / 2
+
+  // Layout radii
+  const R1 = 165   // branch nodes
+  const R2 = 310   // sub-branch nodes
+  const R3 = 420   // leaf nodes
+
+  const wrap = (text: string, max: number): string[] => {
+    const words = text.trim().split(/\s+/).filter(Boolean)
+    const lines: string[] = []; let cur = ""
+    for (const w of words) {
+      const candidate = cur ? `${cur} ${w}` : w
+      if (candidate.length <= max) { cur = candidate }
+      else { if (cur) lines.push(cur); cur = w }
+    }
+    if (cur) lines.push(cur)
+    return lines.slice(0, 3)
+  }
+
+  const bez = (x1: number, y1: number, x2: number, y2: number) => {
+    const mx = (x1 + x2) / 2
+    return `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${mx.toFixed(1)} ${y1.toFixed(1)}, ${mx.toFixed(1)} ${y2.toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`
+  }
+
+  const branches = data.children
+  const N = Math.max(1, branches.length)
+  const rightCount = Math.ceil(N / 2)
+
+  const branchAngles = branches.map((_, i) => {
+    const isRight = i < rightCount
+    const groupSize = isRight ? rightCount : N - rightCount
+    const groupIdx = isRight ? i : i - rightCount
+    const spread = groupSize <= 1 ? 0 : Math.min(Math.PI * 0.72, groupSize * 0.46)
+    const base = isRight ? 0 : Math.PI
+    const offset = groupSize <= 1 ? 0 : ((groupIdx / (groupSize - 1)) - 0.5) * spread
+    return base + offset
+  })
+
+  const centerLines = wrap(data.root, 14)
+
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-gradient-to-br from-[#f8faff] to-[#eef2ff] p-2">
+      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="min-w-[560px] w-full" style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
+        {branches.map((branch, i) => {
+          const angle = branchAngles[i]
+          const color = branch.color || FALLBACK_COLORS[i % FALLBACK_COLORS.length]
+          const bx = cx + R1 * Math.cos(angle)
+          const by = cy + R1 * Math.sin(angle)
+          const subs = branch.children || []
+          const M = subs.length
+
+          return (
+            <g key={branch.id}>
+              {/* Line: center → branch */}
+              <path d={bez(cx, cy, bx, by)} fill="none" stroke={color} strokeWidth={2.8} strokeOpacity={0.4} />
+
+              {/* Sub-branches (level 2) */}
+              {subs.map((sub, j) => {
+                const subSpread = M <= 1 ? 0 : Math.min(0.6, 0.24 * M)
+                const subAngle = M <= 1 ? angle : angle + ((j / (M - 1)) - 0.5) * subSpread * 2
+                const sx = cx + R2 * Math.cos(subAngle)
+                const sy = cy + R2 * Math.sin(subAngle)
+                const ls = wrap(sub.label, 18)
+                const rh = ls.length * 14 + 14
+                const leaves = sub.children || []
+
+                return (
+                  <g key={sub.id}>
+                    {/* Line: branch → sub */}
+                    <path d={bez(bx, by, sx, sy)} fill="none" stroke={color} strokeWidth={1.8} strokeOpacity={0.3} />
+
+                    {/* Leaves (level 3) */}
+                    {leaves.map((leaf, k) => {
+                      const leafCount = leaves.length
+                      const leafSpread = leafCount <= 1 ? 0 : Math.min(0.3, 0.15 * leafCount)
+                      const leafAngle = leafCount <= 1 ? subAngle : subAngle + ((k / (leafCount - 1)) - 0.5) * leafSpread * 2
+                      const lx = cx + R3 * Math.cos(leafAngle)
+                      const ly = cy + R3 * Math.sin(leafAngle)
+                      const ll = wrap(leaf.label, 20)
+                      const lh = ll.length * 12 + 10
+
+                      return (
+                        <g key={leaf.id}>
+                          <path d={bez(sx, sy, lx, ly)} fill="none" stroke={color} strokeWidth={1} strokeOpacity={0.2} strokeDasharray="4 3" />
+                          <rect x={lx - 56} y={ly - lh / 2} width={112} height={lh} rx={7} fill="white" stroke={color} strokeWidth={0.8} strokeOpacity={0.35} />
+                          {ll.map((l, m) => (
+                            <text key={m} x={lx} y={ly - lh / 2 + 10 + m * 12} textAnchor="middle" fill="#475569" fontSize={8.5}>{l}</text>
+                          ))}
+                        </g>
+                      )
+                    })}
+
+                    {/* Sub-branch node */}
+                    <rect x={sx - 65} y={sy - rh / 2} width={130} height={rh} rx={10} fill="white" stroke={color} strokeWidth={1.4} strokeOpacity={0.55} />
+                    {ls.map((l, k) => (
+                      <text key={k} x={sx} y={sy - rh / 2 + 12 + k * 14} textAnchor="middle" fill="#1e293b" fontSize={10} fontWeight="500">{l}</text>
+                    ))}
+                  </g>
+                )
+              })}
+
+              {/* Branch node (on top) */}
+              {(() => {
+                const ls = wrap(branch.label, 14)
+                const rh = ls.length * 14 + 14
+                return (
+                  <g>
+                    <rect x={bx - 60} y={by - rh / 2} width={120} height={rh} rx={12} fill={color} />
+                    {ls.map((l, k) => (
+                      <text key={k} x={bx} y={by - rh / 2 + 12 + k * 14} textAnchor="middle" fill="white" fontSize={11} fontWeight="600">{l}</text>
+                    ))}
+                  </g>
+                )
+              })()}
+            </g>
+          )
+        })}
+
+        {/* Center node (on top of everything) */}
+        <ellipse cx={cx} cy={cy} rx={88} ry={40} fill="#1E3A7A" />
+        <ellipse cx={cx} cy={cy} rx={88} ry={40} fill="none" stroke="white" strokeWidth={1.5} strokeOpacity={0.2} />
+        {centerLines.map((l, k) => (
+          <text key={k} x={cx} y={cy - (centerLines.length - 1) * 7.5 + k * 15} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={13} fontWeight="700">{l}</text>
+        ))}
+      </svg>
+    </div>
+  )
+}
+
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function ClassroomPage() {
   const { classId } = useParams<{ classId: string }>()
@@ -273,12 +422,14 @@ export default function ClassroomPage() {
   const [studyType, setStudyType] = useState<StudyType>("resumo")
   const [selectedFileIds, setSelectedFileIds] = useState<Set<string>>(new Set())
   const [studyResult, setStudyResult] = useState("")
+  const [studyMindmap, setStudyMindmap] = useState<MindMapData | null>(null)
   const [studyFlashcards, setStudyFlashcards] = useState<Flashcard[]>([])
   const [loadingStudy, setLoadingStudy] = useState(false)
   const [currentCard, setCurrentCard] = useState(0)
   const [cardFlipped, setCardFlipped] = useState(false)
   const [studyGenerated, setStudyGenerated] = useState(false)
   const [studyUsedFiles, setStudyUsedFiles] = useState<string[]>([])
+  const [studyDifficulty, setStudyDifficulty] = useState<StudyDifficulty>("medio")
 
   // ── Quiz ──────────────────────────────────────────────────────────────────
   const [selectedQuizFileIds, setSelectedQuizFileIds] = useState<Set<string>>(new Set())
@@ -357,6 +508,7 @@ export default function ClassroomPage() {
         const baseContext = [
           ...asgn.map(a => `[Atividade] ${a.title}${a.description ? ": " + a.description : ""}`),
           ...mat.map(m => `[Material] ${m.title}${m.description ? ": " + m.description : ""}`),
+          ...ann.map(a => `[Mural] ${a.text.slice(0, 200)}`),
         ].join("\n")
 
         // Collect all selectable content items
@@ -383,10 +535,51 @@ export default function ClassroomPage() {
           }
         }
 
-        // 3. Index Drive files from materials and assignments
+        // 3. Classify announcements (mural) with AI — study content gets descriptive titles, admin gets "AVISO"
+        const annWithText = ann.filter(a => a.text && a.text.trim().length > 10)
+        if (annWithText.length > 0) {
+          try {
+            const classifyRes = await fetch("/api/ai/classify-content", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                courseName,
+                announcements: annWithText.map(a => ({
+                  id: a.id,
+                  text: a.text,
+                  fileNames: (a.driveFiles ?? []).map(f => f.title).filter(Boolean),
+                })),
+              }),
+            })
+            const classifyData = await classifyRes.json()
+            const classified: { id: string; title: string; isStudy: boolean }[] = classifyData.classified ?? []
+
+            for (const a of annWithText) {
+              const info = classified.find(c => c.id === a.id)
+              const isStudy = info?.isStudy !== false
+              const title = info?.title && info.title !== "AVISO" ? info.title : "AVISO"
+              const id = `ann-${a.id}`
+              const mimeType = isStudy ? "text/announcement" : "text/notice"
+              collected.push({ id, title, text: a.text, mimeType })
+              if (isStudy) fileTexts.push(`=== ${title} ===\n${a.text}`)
+            }
+          } catch {
+            // Fallback: add all announcements with file names as titles
+            for (const a of annWithText) {
+              const id = `ann-${a.id}`
+              const fileNames = (a.driveFiles ?? []).map(f => f.title).filter(Boolean)
+              const title = fileNames.length > 0 ? fileNames.join(", ") : a.text.slice(0, 60).replace(/\n/g, " ").trim()
+              collected.push({ id, title, text: a.text, mimeType: "text/announcement" })
+              fileTexts.push(`=== ${title} ===\n${a.text}`)
+            }
+          }
+        }
+
+        // 4. Index Drive files from materials, assignments, and announcements
         const allDriveFiles: DriveFile[] = [
           ...mat.flatMap(m => m.driveFiles ?? []),
           ...asgn.flatMap(a => a.driveFiles ?? []),
+          ...ann.flatMap(a => a.driveFiles ?? []),
         ]
 
         if (allDriveFiles.length > 0) {
@@ -508,16 +701,18 @@ export default function ClassroomPage() {
       ? fileContents.filter(f => selectedFileIds.has(f.id)).map(f => f.title)
       : fileContents.map(f => f.title)
     setStudyUsedFiles(usedFiles)
-    setLoadingStudy(true); setStudyResult(""); setStudyFlashcards([]); setStudyGenerated(false)
+    setLoadingStudy(true); setStudyResult(""); setStudyFlashcards([]); setStudyMindmap(null); setStudyGenerated(false)
     try {
       const res = await fetch("/api/ai/study", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: studyType, content, courseName, lang, selectedFileNames: usedFiles }),
+        body: JSON.stringify({ type: studyType, content, courseName, lang, selectedFileNames: usedFiles, difficulty: studyDifficulty }),
       })
       const data = await res.json()
       if (studyType === "flashcards") {
         setStudyFlashcards(data.flashcards ?? []); setCurrentCard(0); setCardFlipped(false)
+      } else if (studyType === "mapa" && data.mindmap) {
+        setStudyMindmap(data.mindmap)
       } else {
         setStudyResult(data.text ?? data.error ?? t("Erro ao gerar.", "Error generating."))
       }
@@ -694,7 +889,7 @@ export default function ClassroomPage() {
     ]
 
     return (
-      <div className="flex flex-1 flex-col overflow-y-auto p-8">
+      <div className="flex flex-1 flex-col overflow-y-auto p-4 sm:p-8">
         <div className="mx-auto w-full max-w-4xl">
           {/* Performance widget */}
           {courseName && renderPerfWidget()}
@@ -708,10 +903,10 @@ export default function ClassroomPage() {
             </p>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-3">
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-3">
             {hubCards.map(card => (
               <button key={card.id} onClick={card.action}
-                className="group relative flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus:outline-none"
+                className="group relative flex flex-col items-center rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus:outline-none active:scale-[0.98]"
               >
                 <div className="absolute left-0 top-0 h-1 w-full rounded-t-2xl" style={{ backgroundColor: card.color }} />
                 <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl text-3xl transition-transform group-hover:scale-110" style={{ backgroundColor: card.color + "18" }}>
@@ -746,15 +941,11 @@ export default function ClassroomPage() {
   function renderChat() {
     return (
       <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-5 py-3">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setMode("hub")} className="text-xs text-gray-400 hover:text-gray-600">
-              ← {t("Voltar", "Back")}
-            </button>
-            <div className="h-4 w-px bg-gray-200" />
-            <div>
-              <h2 className="text-sm font-bold text-[#1a1a2e]">Darwin — {t("Tutor de", "Tutor for")} {courseName}</h2>
-              <p className="text-xs text-gray-400">
+        <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-5 py-2.5">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="min-w-0">
+              <h2 className="text-sm font-bold text-[#1a1a2e] truncate">Darwin — {t("Tutor de", "Tutor for")} {courseName}</h2>
+              <p className="text-xs text-gray-400 truncate">
                 {indexingFiles ? t(`Indexando (${indexedCount}/${totalFiles})…`, `Indexing (${indexedCount}/${totalFiles})…`)
                   : indexedCount > 0 ? t(`${indexedCount} arquivo${indexedCount !== 1 ? "s" : ""} como contexto`, `${indexedCount} file${indexedCount !== 1 ? "s" : ""} as context`)
                     : t("Método socrático ativo", "Socratic method active")}
@@ -788,8 +979,12 @@ export default function ClassroomPage() {
               {msg.role === "assistant" && (
                 <div className="mr-2 mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white" style={{ backgroundColor: courseColor }}>D</div>
               )}
-              <div className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === "user" ? "rounded-tr-sm bg-[#0a1a4a] text-white" : "rounded-tl-sm border border-gray-200 bg-white text-[#1a1a2e]"}`}>
-                {msg.content}
+              <div className={`max-w-[80%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === "user" ? "rounded-tr-sm bg-[#0a1a4a] text-white" : "rounded-tl-sm border border-gray-200 bg-white text-[#1a1a2e]"}`}>
+                {msg.role === "assistant" ? (
+                  <MarkdownRenderer content={msg.content} className="prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1" />
+                ) : (
+                  msg.content
+                )}
               </div>
               {msg.role === "user" && session?.user?.image && (
                 <img src={session.user.image} alt="" className="ml-2 mt-1 h-7 w-7 flex-shrink-0 rounded-full" />
@@ -807,12 +1002,12 @@ export default function ClassroomPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4">
-          <div className="flex items-end gap-3">
+        <div className="flex-shrink-0 border-t border-gray-200 bg-white p-3 sm:p-4 pb-[env(safe-area-inset-bottom,12px)]">
+          <div className="flex items-end gap-2 sm:gap-3">
             <textarea ref={textareaRef} value={input} onChange={handleTextareaChange} onKeyDown={handleKeyDown}
               placeholder={indexingFiles ? t("Aguarde, indexando materiais…", "Please wait, indexing materials…") : t("Pergunte algo sobre a matéria...", "Ask something about the subject...")}
               disabled={indexingFiles} rows={1}
-              className="flex-1 resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#0a1a4a] focus:bg-white focus:ring-1 focus:ring-[#0a1a4a]/30 disabled:opacity-50"
+              className="flex-1 resize-none rounded-xl border border-gray-200 bg-gray-50 px-3 sm:px-4 py-3 text-[16px] sm:text-sm outline-none transition placeholder:text-gray-400 focus:border-[#0a1a4a] focus:bg-white focus:ring-1 focus:ring-[#0a1a4a]/30 disabled:opacity-50"
               style={{ height: "44px", minHeight: "44px", maxHeight: "120px" }}
             />
             <button onClick={sendMessage} disabled={!input.trim() || loadingChat || indexingFiles}
@@ -824,7 +1019,7 @@ export default function ClassroomPage() {
               </svg>
             </button>
           </div>
-          <p className="mt-2 text-center text-xs text-gray-400">
+          <p className="mt-1.5 hidden sm:block text-center text-xs text-gray-400">
             {t("Enter para enviar · Shift+Enter para nova linha", "Enter to send · Shift+Enter for new line")}
           </p>
         </div>
@@ -839,15 +1034,11 @@ export default function ClassroomPage() {
     const current = studyTypes.find(s => s.id === studyType)!
     return (
       <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex flex-shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-5 py-3">
-          <button onClick={() => { setMode("hub"); setStudyGenerated(false) }} className="text-xs text-gray-400 hover:text-gray-600">
-            ← {t("Voltar", "Back")}
-          </button>
-          <div className="h-4 w-px bg-gray-200" />
-          <h2 className="text-sm font-bold text-[#1a1a2e]">📚 {t("Revisar a Matéria", "Review the Material")} — {courseName}</h2>
+        <div className="flex flex-shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-5 py-2.5">
+          <h2 className="text-sm font-bold text-[#1a1a2e] truncate">📚 {t("Revisar a Matéria", "Review the Material")}</h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5">
           {!studyGenerated ? (
             <>
               <ContentSelector fileContents={fileContents} ids={selectedFileIds} setIds={setSelectedFileIds} t={t} indexing={indexingFiles} indexedCount={indexedCount} totalFiles={totalFiles} />
@@ -861,6 +1052,29 @@ export default function ClassroomPage() {
                     <span className="text-xs leading-tight text-gray-400">{st.desc}</span>
                   </button>
                 ))}
+              </div>
+              {/* Difficulty selector */}
+              <div className="rounded-xl border border-gray-200 bg-white p-4">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  {t("Nível de profundidade", "Depth level")}
+                </p>
+                <div className="flex gap-2">
+                  {([
+                    { id: "facil" as StudyDifficulty, emoji: "\uD83C\uDF31", label: t("Simples", "Simple"), desc: t("Conceitos principais", "Key concepts") },
+                    { id: "medio" as StudyDifficulty, emoji: "\uD83D\uDCDA", label: t("Padrão", "Standard"), desc: t("Visão completa", "Full overview") },
+                    { id: "dificil" as StudyDifficulty, emoji: "\uD83D\uDD2C", label: t("Avançado", "Advanced"), desc: t("Máximo detalhe", "Max detail") },
+                  ] as const).map(d => (
+                    <button
+                      key={d.id}
+                      onClick={() => setStudyDifficulty(d.id)}
+                      className={`flex flex-1 flex-col items-center gap-1 rounded-xl border p-3 text-center transition-all ${studyDifficulty === d.id ? "border-[#0ea5e9] bg-[#0ea5e9]/8 text-[#0ea5e9]" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}
+                    >
+                      <span className="text-lg">{d.emoji}</span>
+                      <span className="text-xs font-semibold">{d.label}</span>
+                      <span className="text-[10px] leading-tight text-gray-400">{d.desc}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
               <button onClick={generateStudy} disabled={loadingStudy || indexingFiles || (fileContents.length > 0 && selectedFileIds.size === 0)}
                 className="w-full rounded-xl py-3 text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
@@ -882,7 +1096,7 @@ export default function ClassroomPage() {
                   <span className="text-lg">{current.icon}</span>
                   <span className="font-semibold text-[#1a1a2e]">{current.label}</span>
                 </div>
-                <button onClick={() => { setStudyGenerated(false); setStudyResult(""); setStudyFlashcards([]) }} className="text-xs text-[#0ea5e9] hover:underline">
+                <button onClick={() => { setStudyGenerated(false); setStudyResult(""); setStudyFlashcards([]); setStudyMindmap(null) }} className="text-xs text-[#0ea5e9] hover:underline">
                   ← {t("Gerar outro", "Generate another")}
                 </button>
               </div>
@@ -919,9 +1133,11 @@ export default function ClassroomPage() {
                     <button onClick={() => { setCurrentCard(prev => Math.min(studyFlashcards.length - 1, prev + 1)); setCardFlipped(false) }} disabled={currentCard === studyFlashcards.length - 1} className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-30">{t("Próximo", "Next")} →</button>
                   </div>
                 </div>
+              ) : studyType === "mapa" && studyMindmap ? (
+                <MindMapRenderer data={studyMindmap} />
               ) : (
-                <div className="rounded-2xl border border-gray-200 bg-white p-6">
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-[#1a1a2e]">{studyResult}</pre>
+                <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+                  <MarkdownRenderer content={studyResult} />
                 </div>
               )}
             </>
@@ -1006,11 +1222,7 @@ export default function ClassroomPage() {
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex flex-shrink-0 flex-col border-b border-gray-200 bg-white px-5 py-3 gap-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button onClick={() => { setMode("hub"); setQuizGenerated(false) }} className="text-xs text-gray-400 hover:text-gray-600">← {t("Sair", "Exit")}</button>
-                <div className="h-4 w-px bg-gray-200" />
-                <h2 className="text-sm font-bold text-[#1a1a2e]">📝 {t(`Questão ${currentQuestion + 1} de ${quizQuestions.length}`, `Question ${currentQuestion + 1} of ${quizQuestions.length}`)}</h2>
-              </div>
+              <h2 className="text-sm font-bold text-[#1a1a2e]">📝 {t(`Questão ${currentQuestion + 1} de ${quizQuestions.length}`, `Question ${currentQuestion + 1} of ${quizQuestions.length}`)}</h2>
               <div className="flex gap-1">
                 {quizQuestions.map((_, i) => (
                   <div key={i} className={`h-2 w-2 rounded-full ${i < currentQuestion ? quizAnswers[i] === quizQuestions[i].correct ? "bg-green-500" : "bg-red-400" : i === currentQuestion ? "bg-[#22c55e]" : "bg-gray-200"}`} />
@@ -1046,7 +1258,7 @@ export default function ClassroomPage() {
                   return (
                     <button key={i} disabled={revealed}
                       onClick={() => { const next = [...quizAnswers]; next[currentQuestion] = i; setQuizAnswers(next) }}
-                      className={`w-full rounded-xl border p-4 text-left text-sm transition-all disabled:cursor-default ${cls}`}
+                      className={`w-full rounded-xl border p-4 text-left text-sm leading-relaxed transition-all disabled:cursor-default active:scale-[0.99] min-h-[48px] ${cls}`}
                     >{opt}</button>
                   )
                 })}
@@ -1085,10 +1297,8 @@ export default function ClassroomPage() {
     // Setup
     return (
       <div className="flex flex-1 flex-col overflow-hidden">
-        <div className="flex flex-shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-5 py-3">
-          <button onClick={() => setMode("hub")} className="text-xs text-gray-400 hover:text-gray-600">← {t("Voltar", "Back")}</button>
-          <div className="h-4 w-px bg-gray-200" />
-          <h2 className="text-sm font-bold text-[#1a1a2e]">📝 {t("Teste o Seu Conhecimento", "Test Your Knowledge")} — {courseName}</h2>
+        <div className="flex flex-shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-5 py-2.5">
+          <h2 className="text-sm font-bold text-[#1a1a2e] truncate">📝 {t("Teste o Seu Conhecimento", "Test Your Knowledge")}</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           <ContentSelector fileContents={fileContents} ids={selectedQuizFileIds} setIds={setSelectedQuizFileIds} t={t} indexing={indexingFiles} indexedCount={indexedCount} totalFiles={totalFiles} />
@@ -1205,11 +1415,14 @@ export default function ClassroomPage() {
   // ── MAIN RENDER ───────────────────────────────────────────────────────────
   // ══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="flex h-screen flex-col bg-white overflow-x-hidden">
+    <div className="flex h-dvh flex-col bg-white overflow-x-hidden">
       <header className="flex-shrink-0 border-b border-gray-200 bg-white px-4 sm:px-6 py-3">
         <div className="mx-auto flex max-w-7xl items-center gap-2 sm:gap-3">
-          <button onClick={() => router.push("/dashboard/student")} className="text-sm text-gray-400 hover:text-gray-600">
-            {t("← Voltar", "← Back")}
+          <button onClick={() => {
+            if (mode === "hub") { router.push("/dashboard/student") }
+            else { setMode("hub"); setStudyGenerated(false); setQuizGenerated(false); setQuizFinished(false) }
+          }} className="flex-shrink-0 flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-50 active:scale-95 transition-all min-h-[36px]">
+            ← {mode === "hub" ? t("Turmas", "Classes") : t("Voltar", "Back")}
           </button>
           <div className="h-4 w-px bg-gray-200" />
           <div className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold text-white" style={{ backgroundColor: courseColor }}>
@@ -1219,17 +1432,17 @@ export default function ClassroomPage() {
             <h1 className="font-[var(--font-heading)] text-sm font-bold text-[#1a1a2e] truncate">{courseName || t("Carregando...", "Loading...")}</h1>
             <p className="text-xs text-gray-400">Google Classroom</p>
           </div>
-          <div className="ml-auto flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="ml-auto flex items-center gap-2 flex-shrink-0">
             {indexingFiles && (
-              <div className="flex items-center gap-2 rounded-full bg-[#0a1a4a]/8 px-3 py-1">
+              <div className="flex items-center gap-1.5 rounded-full bg-[#0a1a4a]/8 px-2 sm:px-3 py-1">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-[#0a1a4a]" />
-                <span className="text-xs text-[#0a1a4a]">{t(`Lendo materiais ${indexedCount}/${totalFiles}…`, `Reading materials ${indexedCount}/${totalFiles}…`)}</span>
+                <span className="hidden sm:inline text-xs text-[#0a1a4a]">{t(`Lendo ${indexedCount}/${totalFiles}…`, `Reading ${indexedCount}/${totalFiles}…`)}</span>
               </div>
             )}
             {!indexingFiles && indexedCount > 0 && mode === "hub" && (
-              <div className="flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1">
+              <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1">
                 <svg className="h-3 w-3 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                <span className="text-xs text-green-600">{t(`${indexedCount} arquivo${indexedCount !== 1 ? "s" : ""} indexado${indexedCount !== 1 ? "s" : ""}`, `${indexedCount} file${indexedCount !== 1 ? "s" : ""} indexed`)}</span>
+                <span className="text-xs text-green-600">{t(`${indexedCount} indexado${indexedCount !== 1 ? "s" : ""}`, `${indexedCount} indexed`)}</span>
               </div>
             )}
             <LangToggle />

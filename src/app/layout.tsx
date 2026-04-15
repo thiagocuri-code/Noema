@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Open_Sans, Nunito } from "next/font/google"
+import "katex/dist/katex.min.css"
 import "./globals.css"
 
 const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-sans" })

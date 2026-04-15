@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLang, LangToggle } from "@/lib/lang-context"
 import { AthenaLogo } from "@/components/shared/athena-logo"
+import { StudentOverviewPanel } from "@/components/shared/student-overview-panel"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Course {
@@ -363,6 +364,13 @@ export default function StudentDashboard() {
       .catch(() => { /* ignore */ })
   }, [(session as any)?.googleId])
 
+  // If token refresh failed, force re-login
+  useEffect(() => {
+    if ((session as any)?.error === "RefreshAccessTokenError") {
+      signOut({ callbackUrl: "/login" })
+    }
+  }, [(session as any)?.error])
+
   useEffect(() => {
     if (!session?.accessToken) return
     fetch(`/api/classroom/courses?accessToken=${session.accessToken}`)
@@ -487,6 +495,17 @@ export default function StudentDashboard() {
                 )}
           </p>
         </div>
+
+        {/* Student performance panel — all Classroom activities + subject breakdown */}
+        {!loading && !error && session?.accessToken && courses.length > 0 && (
+          <StudentOverviewPanel
+            accessToken={session.accessToken as string}
+            translateCourseName={(name) => translateCourseName(name, lang)}
+            platformSummary={perfSummary}
+            courses={courses}
+            googleId={(session as any)?.googleId}
+          />
+        )}
 
         {/* Loading skeletons */}
         {loading && (

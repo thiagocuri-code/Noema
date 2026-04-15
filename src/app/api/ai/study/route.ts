@@ -6,7 +6,7 @@ import OpenAI from "openai"
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 export async function POST(req: Request) {
-  const { type, content, courseName, lang, selectedFileNames } = await req.json()
+  const { type, content, courseName, lang, selectedFileNames, difficulty } = await req.json()
 
   if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "cole-sua-chave-aqui") {
     return Response.json({ error: "OPENAI_API_KEY não configurada." }, { status: 500 })
@@ -23,17 +23,28 @@ export async function POST(req: Request) {
 
   const contentOnlyRule = `\nREGRA CRÍTICA: Foque EXCLUSIVAMENTE no conteúdo acadêmico/matéria. NÃO inclua informações sobre datas de entrega, avisos do professor, quando o conteúdo foi ensinado, prazos, ou informações administrativas. Apenas conceitos, definições, fórmulas, teorias e conhecimento da disciplina.\n`
 
+  const difficultyNote =
+    difficulty === "facil"
+      ? "\nNÍVEL: SIMPLES — Use linguagem acessível, foque nos 3-4 conceitos fundamentais apenas. Sem detalhes avançados.\n"
+      : difficulty === "dificil"
+      ? "\nNÍVEL: AVANÇADO — Máxima profundidade: nuances, exceções, conexões entre conceitos e exemplos complexos.\n"
+      : "\nNÍVEL: PADRÃO — Equilíbrio entre cobertura e clareza, adequado para o ENEM.\n"
+
   const prompts: Record<string, string> = {
     resumo: `Você é um tutor educacional especializado em criar resumos para o ENEM.
 Crie um RESUMO DETALHADO do conteúdo abaixo sobre "${courseName}".
 ${langNote}
-${sourceBlock}${contentOnlyRule}
-FORMATO:
-- Use títulos e subtítulos (# e ##)
-- Use listas com marcadores para pontos-chave
-- Destaque definições em **negrito**
+${sourceBlock}${contentOnlyRule}${difficultyNote}
+FORMATO OBRIGATÓRIO (Markdown):
+- Use # para título principal e ## para subtítulos
+- Use **negrito** para definições e conceitos-chave
+- Use listas com marcadores (- ou *) para pontos-chave
+- Use \`código\` para termos técnicos quando aplicável
+- Para fórmulas matemáticas/químicas, use notação LaTeX: $E = mc^2$ para inline, $$\\sum_{i=1}^{n} x_i$$ para bloco
+- Inclua > blockquotes para informações importantes ou "dica ENEM"
 - Inclua exemplos práticos quando relevante
-- Máximo 600 palavras
+- Máximo 800 palavras
+- Organize logicamente: conceitos fundamentais → desenvolvimento → aplicações
 
 CONTEÚDO:
 ${content.slice(0, 12000)}`,
@@ -41,7 +52,13 @@ ${content.slice(0, 12000)}`,
     flashcards: `Você é um tutor educacional criando flashcards de estudo ativo sobre "${courseName}".
 Crie exatamente 10 flashcards com base no conteúdo abaixo.
 ${langNote}
-${sourceBlock}${contentOnlyRule}
+${sourceBlock}${contentOnlyRule}${difficultyNote}
+REGRAS:
+- Varie entre perguntas conceituais, aplicações práticas e comparações
+- Use linguagem direta e clara
+- Inclua fórmulas LaTeX se o conteúdo for de exatas (ex: $F = ma$)
+- Cada resposta deve ter 1-3 frases
+
 Responda APENAS com JSON válido (sem texto antes ou depois):
 [
   {"front": "pergunta ou conceito", "back": "resposta ou definição"},
@@ -51,16 +68,60 @@ Responda APENAS com JSON válido (sem texto antes ou depois):
 CONTEÚDO:
 ${content.slice(0, 12000)}`,
 
-    mapa: `Você é um tutor educacional criando um mapa mental sobre "${courseName}".
-Crie um MAPA MENTAL em formato de texto estruturado com base no conteúdo abaixo.
+    mapa: `Você é um especialista em mapas mentais educacionais para o ENEM brasileiro.
+Sua tarefa é gerar um mapa mental em JSON sobre o conteúdo fornecido pelo professor.
+Matéria: "${courseName}".
 ${langNote}
-${sourceBlock}${contentOnlyRule}
-FORMATO:
-- Tópico central no topo (use ★)
-- Use indentação (2 espaços por nível) para hierarquia
-- Máximo 4 níveis de profundidade
-- Use emojis relevantes para nós principais
-- 3-5 palavras por nó
+${sourceBlock}${contentOnlyRule}${difficultyNote}
+REGRAS ABSOLUTAS — NUNCA VIOLE:
+
+1. PROIBIDO mencionar questões, exercícios ou gabaritos em qualquer nó.
+   Nunca use: "Questão 1", "Questão 2", "Alternativa A", "Exercício",
+   "Questões de Escolha", "Questões de Revisão" ou qualquer variação.
+   O mapa é sobre CONCEITOS, não sobre provas.
+
+2. PROIBIDO nós vagos ou genéricos sem significado conceitual.
+   Nunca use: "Exemplos Complexos", "Outros Conceitos", "Mais detalhes",
+   "Ver mais", "Conceitos Gerais" ou labels sem substância real.
+   Todo nó deve nomear um conceito, fenômeno, lei, fórmula ou aplicação específica.
+
+3. TODOS os ramos principais devem ter a mesma profundidade (mínimo 2 níveis
+   de filhos cada). Nenhum ramo pode ser mais raso que os outros.
+
+4. Máximo 6 palavras por label de nó. Seja específico e direto.
+
+5. Mínimo 4 ramos principais saindo do nó raiz.
+
+6. Fórmulas químicas e matemáticas devem aparecer nos nós quando relevante.
+
+ESTRUTURA OBRIGATÓRIA DOS RAMOS:
+- Nível 1 (ramo): categoria conceitual real
+- Nível 2 (filho): conceito específico
+- Nível 3 (neto): exemplo concreto ou fórmula
+
+Responda APENAS com o JSON válido abaixo, sem markdown, sem explicações, sem texto antes ou depois:
+{
+  "root": "TÍTULO DA MATÉRIA",
+  "children": [
+    {
+      "id": "1",
+      "label": "Ramo Principal",
+      "color": "#3D5FC0",
+      "children": [
+        {
+          "id": "1.1",
+          "label": "Conceito Específico",
+          "children": [
+            { "id": "1.1.1", "label": "Exemplo ou Fórmula", "children": [] }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+Use cores diferentes para cada ramo principal:
+Ramo 1: #3D5FC0, Ramo 2: #E67E22, Ramo 3: #27AE60, Ramo 4: #8E44AD, Ramo 5: #E74C3C, Ramo 6: #1ABC9C
 
 CONTEÚDO:
 ${content.slice(0, 12000)}`,
@@ -68,13 +129,18 @@ ${content.slice(0, 12000)}`,
     guia: `Você é um tutor educacional criando um guia de estudo para o ENEM sobre "${courseName}".
 Crie um GUIA DE ESTUDO estruturado com base no conteúdo abaixo.
 ${langNote}
-${sourceBlock}${contentOnlyRule}
-FORMATO:
-- Divida em etapas numeradas de estudo
-- Seções: Conceitos Essenciais, Pontos de Atenção, Dicas para a Prova
-- Inclua 3 perguntas de autoavaliação ao final
-- Use markdown com títulos e listas
-- Máximo 500 palavras
+${sourceBlock}${contentOnlyRule}${difficultyNote}
+FORMATO OBRIGATÓRIO (Markdown):
+- Use # para título e ## para seções
+- Divida em etapas numeradas de estudo (### Etapa 1, ### Etapa 2, etc.)
+- Seções obrigatórias:
+  ## 📚 Conceitos Essenciais (com definições em **negrito**)
+  ## ⚠️ Pontos de Atenção (erros comuns e armadilhas)
+  ## 💡 Dicas para a Prova (estratégias práticas)
+  ## ✅ Autoavaliação (5 perguntas reflexivas em lista numerada)
+- Use > blockquote para dicas especiais
+- Use fórmulas LaTeX quando aplicável: $f(x) = ax^2 + bx + c$
+- Máximo 700 palavras
 
 CONTEÚDO:
 ${content.slice(0, 12000)}`,
@@ -86,7 +152,7 @@ ${content.slice(0, 12000)}`,
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 1800,
+      max_tokens: 2500,
       temperature: 0.7,
     })
 
@@ -99,6 +165,17 @@ ${content.slice(0, 12000)}`,
         return Response.json({ flashcards })
       } catch {
         return Response.json({ error: "Erro ao processar flashcards." }, { status: 500 })
+      }
+    }
+
+    if (type === "mapa") {
+      try {
+        const clean = text.trim().replace(/^```json\n?/, "").replace(/\n?```$/, "")
+        const mindmap = JSON.parse(clean)
+        return Response.json({ mindmap })
+      } catch {
+        // Fallback: return as text so the old renderer can handle it
+        return Response.json({ text })
       }
     }
 
