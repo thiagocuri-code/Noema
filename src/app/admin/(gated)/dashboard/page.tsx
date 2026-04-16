@@ -5,6 +5,7 @@ import {
   getTokenMetrics,
   getKbCount,
 } from "@/lib/admin-metrics"
+import { getOpenAIUsageSummary } from "@/lib/openai-usage"
 
 export const dynamic = "force-dynamic"
 
@@ -26,12 +27,20 @@ function fmtTokens(n: number): string {
 }
 
 export default async function DashboardPage() {
-  const [students, engagement, db, tokens, kb] = await Promise.all([
+  const [students, engagement, db, tokens, kb, openai] = await Promise.all([
     getStudentMetrics(),
     getEngagementMetrics(),
     getDbSize(),
     getTokenMetrics(),
     getKbCount(),
+    getOpenAIUsageSummary().catch(() => ({
+      available: false,
+      costUsd7d: 0,
+      costUsd30d: 0,
+      costUsdMtd: 0,
+      inputTokens30d: 0,
+      outputTokens30d: 0,
+    })),
   ])
 
   const engagementRate = students.totalEdu > 0 ? (students.active7d / students.totalEdu) * 100 : 0
@@ -69,44 +78,52 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      {/* Custo IA */}
+      {/* Custo IA (OpenAI) */}
       <section className="mb-8">
-        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">Custo IA (USD)</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Card label="Últimos 7 dias" value={fmtUsd(tokens.costUsd7d)} />
-          <Card label="Últimos 30 dias" value={fmtUsd(tokens.costUsd30d)} />
-          <Card label="Total" value={fmtUsd(tokens.costUsdTotal)} />
-          <Card
-            label="Tokens processados"
-            value={fmtTokens(tokens.inputTokensTotal + tokens.outputTokensTotal)}
-            sub={`${fmtTokens(tokens.inputTokensTotal)} in · ${fmtTokens(tokens.outputTokensTotal)} out`}
-          />
-        </div>
-
-        {tokens.byModel.length > 0 && (
-          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Breakdown
-              title="Por modelo"
-              rows={tokens.byModel.map((r) => ({
-                label: `${r.provider}/${r.model}`,
-                value: fmtUsd(r.costUsd),
-                meta: `${r.calls} chamadas`,
-              }))}
-            />
-            <Breakdown
-              title="Por rota"
-              rows={tokens.byRoute.map((r) => ({
-                label: r.route,
-                value: fmtUsd(r.costUsd),
-                meta: `${r.calls} chamadas`,
-              }))}
-            />
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">
+          Custo IA (USD) {openai.available ? <span className="ml-2 normal-case text-gray-400">· fonte: OpenAI</span> : null}
+        </h2>
+        {openai.available ? (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Card label="Últimos 7 dias" value={fmtUsd(openai.costUsd7d)} />
+              <Card label="Últimos 30 dias" value={fmtUsd(openai.costUsd30d)} />
+              <Card label="Mês atual" value={fmtUsd(openai.costUsdMtd)} />
+              <Card
+                label="Tokens 30d"
+                value={fmtTokens(openai.inputTokens30d + openai.outputTokens30d)}
+                sub={`${fmtTokens(openai.inputTokens30d)} in · ${fmtTokens(openai.outputTokens30d)} out`}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            Configure <code className="rounded bg-amber-100 px-1">OPENAI_ADMIN_KEY</code> para exibir custos reais da OpenAI.
           </div>
         )}
-        {tokens.byModel.length === 0 && (
-          <p className="mt-3 text-xs text-gray-400">
-            Ainda não há registros de uso — o rastreamento começa a partir da próxima chamada de IA.
-          </p>
+
+        {tokens.byRoute.length > 0 && (
+          <div className="mt-4">
+            <h3 className="mb-2 text-xs font-semibold text-gray-500">Breakdown interno por rota (desde o início do tracking)</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Breakdown
+                title="Por modelo"
+                rows={tokens.byModel.map((r) => ({
+                  label: `${r.provider}/${r.model}`,
+                  value: fmtUsd(r.costUsd),
+                  meta: `${r.calls} chamadas`,
+                }))}
+              />
+              <Breakdown
+                title="Por rota"
+                rows={tokens.byRoute.map((r) => ({
+                  label: r.route,
+                  value: fmtUsd(r.costUsd),
+                  meta: `${r.calls} chamadas`,
+                }))}
+              />
+            </div>
+          </div>
         )}
       </section>
 
