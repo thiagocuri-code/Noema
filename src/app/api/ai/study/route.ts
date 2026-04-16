@@ -30,6 +30,11 @@ export async function POST(req: Request) {
       ? "\nNÍVEL: AVANÇADO — Máxima profundidade: nuances, exceções, conexões entre conceitos e exemplos complexos.\n"
       : "\nNÍVEL: PADRÃO — Equilíbrio entre cobertura e clareza, adequado para o ENEM.\n"
 
+  const safeContent = (content ?? "").slice(0, 12000)
+  const contentBlock = safeContent.trim().length > 0
+    ? `\nCONTEÚDO:\n${safeContent}`
+    : `\n(Sem conteúdo de materiais. Use seu conhecimento geral sobre ${courseName} para o nivel ENEM.)`
+
   const prompts: Record<string, string> = {
     resumo: `Você é um tutor educacional especializado em criar resumos para o ENEM.
 Crie um RESUMO DETALHADO do conteúdo abaixo sobre "${courseName}".
@@ -45,9 +50,7 @@ FORMATO OBRIGATÓRIO (Markdown):
 - Inclua exemplos práticos quando relevante
 - Máximo 800 palavras
 - Organize logicamente: conceitos fundamentais → desenvolvimento → aplicações
-
-CONTEÚDO:
-${content.slice(0, 12000)}`,
+${contentBlock}`,
 
     flashcards: `Você é um tutor educacional criando flashcards de estudo ativo sobre "${courseName}".
 Crie exatamente 10 flashcards com base no conteúdo abaixo.
@@ -59,14 +62,9 @@ REGRAS:
 - Inclua fórmulas LaTeX se o conteúdo for de exatas (ex: $F = ma$)
 - Cada resposta deve ter 1-3 frases
 
-Responda APENAS com JSON válido (sem texto antes ou depois):
-[
-  {"front": "pergunta ou conceito", "back": "resposta ou definição"},
-  ...
-]
-
-CONTEÚDO:
-${content.slice(0, 12000)}`,
+Responda em JSON com a estrutura:
+{ "flashcards": [ {"front": "pergunta ou conceito", "back": "resposta ou definição"} ] }
+${contentBlock}`,
 
     mapa: `Você é um especialista em mapas mentais educacionais para o ENEM brasileiro.
 Sua tarefa é gerar um mapa mental em JSON sobre o conteúdo fornecido pelo professor.
@@ -122,9 +120,7 @@ Responda APENAS com o JSON válido abaixo, sem markdown, sem explicações, sem 
 
 Use cores diferentes para cada ramo principal:
 Ramo 1: #3D5FC0, Ramo 2: #E67E22, Ramo 3: #27AE60, Ramo 4: #8E44AD, Ramo 5: #E74C3C, Ramo 6: #1ABC9C
-
-CONTEÚDO:
-${content.slice(0, 12000)}`,
+${contentBlock}`,
 
     guia: `Você é um tutor educacional criando um guia de estudo para o ENEM sobre "${courseName}".
 Crie um GUIA DE ESTUDO estruturado com base no conteúdo abaixo.
@@ -141,12 +137,11 @@ FORMATO OBRIGATÓRIO (Markdown):
 - Use > blockquote para dicas especiais
 - Use fórmulas LaTeX quando aplicável: $f(x) = ax^2 + bx + c$
 - Máximo 700 palavras
-
-CONTEÚDO:
-${content.slice(0, 12000)}`,
+${contentBlock}`,
   }
 
   const prompt = prompts[type] ?? prompts.resumo
+  const wantsJson = type === "flashcards" || type === "mapa"
 
   try {
     const completion = await openai.chat.completions.create({
@@ -154,34 +149,57 @@ ${content.slice(0, 12000)}`,
       messages: [{ role: "user", content: prompt }],
       max_tokens: 2500,
       temperature: 0.7,
+      ...(wantsJson ? { response_format: { type: "json_object" as const } } : {}),
     })
 
     const text = completion.choices[0]?.message?.content ?? ""
 
     if (type === "flashcards") {
-      try {
-        const clean = text.trim().replace(/^```json\n?/, "").replace(/\n?```$/, "")
-        const flashcards = JSON.parse(clean)
-        return Response.json({ flashcards })
-      } catch {
+      let parsed: any
+      try { parsed = JSON.parse(text) } catch {
+        parsed = extractJsonObject(text) ?? { flashcards: extractJsonArray(text) }
+      }
+      const flashcards = Array.isArray(parsed?.flashcards) ? parsed.flashcards : Array.isArray(parsed) ? parsed : null
+      if (!flashcards || flashcards.length === 0) {
+        console.error("[ai/study] flashcards parse failed. Raw:", text.slice(0, 400))
         return Response.json({ error: "Erro ao processar flashcards." }, { status: 500 })
       }
+      return Response.json({ flashcards })
     }
 
     if (type === "mapa") {
-      try {
-        const clean = text.trim().replace(/^```json\n?/, "").replace(/\n?```$/, "")
-        const mindmap = JSON.parse(clean)
-        return Response.json({ mindmap })
-      } catch {
-        // Fallback: return as text so the old renderer can handle it
-        return Response.json({ text })
-      }
+      const mindmap = extractJsonObject(text)
+      if (mindmap) return Response.json({ mindmap })
+      return Response.json({ text })
     }
 
     return Response.json({ text })
   } catch (err: any) {
-    console.error("OpenAI study error:", err?.message)
+    console.error("[ai/study] OpenAI error:", err?.message)
     return Response.json({ error: err?.message ?? "Erro de conexão" }, { status: 500 })
   }
+}
+
+function extractJsonArray(text: string): any[] | null {
+  if (!text) return null
+  let s = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim()
+  try { const v = JSON.parse(s); return Array.isArray(v) ? v : null } catch { /* */ }
+  const start = s.indexOf("[")
+  const end = s.lastIndexOf("]")
+  if (start >= 0 && end > start) {
+    try { const v = JSON.parse(s.slice(start, end + 1)); return Array.isArray(v) ? v : null } catch { /* */ }
+  }
+  return null
+}
+
+function extractJsonObject(text: string): any | null {
+  if (!text) return null
+  let s = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim()
+  try { const v = JSON.parse(s); return typeof v === "object" && v !== null ? v : null } catch { /* */ }
+  const start = s.indexOf("{")
+  const end = s.lastIndexOf("}")
+  if (start >= 0 && end > start) {
+    try { return JSON.parse(s.slice(start, end + 1)) } catch { /* */ }
+  }
+  return null
 }

@@ -22,6 +22,11 @@ export async function POST(req: Request) {
     ? `\nFONTES SELECIONADAS PELO ALUNO (provão de ${examTitle}): ${selectedFileNames.join(", ")}\nGere questões cobrindo os principais tópicos presentes nesses materiais.\n`
     : ""
 
+  const safeContent = (content ?? "").slice(0, 10000)
+  const contentBlock = safeContent.trim().length > 0
+    ? `\nCONTEÚDO:\n${safeContent}`
+    : `\n(Sem conteúdo de materiais. Use seu conhecimento geral sobre ${courseName} para criar um diagnóstico nivel ENEM da prova "${examTitle}".)`
+
   const prompt = `Você é um tutor especializado em diagnosticar o nível de um aluno em "${courseName}" ANTES dele começar a estudar para a prova "${examTitle}".
 Crie um DIAGNÓSTICO com EXATAMENTE 8 questões de múltipla escolha baseadas no conteúdo abaixo.
 ${langNote}
@@ -34,20 +39,20 @@ OBJETIVO:
 
 REGRA CRÍTICA: Crie questões APENAS sobre o conteúdo acadêmico. NÃO pergunte sobre datas de entrega, avisos, prazos.
 
-Responda APENAS com JSON válido (sem texto antes ou depois):
-[
-  {
-    "question": "enunciado completo",
-    "options": ["A) opção A", "B) opção B", "C) opção C", "D) opção D"],
-    "correct": 0,
-    "topic": "tag curta do tópico",
-    "difficulty": "facil" | "medio" | "dificil",
-    "explanation": "explicação breve da resposta correta"
-  }
-]
-
-CONTEÚDO:
-${(content ?? "").slice(0, 10000)}`
+Responda em JSON com a estrutura:
+{
+  "questions": [
+    {
+      "question": "enunciado",
+      "options": ["A) ...", "B) ...", "C) ...", "D) ..."],
+      "correct": 0,
+      "topic": "tag curta do tópico",
+      "difficulty": "facil",
+      "explanation": "breve"
+    }
+  ]
+}
+${contentBlock}`
 
   try {
     const completion = await openai.chat.completions.create({
@@ -55,19 +60,23 @@ ${(content ?? "").slice(0, 10000)}`
       messages: [{ role: "user", content: prompt }],
       max_tokens: 3000,
       temperature: 0.7,
+      response_format: { type: "json_object" },
     })
 
     const text = completion.choices[0]?.message?.content ?? ""
-
-    try {
-      const clean = text.trim().replace(/^```json\n?/, "").replace(/\n?```$/, "")
-      const questions = JSON.parse(clean)
-      return Response.json({ questions })
-    } catch {
+    let parsed: any
+    try { parsed = JSON.parse(text) } catch {
+      console.error("[ai/diagnostic] parse failed. Raw:", text.slice(0, 400))
       return Response.json({ error: "Erro ao processar diagnóstico." }, { status: 500 })
     }
+    const questions = Array.isArray(parsed?.questions) ? parsed.questions : Array.isArray(parsed) ? parsed : null
+    if (!questions || questions.length === 0) {
+      console.error("[ai/diagnostic] empty questions. Raw:", text.slice(0, 400))
+      return Response.json({ error: "Não foi possível gerar diagnóstico para esse conteúdo." }, { status: 500 })
+    }
+    return Response.json({ questions })
   } catch (err: any) {
-    console.error("OpenAI diagnostic error:", err?.message)
+    console.error("[ai/diagnostic] OpenAI error:", err?.message)
     return Response.json({ error: err?.message ?? "Erro de conexão" }, { status: 500 })
   }
 }
