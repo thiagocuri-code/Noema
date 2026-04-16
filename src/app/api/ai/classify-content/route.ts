@@ -1,6 +1,8 @@
 import OpenAI from "openai"
+import { trackAiUsage, extractOpenAIUsage } from "@/lib/ai-track"
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const MODEL = "gpt-4o"
 
 export async function POST(req: Request) {
   const { announcements, courseName } = await req.json()
@@ -38,11 +40,14 @@ ${items}`
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: MODEL,
       messages: [{ role: "user", content: prompt }],
       max_tokens: 1000,
       temperature: 0.3,
     })
+
+    const usage = extractOpenAIUsage(completion)
+    await trackAiUsage({ provider: "openai", model: MODEL, ...usage, route: "/api/ai/classify-content" })
 
     const text = completion.choices[0]?.message?.content ?? "[]"
     const clean = text.trim().replace(/^```json\n?/, "").replace(/\n?```$/, "")

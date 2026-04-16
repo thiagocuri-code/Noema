@@ -112,3 +112,18 @@ model KnowledgeBase {
 
   @@index([grade, subject])
 }
+
+model AiUsage {
+  id           String   @id @default(cuid())
+  provider     String   // "anthropic" | "openai"
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  costUsd      Float
+  route        String
+  studentId    String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([provider, model])
+}

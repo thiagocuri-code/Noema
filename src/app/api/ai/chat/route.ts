@@ -3,9 +3,11 @@ if (process.env.NODE_ENV === "development") process.env.NODE_TLS_REJECT_UNAUTHOR
 
 import OpenAI from "openai"
 import { prisma } from "@/lib/prisma"
+import { trackAiUsage, extractOpenAIUsage } from "@/lib/ai-track"
 import crypto from "crypto"
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const MODEL = "gpt-4o"
 
 const SYSTEM_PROMPT = `Você é Darwin, um tutor de IA educacional ético para o ensino médio brasileiro.
 
@@ -73,13 +75,23 @@ Use essas informações para personalizar COMPLETAMENTE seu tom, seus exemplos e
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: MODEL,
       messages,
       max_tokens: 500,
       temperature: 0.7,
     })
 
     const responseText = completion.choices[0]?.message?.content ?? ""
+
+    const usage = extractOpenAIUsage(completion)
+    const studentForTrack = googleId ? await prisma.student.findUnique({ where: { googleId }, select: { id: true } }) : null
+    await trackAiUsage({
+      provider: "openai",
+      model: MODEL,
+      ...usage,
+      route: "/api/ai/chat",
+      studentId: studentForTrack?.id ?? null,
+    })
 
     // Save interaction to DB (fire-and-forget)
     if (googleId) {

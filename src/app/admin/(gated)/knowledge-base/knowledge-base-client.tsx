@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 
 type Entry = {
   id: string
@@ -13,7 +12,6 @@ type Entry = {
 }
 
 export default function KnowledgeBaseClient({ initialEntries }: { initialEntries: Entry[] }) {
-  const router = useRouter()
   const [entries, setEntries] = useState<Entry[]>(initialEntries)
   const [grade, setGrade] = useState<number>(1)
   const [subject, setSubject] = useState("")
@@ -22,12 +20,6 @@ export default function KnowledgeBaseClient({ initialEntries }: { initialEntries
   const [file, setFile] = useState<File | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  async function handleLogout() {
-    await fetch("/api/admin/auth", { method: "DELETE" })
-    router.push("/admin/login")
-    router.refresh()
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -78,14 +70,9 @@ export default function KnowledgeBaseClient({ initialEntries }: { initialEntries
 
   return (
     <div className="mx-auto max-w-4xl p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[#0a1a4a]">Base de Conhecimento</h1>
-          <p className="text-sm text-gray-500">Adicione materiais por ano e matéria. Usados pela IA nas provas.</p>
-        </div>
-        <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-[#0a1a4a]">
-          Sair
-        </button>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#0a1a4a]">Base de Conhecimento</h1>
+        <p className="text-sm text-gray-500">Adicione materiais por ano e matéria. Usados pela IA nas provas.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="mb-10 rounded-2xl border border-gray-200 bg-white p-6">

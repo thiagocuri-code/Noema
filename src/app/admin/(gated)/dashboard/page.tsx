@@ -1,0 +1,177 @@
+import {
+  getStudentMetrics,
+  getEngagementMetrics,
+  getDbSize,
+  getTokenMetrics,
+  getKbCount,
+} from "@/lib/admin-metrics"
+
+export const dynamic = "force-dynamic"
+
+function fmtBytes(n: number): string {
+  if (n < 1024) return `${n} B`
+  if (n < 1024 ** 2) return `${(n / 1024).toFixed(1)} KB`
+  if (n < 1024 ** 3) return `${(n / 1024 ** 2).toFixed(1)} MB`
+  return `${(n / 1024 ** 3).toFixed(2)} GB`
+}
+
+function fmtUsd(n: number): string {
+  return `$${n.toFixed(n < 1 ? 4 : 2)}`
+}
+
+function fmtTokens(n: number): string {
+  if (n < 1000) return String(n)
+  if (n < 1_000_000) return `${(n / 1000).toFixed(1)}K`
+  return `${(n / 1_000_000).toFixed(2)}M`
+}
+
+export default async function DashboardPage() {
+  const [students, engagement, db, tokens, kb] = await Promise.all([
+    getStudentMetrics(),
+    getEngagementMetrics(),
+    getDbSize(),
+    getTokenMetrics(),
+    getKbCount(),
+  ])
+
+  const engagementRate = students.totalEdu > 0 ? (students.active7d / students.totalEdu) * 100 : 0
+
+  return (
+    <div className="mx-auto max-w-6xl p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-[#0a1a4a]">Dashboard</h1>
+        <p className="text-sm text-gray-500">Visão geral da plataforma. Alunos contam apenas contas @edu.</p>
+      </div>
+
+      {/* Alunos + Engajamento */}
+      <section className="mb-8">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">Alunos (@edu)</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card label="Total" value={String(students.totalEdu)} />
+          <Card
+            label="Ativos 7d"
+            value={String(students.active7d)}
+            sub={`${engagementRate.toFixed(0)}% da base`}
+          />
+          <Card label="Engajados 7d" value={String(students.engaged7d)} sub="≥3 interações" />
+          <Card label="Inativos 30d" value={String(students.inactive30d)} tone="warning" />
+        </div>
+      </section>
+
+      {/* Engajamento detalhado */}
+      <section className="mb-8">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">Uso (@edu)</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card label="IA chats 7d" value={String(engagement.aiInteractions7d)} sub={`${engagement.aiInteractions30d} em 30d`} />
+          <Card label="Sessões estudo 7d" value={String(engagement.studyInteractions7d)} />
+          <Card label="Provas ativas 7d" value={String(engagement.examSessionsActive7d)} />
+          <Card label="Provas totais" value={String(engagement.totalExamSessions)} />
+        </div>
+      </section>
+
+      {/* Custo IA */}
+      <section className="mb-8">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">Custo IA (USD)</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card label="Últimos 7 dias" value={fmtUsd(tokens.costUsd7d)} />
+          <Card label="Últimos 30 dias" value={fmtUsd(tokens.costUsd30d)} />
+          <Card label="Total" value={fmtUsd(tokens.costUsdTotal)} />
+          <Card
+            label="Tokens processados"
+            value={fmtTokens(tokens.inputTokensTotal + tokens.outputTokensTotal)}
+            sub={`${fmtTokens(tokens.inputTokensTotal)} in · ${fmtTokens(tokens.outputTokensTotal)} out`}
+          />
+        </div>
+
+        {tokens.byModel.length > 0 && (
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Breakdown
+              title="Por modelo"
+              rows={tokens.byModel.map((r) => ({
+                label: `${r.provider}/${r.model}`,
+                value: fmtUsd(r.costUsd),
+                meta: `${r.calls} chamadas`,
+              }))}
+            />
+            <Breakdown
+              title="Por rota"
+              rows={tokens.byRoute.map((r) => ({
+                label: r.route,
+                value: fmtUsd(r.costUsd),
+                meta: `${r.calls} chamadas`,
+              }))}
+            />
+          </div>
+        )}
+        {tokens.byModel.length === 0 && (
+          <p className="mt-3 text-xs text-gray-400">
+            Ainda não há registros de uso — o rastreamento começa a partir da próxima chamada de IA.
+          </p>
+        )}
+      </section>
+
+      {/* Banco de dados */}
+      <section className="mb-8">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">Banco de Dados</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card label="Tamanho total" value={fmtBytes(db.totalBytes)} sub="Supabase free: 500 MB" />
+          <Card label="Tabelas" value={String(db.tables.length)} />
+        </div>
+
+        {db.tables.length > 0 && (
+          <div className="mt-4">
+            <Breakdown
+              title="Top tabelas"
+              rows={db.tables.map((t) => ({
+                label: t.name,
+                value: fmtBytes(t.bytes),
+                meta: `${t.rows.toLocaleString()} linhas`,
+              }))}
+            />
+          </div>
+        )}
+      </section>
+
+      {/* Base de conhecimento */}
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">Base de Conhecimento</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Card label="Total" value={String(kb.total)} />
+          <Card label="1º ano" value={String(kb.byGrade[1] ?? 0)} />
+          <Card label="2º ano" value={String(kb.byGrade[2] ?? 0)} />
+          <Card label="3º ano" value={String(kb.byGrade[3] ?? 0)} />
+        </div>
+      </section>
+    </div>
+  )
+}
+
+function Card({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "warning" }) {
+  const toneClass = tone === "warning" ? "text-amber-600" : "text-[#0a1a4a]"
+  return (
+    <div className="rounded-2xl border border-gray-100 bg-white p-4">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{label}</p>
+      <p className={`mt-1 text-2xl font-bold ${toneClass}`}>{value}</p>
+      {sub && <p className="mt-1 text-xs text-gray-500">{sub}</p>}
+    </div>
+  )
+}
+
+function Breakdown({ title, rows }: { title: string; rows: Array<{ label: string; value: string; meta?: string }> }) {
+  return (
+    <div className="rounded-2xl border border-gray-100 bg-white p-4">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">{title}</p>
+      <div className="space-y-1.5">
+        {rows.map((r, i) => (
+          <div key={i} className="flex items-center justify-between gap-3 text-sm">
+            <span className="truncate text-gray-700">{r.label}</span>
+            <span className="shrink-0 text-right">
+              <span className="font-semibold text-[#0a1a4a]">{r.value}</span>
+              {r.meta && <span className="ml-2 text-xs text-gray-400">{r.meta}</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

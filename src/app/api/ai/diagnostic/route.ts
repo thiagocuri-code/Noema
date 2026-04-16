@@ -2,8 +2,10 @@
 if (process.env.NODE_ENV === "development") process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
 import OpenAI from "openai"
+import { trackAiUsage, extractOpenAIUsage } from "@/lib/ai-track"
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const MODEL = "gpt-4o"
 
 // Generates a diagnostic quiz with topic tags so weak/strong areas can be mapped.
 export async function POST(req: Request) {
@@ -56,12 +58,15 @@ ${contentBlock}`
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: MODEL,
       messages: [{ role: "user", content: prompt }],
       max_tokens: 3000,
       temperature: 0.7,
       response_format: { type: "json_object" },
     })
+
+    const usage = extractOpenAIUsage(completion)
+    await trackAiUsage({ provider: "openai", model: MODEL, ...usage, route: "/api/ai/diagnostic" })
 
     const text = completion.choices[0]?.message?.content ?? ""
     let parsed: any

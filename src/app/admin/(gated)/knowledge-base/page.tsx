@@ -1,11 +1,7 @@
-import { redirect } from "next/navigation"
-import { isAdminAuthenticated } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 import KnowledgeBaseClient from "./knowledge-base-client"
 
 export default async function KnowledgeBasePage() {
-  if (!(await isAdminAuthenticated())) redirect("/admin/login")
-
   const entries = await prisma.knowledgeBase.findMany({
     orderBy: [{ grade: "asc" }, { subject: "asc" }, { createdAt: "desc" }],
   })

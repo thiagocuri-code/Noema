@@ -19,7 +19,7 @@ export default function AdminLoginPage() {
       body: JSON.stringify({ password }),
     })
     if (res.ok) {
-      router.push("/admin/knowledge-base")
+      router.push("/admin/dashboard")
       router.refresh()
     } else {
       setError("Senha incorreta")
