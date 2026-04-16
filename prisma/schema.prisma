@@ -101,3 +101,14 @@ model ExamSession {
 
   @@index([studentId])
 }
+
+model KnowledgeBase {
+  id        String   @id @default(cuid())
+  grade     Int
+  subject   String
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([grade, subject])
+}

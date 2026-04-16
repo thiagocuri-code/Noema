@@ -135,13 +135,30 @@ export default function NewExamPage() {
           }
         }
 
+        try {
+          const kbRes = await fetch(`/api/knowledge-base?courseName=${encodeURIComponent(courseName)}`)
+          if (kbRes.ok) {
+            const kbData = await kbRes.json()
+            const kbEntries: Array<{ id: string; title: string; content: string }> = kbData.entries ?? []
+            for (const kb of kbEntries) {
+              collected.push({
+                id: `kb-${kb.id}`,
+                title: `📚 ${kb.title}`,
+                text: kb.content,
+                mimeType: "text/knowledge-base",
+              })
+              fileTexts.push(`=== ${kb.title} ===\n${kb.content}`)
+            }
+          }
+        } catch { /* ignore KB errors */ }
+
         setFileContents(collected)
         setSelectedFileIds(new Set(collected.map(f => f.id)))
         setContextText(fileTexts.join("\n\n"))
         setIndexing(false)
       })
       .catch(() => setIndexing(false))
-  }, [step, session?.accessToken, courseId])
+  }, [step, session?.accessToken, courseId, courseName])
 
   async function startDiagnostic() {
     if (selectedFileIds.size === 0 || !title.trim()) return
