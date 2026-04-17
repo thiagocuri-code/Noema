@@ -27,6 +27,10 @@ export default function KnowledgeBaseClient({ initialEntries }: { initialEntries
     if (!subject.trim()) return setError("Informe a matéria.")
     if (!file && !textContent.trim()) return setError("Envie um PDF ou cole o texto.")
 
+    if (file && file.size > 4 * 1024 * 1024) {
+      return setError("Arquivo muito grande. O limite é 4 MB.")
+    }
+
     setSaving(true)
     try {
       const form = new FormData()
@@ -40,7 +44,17 @@ export default function KnowledgeBaseClient({ initialEntries }: { initialEntries
       }
 
       const res = await fetch("/api/admin/knowledge-base", { method: "POST", body: form })
-      const data = await res.json()
+      let data: any
+      const text = await res.text()
+      try {
+        data = JSON.parse(text)
+      } catch {
+        throw new Error(
+          res.status === 413
+            ? "Arquivo muito grande. O limite é 4 MB."
+            : `Erro do servidor: ${text.slice(0, 120)}`
+        )
+      }
       if (!res.ok) throw new Error(data.error || "Erro ao salvar")
 
       setEntries((prev) => [data.entry, ...prev])

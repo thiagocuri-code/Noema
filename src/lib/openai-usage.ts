@@ -47,7 +47,7 @@ function startOfMonthUnix(): number {
 async function sumCosts(startTime: number): Promise<number> {
   const key = adminKey()
   if (!key) return 0
-  const url = `${BASE}/costs?start_time=${startTime}&bucket_width=1d&limit=180`
+  const url = `${BASE}/costs?start_time=${startTime}&bucket_width=1d&limit=31`
   const buckets = await fetchPaged<CostBucket>(url, { Authorization: `Bearer ${key}` })
   let total = 0
   for (const b of buckets) for (const r of b.results) total += parseFloat(r.amount?.value ?? "0") || 0
@@ -57,7 +57,7 @@ async function sumCosts(startTime: number): Promise<number> {
 async function sumUsage(startTime: number): Promise<{ input: number; output: number }> {
   const key = adminKey()
   if (!key) return { input: 0, output: 0 }
-  const url = `${BASE}/usage/completions?start_time=${startTime}&bucket_width=1d&limit=180`
+  const url = `${BASE}/usage/completions?start_time=${startTime}&bucket_width=1d&limit=31`
   const buckets = await fetchPaged<UsageBucket>(url, { Authorization: `Bearer ${key}` })
   let input = 0
   let output = 0
@@ -77,33 +77,39 @@ export type OpenAIUsageSummary = {
   costUsdMtd: number
   inputTokens30d: number
   outputTokens30d: number
+  error?: string
 }
 
 export async function getOpenAIUsageSummary(): Promise<OpenAIUsageSummary> {
+  const zero = {
+    costUsd7d: 0,
+    costUsd30d: 0,
+    costUsdMtd: 0,
+    inputTokens30d: 0,
+    outputTokens30d: 0,
+  }
   if (!adminKey()) {
-    return {
-      available: false,
-      costUsd7d: 0,
-      costUsd30d: 0,
-      costUsdMtd: 0,
-      inputTokens30d: 0,
-      outputTokens30d: 0,
-    }
+    return { available: false, ...zero, error: "OPENAI_ADMIN_KEY ausente no runtime" }
   }
 
-  const [cost7, cost30, costMtd, usage30] = await Promise.all([
-    sumCosts(startOfDayUnix(7)),
-    sumCosts(startOfDayUnix(30)),
-    sumCosts(startOfMonthUnix()),
-    sumUsage(startOfDayUnix(30)),
-  ])
-
-  return {
-    available: true,
-    costUsd7d: cost7,
-    costUsd30d: cost30,
-    costUsdMtd: costMtd,
-    inputTokens30d: usage30.input,
-    outputTokens30d: usage30.output,
+  try {
+    const [cost7, cost30, costMtd, usage30] = await Promise.all([
+      sumCosts(startOfDayUnix(7)),
+      sumCosts(startOfDayUnix(30)),
+      sumCosts(startOfMonthUnix()),
+      sumUsage(startOfDayUnix(30)),
+    ])
+    return {
+      available: true,
+      costUsd7d: cost7,
+      costUsd30d: cost30,
+      costUsdMtd: costMtd,
+      inputTokens30d: usage30.input,
+      outputTokens30d: usage30.output,
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error("[openai-usage] falhou:", msg)
+    return { available: false, ...zero, error: msg }
   }
 }

@@ -33,13 +33,14 @@ export default async function DashboardPage() {
     getDbSize(),
     getTokenMetrics(),
     getKbCount(),
-    getOpenAIUsageSummary().catch(() => ({
+    getOpenAIUsageSummary().catch((e: unknown) => ({
       available: false,
       costUsd7d: 0,
       costUsd30d: 0,
       costUsdMtd: 0,
       inputTokens30d: 0,
       outputTokens30d: 0,
+      error: e instanceof Error ? e.message : String(e),
     })),
   ])
 
@@ -98,7 +99,10 @@ export default async function DashboardPage() {
           </>
         ) : (
           <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-            Configure <code className="rounded bg-amber-100 px-1">OPENAI_ADMIN_KEY</code> para exibir custos reais da OpenAI.
+            <p>Não foi possível carregar custos da OpenAI.</p>
+            {openai.error && (
+              <p className="mt-2 font-mono text-xs text-amber-900">{openai.error}</p>
+            )}
           </div>
         )}
 
