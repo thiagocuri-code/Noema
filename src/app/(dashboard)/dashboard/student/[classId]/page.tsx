@@ -9,7 +9,7 @@ import { MarkdownRenderer } from "@/components/shared/markdown-renderer"
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Message { role: "user" | "assistant"; content: string }
 interface DriveFile { id: string; title: string }
-interface FileContent { id: string; title: string; text: string; mimeType?: string }
+interface FileContent { id: string; title: string; text: string; mimeType?: string; subject?: string }
 interface Assignment {
   id: string; title: string; description?: string
   dueDate?: { year: number; month: number; day: number }
@@ -76,17 +76,29 @@ function ScoreRing({ pct, color, size = 64 }: { pct: number; color: string; size
 const COLORS = ["#0a1a4a", "#0ea5e9", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6", "#f97316"]
 
 // ── File type helpers ─────────────────────────────────────────────────────────
-function getFileType(mimeType?: string): { label: string; color: string } {
-  if (!mimeType) return { label: "Arquivo", color: "bg-gray-100 text-gray-500" }
-  if (mimeType === "text/material") return { label: "Material", color: "bg-purple-100 text-purple-600" }
-  if (mimeType === "text/assignment") return { label: "Atividade", color: "bg-indigo-100 text-indigo-600" }
-  if (mimeType === "text/announcement") return { label: "Conteúdo", color: "bg-amber-100 text-amber-600" }
-  if (mimeType === "text/notice") return { label: "Aviso", color: "bg-gray-100 text-gray-500" }
-  if (mimeType.includes("pdf")) return { label: "PDF", color: "bg-red-100 text-red-600" }
-  if (mimeType.includes("document") || mimeType.includes("word")) return { label: "Docs", color: "bg-blue-100 text-blue-600" }
-  if (mimeType.includes("presentation") || mimeType.includes("powerpoint")) return { label: "Slides", color: "bg-orange-100 text-orange-600" }
-  if (mimeType.includes("spreadsheet") || mimeType.includes("excel")) return { label: "Sheets", color: "bg-green-100 text-green-600" }
-  if (mimeType.includes("text")) return { label: "TXT", color: "bg-gray-100 text-gray-500" }
+const SUBJECT_COLORS: Record<string, string> = {
+  "história": "bg-amber-100 text-amber-700",
+  "química": "bg-emerald-100 text-emerald-700",
+  "matemática": "bg-blue-100 text-blue-700",
+  "física": "bg-violet-100 text-violet-700",
+  "biologia": "bg-green-100 text-green-700",
+  "sociologia": "bg-rose-100 text-rose-700",
+  "filosofia": "bg-purple-100 text-purple-700",
+  "geografia": "bg-cyan-100 text-cyan-700",
+  "português": "bg-indigo-100 text-indigo-700",
+  "inglês": "bg-sky-100 text-sky-700",
+  "literatura": "bg-fuchsia-100 text-fuchsia-700",
+  "redação": "bg-teal-100 text-teal-700",
+  "arte": "bg-pink-100 text-pink-700",
+}
+
+function getFileLabel(f: FileContent): { label: string; color: string } {
+  if (f.subject) {
+    const key = f.subject.toLowerCase()
+    if (key === "aviso" || f.title === "AVISO") return { label: "Aviso", color: "bg-gray-100 text-gray-500" }
+    return { label: f.subject, color: SUBJECT_COLORS[key] ?? "bg-purple-100 text-purple-700" }
+  }
+  if (f.mimeType === "text/notice") return { label: "Aviso", color: "bg-gray-100 text-gray-500" }
   return { label: "Arquivo", color: "bg-gray-100 text-gray-500" }
 }
 
@@ -186,7 +198,7 @@ function ContentSelector({
           <p className="py-4 text-center text-xs text-gray-400">{t("Nenhum arquivo encontrado", "No files found")}</p>
         ) : filtered.map(f => {
           const selected = ids.has(f.id)
-          const { label, color } = getFileType(f.mimeType)
+          const { label, color } = getFileLabel(f)
           return (
             <button
               key={f.id}
@@ -515,7 +527,7 @@ export default function ClassroomPage() {
         const collected: FileContent[] = []
         const fileTexts: string[] = []
 
-        // 1. Add materials with descriptions as selectable content
+        // 1. Add materials with descriptions
         for (const m of mat) {
           if (m.description && m.description.trim().length > 10) {
             const id = `mat-${m.id}`
@@ -525,7 +537,7 @@ export default function ClassroomPage() {
           }
         }
 
-        // 2. Add assignments with descriptions as selectable content
+        // 2. Add assignments with descriptions
         for (const a of asgn) {
           if (a.description && a.description.trim().length > 10) {
             const id = `asgn-${a.id}`
@@ -535,44 +547,12 @@ export default function ClassroomPage() {
           }
         }
 
-        // 3. Classify announcements (mural) with AI — study content gets descriptive titles, admin gets "AVISO"
+        // 3. Add announcements
         const annWithText = ann.filter(a => a.text && a.text.trim().length > 10)
-        if (annWithText.length > 0) {
-          try {
-            const classifyRes = await fetch("/api/ai/classify-content", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                courseName,
-                announcements: annWithText.map(a => ({
-                  id: a.id,
-                  text: a.text,
-                  fileNames: (a.driveFiles ?? []).map(f => f.title).filter(Boolean),
-                })),
-              }),
-            })
-            const classifyData = await classifyRes.json()
-            const classified: { id: string; title: string; isStudy: boolean }[] = classifyData.classified ?? []
-
-            for (const a of annWithText) {
-              const info = classified.find(c => c.id === a.id)
-              const isStudy = info?.isStudy !== false
-              const title = info?.title && info.title !== "AVISO" ? info.title : "AVISO"
-              const id = `ann-${a.id}`
-              const mimeType = isStudy ? "text/announcement" : "text/notice"
-              collected.push({ id, title, text: a.text, mimeType })
-              if (isStudy) fileTexts.push(`=== ${title} ===\n${a.text}`)
-            }
-          } catch {
-            // Fallback: add all announcements with file names as titles
-            for (const a of annWithText) {
-              const id = `ann-${a.id}`
-              const fileNames = (a.driveFiles ?? []).map(f => f.title).filter(Boolean)
-              const title = fileNames.length > 0 ? fileNames.join(", ") : a.text.slice(0, 60).replace(/\n/g, " ").trim()
-              collected.push({ id, title, text: a.text, mimeType: "text/announcement" })
-              fileTexts.push(`=== ${title} ===\n${a.text}`)
-            }
-          }
+        for (const a of annWithText) {
+          const id = `ann-${a.id}`
+          collected.push({ id, title: a.text.slice(0, 60).replace(/\n/g, " ").trim(), text: a.text, mimeType: "text/announcement" })
+          fileTexts.push(`=== ${a.text.slice(0, 60)} ===\n${a.text}`)
         }
 
         // 4. Index Drive files from materials, assignments, and announcements
@@ -592,16 +572,64 @@ export default function ClassroomPage() {
                 if (d.text && d.text.trim().length > 20) {
                   fileTexts.push(`=== ${d.name ?? file.title} ===\n${d.text}`)
                   collected.push({ id: file.id, title: d.name ?? file.title, text: d.text, mimeType: d.mimeType })
+                } else {
+                  collected.push({ id: file.id, title: file.title, text: "", mimeType: d.mimeType, subject: "Aviso" })
                 }
               } else {
-                console.warn(`[indexing] Drive file ${file.id} (${file.title}) failed: ${res.status}`)
+                collected.push({ id: file.id, title: file.title, text: "", subject: "Aviso" })
               }
             } catch (err) {
               console.warn(`[indexing] Drive file ${file.id} error:`, err)
+              collected.push({ id: file.id, title: file.title, text: "", subject: "Aviso" })
             }
             setIndexedCount(prev => prev + 1)
           }
           setIndexingFiles(false)
+        }
+
+        // 5. Classify ALL items with AI — identify subject and generate descriptive titles
+        const toClassify = collected.filter(f => f.text.length > 10)
+        if (toClassify.length > 0) {
+          try {
+            const classifyRes = await fetch("/api/ai/classify-content", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                courseName,
+                items: toClassify.map(f => ({
+                  id: f.id,
+                  text: f.text.slice(0, 500),
+                  fileNames: f.title ? [f.title] : [],
+                })),
+              }),
+            })
+            const classifyData = await classifyRes.json()
+            const classified: { id: string; title: string; subject: string; isStudy: boolean }[] = classifyData.classified ?? []
+
+            for (const c of classified) {
+              const item = collected.find(f => f.id === c.id)
+              if (!item) continue
+              item.subject = c.subject || "Geral"
+              if (c.title && c.title !== "AVISO") {
+                item.title = c.title
+              } else if (!c.isStudy) {
+                item.title = "AVISO"
+                item.subject = "Aviso"
+                item.mimeType = "text/notice"
+              }
+            }
+          } catch {
+            // Fallback: keep original titles, no subject labels
+          }
+        }
+
+        // Mark items with no content as AVISO
+        for (const f of collected) {
+          if (!f.text || f.text.trim().length <= 10) {
+            f.title = "AVISO"
+            f.subject = "Aviso"
+            f.mimeType = "text/notice"
+          }
         }
 
         setFileContents(collected)

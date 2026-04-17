@@ -5,37 +5,42 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const MODEL = "gpt-4o"
 
 export async function POST(req: Request) {
-  const { announcements, courseName } = await req.json()
+  const { items: rawItems, courseName } = await req.json()
 
   if (!process.env.OPENAI_API_KEY) {
     return Response.json({ error: "API key missing" }, { status: 500 })
   }
 
-  if (!announcements?.length) {
+  if (!rawItems?.length) {
     return Response.json({ classified: [] })
   }
 
-  const items = announcements.map((a: { id: string; text: string; fileNames: string[] }, i: number) => {
-    const files = a.fileNames.length > 0 ? `\nArquivos anexos: ${a.fileNames.join(", ")}` : ""
+  const items = rawItems.map((a: { id: string; text: string; fileNames?: string[] }, i: number) => {
+    const files = a.fileNames && a.fileNames.length > 0 ? `\nArquivos anexos: ${a.fileNames.join(", ")}` : ""
     return `[${i}] ID=${a.id}\n${a.text.slice(0, 500)}${files}`
   }).join("\n---\n")
 
-  const prompt = `Você é um assistente educacional. Analise os avisos abaixo postados no mural da turma "${courseName}" no Google Classroom.
+  const prompt = `Você é um assistente educacional. Analise os conteúdos abaixo da turma "${courseName}" no Google Classroom.
 
-Para CADA aviso, classifique:
-- Se contém MATERIAL DE ESTUDO (menção a capítulos, avaliações, conteúdos, provas, exercícios, slides, livros, temas para estudar) → gere um título descritivo curto (máx 80 chars) que diga O QUE o aluno vai estudar. Formato: "Nome do Assunto — Detalhes". Exemplos:
-  "Revolução Russa — Cap. 26, Avaliação 4º elemento"
-  "República Oligárquica — Caps. 28-29, Revoltas"
-  "Caderno de Humanidades — 2ª Avaliação"
-- Se é APENAS um aviso administrativo (parabéns, boas férias, recados gerais sem conteúdo de estudo) → retorne exatamente "AVISO"
+Para CADA item, faça duas coisas:
+
+1. IDENTIFIQUE A MATÉRIA do conteúdo. Use nomes curtos e padronizados:
+   "História", "Química", "Matemática", "Física", "Biologia", "Sociologia", "Filosofia", "Geografia", "Português", "Inglês", "Arte", "Ed. Física", "Literatura", "Redação", "Espanhol"
+   Se não for possível identificar a matéria → use "Geral"
+
+2. CLASSIFIQUE o conteúdo:
+   - Se contém MATERIAL DE ESTUDO (menção a capítulos, avaliações, conteúdos, provas, exercícios, slides, livros, temas) → gere um título descritivo curto (máx 80 chars). Formato: "Nome do Assunto — Detalhes". Exemplos:
+     "Revolução Russa — Cap. 26, Avaliação 4º elemento"
+     "República Oligárquica — Caps. 28-29, Revoltas"
+   - Se é APENAS aviso administrativo (parabéns, boas férias, recados sem conteúdo de estudo) ou não tem conteúdo significativo → title = "AVISO"
 
 Responda APENAS com JSON válido, sem markdown:
 [
-  { "id": "...", "title": "...", "isStudy": true },
-  { "id": "...", "title": "AVISO", "isStudy": false }
+  { "id": "...", "title": "...", "subject": "História", "isStudy": true },
+  { "id": "...", "title": "AVISO", "subject": "Geral", "isStudy": false }
 ]
 
-AVISOS:
+CONTEÚDOS:
 ${items}`
 
   try {
