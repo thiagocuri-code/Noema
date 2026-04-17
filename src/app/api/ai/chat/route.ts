@@ -4,6 +4,7 @@ if (process.env.NODE_ENV === "development") process.env.NODE_TLS_REJECT_UNAUTHOR
 import OpenAI from "openai"
 import { prisma } from "@/lib/prisma"
 import { trackAiUsage, extractOpenAIUsage } from "@/lib/ai-track"
+import { parseCourseName } from "@/lib/course-name"
 import crypto from "crypto"
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -60,9 +61,28 @@ export async function POST(req: Request) {
 Use essas informações para personalizar COMPLETAMENTE seu tom, seus exemplos e seu nível de detalhe em cada resposta.\n`
       : ""
 
+  // Fetch knowledge base entries for this course
+  let kbBlock = ""
+  try {
+    const parsed = parseCourseName(courseName ?? "")
+    if (parsed.grade && parsed.subjectNormalized) {
+      const kbEntries = await prisma.knowledgeBase.findMany({
+        where: { grade: parsed.grade, subject: parsed.subjectNormalized },
+        orderBy: { createdAt: "desc" },
+        select: { title: true, content: true },
+      })
+      if (kbEntries.length > 0) {
+        const kbTexts = kbEntries.map(e => `=== ${e.title} ===\n${e.content}`).join("\n\n")
+        kbBlock = `\n\n--- BASE DE CONHECIMENTO DO PROFESSOR ---\n${kbTexts}`
+      }
+    }
+  } catch (e: unknown) {
+    console.error("[ai/chat] KB lookup failed:", e)
+  }
+
   const contextBlock = courseContext
-    ? `Matéria: ${courseName}.\n\n${courseContext.slice(0, 12000)}`
-    : `Matéria: ${courseName}.`
+    ? `Matéria: ${courseName}.\n\n${courseContext.slice(0, 12000)}${kbBlock.slice(0, 4000)}`
+    : `Matéria: ${courseName}.${kbBlock.slice(0, 4000)}`
 
   const systemContent =
     profileBlock + SYSTEM_PROMPT.replace("{CONTEXT}", contextBlock) + langInstruction
