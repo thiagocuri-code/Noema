@@ -8,10 +8,10 @@ interface LotusLogoProps {
 }
 
 const sizeMap = {
-  sm: "h-12",
-  md: "h-16",
-  lg: "h-24",
-  xl: "h-32",
+  sm: "h-24",
+  md: "h-32",
+  lg: "h-48",
+  xl: "h-64",
 } as const
 
 const srcMap = {

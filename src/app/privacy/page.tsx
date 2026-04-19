@@ -3,7 +3,7 @@ export default function PrivacyPolicy() {
     <div className="min-h-screen bg-white px-4 py-8 sm:py-12 overflow-x-hidden">
       <div className="mx-auto max-w-3xl space-y-8">
         <div className="flex items-center gap-3">
-          <img src="/lotus-logo.png" alt="lótus" className="h-8 w-auto object-contain" />
+          <img src="/lotus-logo.png" alt="lótus" className="h-16 w-auto object-contain" />
           <h1 className="font-[var(--font-heading)] text-2xl sm:text-3xl font-bold text-[#071245]">
             Política de Privacidade
           </h1>

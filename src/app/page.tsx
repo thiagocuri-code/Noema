@@ -41,7 +41,7 @@ export default function Home() {
         {/* ━━━ NAVBAR ━━━ */}
         <nav className="sticky top-0 z-50 border-b border-[#E5E7EB] bg-white/95 backdrop-blur-sm shadow-sm">
           <div className="mx-auto flex py-3 max-w-6xl items-center justify-between px-6">
-            <img src="/lotus-logo.png" alt="lótus" className="h-16 w-auto object-contain" />
+            <img src="/lotus-logo.png" alt="lótus" className="h-32 w-auto object-contain" />
             <div className="flex items-center gap-6">
               <a href="#como-funciona" className="hidden text-sm font-medium text-gray-600 hover:text-[#071245] sm:block">Como funciona</a>
               <a href="#para-escolas" className="hidden text-sm font-medium text-gray-600 hover:text-[#071245] sm:block">Para escolas</a>
@@ -294,7 +294,7 @@ export default function Home() {
           <div className="mx-auto max-w-6xl px-6">
             <div className="flex flex-col items-center gap-6 text-center">
               <div className="flex items-center gap-3">
-                <img src="/lotus-logo.png" alt="lótus" className="h-8 w-auto object-contain brightness-0 invert" />
+                <img src="/lotus-logo.png" alt="lótus" className="h-16 w-auto object-contain brightness-0 invert" />
                 <span className="text-lg font-bold text-white">lótus</span>
               </div>
               <p className="text-sm text-white/60 italic">understand the how, not just what</p>
