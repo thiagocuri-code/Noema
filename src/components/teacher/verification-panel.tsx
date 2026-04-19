@@ -36,7 +36,7 @@ export function VerificationPanel() {
       <CardHeader>
         <CardTitle className="text-base">Verificação de Autoria</CardTitle>
         <p className="text-xs text-gray-500">
-          Cole um trecho de trabalho entregue para verificar se a athena gerou este conteúdo.
+          Cole um trecho de trabalho entregue para verificar se a lótus gerou este conteúdo.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -51,7 +51,7 @@ export function VerificationPanel() {
           disabled={!text.trim() || loading}
           className="bg-[#071245] hover:bg-[#071245] text-white"
         >
-          {loading ? "Verificando..." : "Verificar com athena"}
+          {loading ? "Verificando..." : "Verificar com lótus"}
         </Button>
 
         {result && (
@@ -73,7 +73,7 @@ export function VerificationPanel() {
                     : "bg-green-100 text-green-700"
                 }
               >
-                {result.generated ? "Gerado pela athena" : "Não gerado"}
+                {result.generated ? "Gerado pela lótus" : "Não gerado"}
               </Badge>
             </div>
             <p className="text-sm text-gray-700">{result.message}</p>

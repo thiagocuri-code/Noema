@@ -20,14 +20,14 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>("pt")
 
   useEffect(() => {
-    const saved = localStorage.getItem("athena-lang") as Lang | null
+    const saved = localStorage.getItem("lotus-lang") as Lang | null
     if (saved === "en" || saved === "pt") setLang(saved)
   }, [])
 
   function toggle() {
     setLang((prev) => {
       const next = prev === "pt" ? "en" : "pt"
-      localStorage.setItem("athena-lang", next)
+      localStorage.setItem("lotus-lang", next)
       return next
     })
   }

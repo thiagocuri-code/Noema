@@ -129,7 +129,7 @@ export function StudentOverviewPanel({ accessToken, translateCourseName, platfor
   const [activities, setActivities] = useState<Activity[]>([])
   const [tab, setTab] = useState<"pending" | "missing" | "subjects">("pending")
   const [expanded, setExpanded] = useState(false)
-  const [view, setView] = useState<"exams" | "classroom" | "athena">("exams")
+  const [view, setView] = useState<"exams" | "classroom" | "lotus">("exams")
   const [exams, setExams] = useState<ExamSummary[]>([])
   const [loadingExams, setLoadingExams] = useState(false)
 
@@ -200,14 +200,14 @@ export function StudentOverviewPanel({ accessToken, translateCourseName, platfor
     )
   }
 
-  // Athena (platform) aggregates — reused even if classroom data is empty
-  const athenaEntries = Object.entries(platformSummary)
-  const scored = athenaEntries.filter(([, v]) => v.avgScore > 0)
-  const athenaAvg = scored.length
+  // Lotus (platform) aggregates — reused even if classroom data is empty
+  const lotusEntries = Object.entries(platformSummary)
+  const scored = lotusEntries.filter(([, v]) => v.avgScore > 0)
+  const lotusAvg = scored.length
     ? Math.round(scored.reduce((a, [, v]) => a + v.avgScore, 0) / scored.length)
     : null
-  const athenaTotalActivities = athenaEntries.reduce((a, [, v]) => a + v.totalActivities, 0)
-  const athenaCourseRows = athenaEntries
+  const lotusTotalActivities = lotusEntries.reduce((a, [, v]) => a + v.totalActivities, 0)
+  const lotusCourseRows = lotusEntries
     .map(([courseId, v]) => ({
       courseId,
       courseName: courses.find((c) => c.id === courseId)?.name ?? courseId,
@@ -253,13 +253,13 @@ export function StudentOverviewPanel({ accessToken, translateCourseName, platfor
             {t("Classroom", "Classroom")}
           </button>
           <button
-            onClick={() => setView("athena")}
+            onClick={() => setView("lotus")}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-all ${
-              view === "athena" ? "bg-white text-[#0a1a4a] shadow-sm" : "text-gray-500 hover:text-gray-700"
+              view === "lotus" ? "bg-white text-[#0a1a4a] shadow-sm" : "text-gray-500 hover:text-gray-700"
             }`}
           >
             <span>✨</span>
-            {t("athena", "athena")}
+            {t("lótus", "lótus")}
           </button>
         </div>
       </div>
@@ -441,10 +441,10 @@ export function StudentOverviewPanel({ accessToken, translateCourseName, platfor
           </div>
         )
       ) : (
-        <AthenaView
-          avg={athenaAvg}
-          totalActivities={athenaTotalActivities}
-          rows={athenaCourseRows}
+        <LotusView
+          avg={lotusAvg}
+          totalActivities={lotusTotalActivities}
+          rows={lotusCourseRows}
           translateCourseName={translateCourseName}
           t={t}
         />
@@ -488,8 +488,8 @@ function ExamPrepView({
           </h2>
           <p className="mt-0.5 text-xs text-gray-500">
             {t(
-              "Crie um plano de estudo focado em uma prova específica — a athena vai diagnosticar suas dificuldades e priorizar o que importa.",
-              "Create a focused study plan for a specific exam — athena diagnoses your gaps and prioritizes what matters."
+              "Crie um plano de estudo focado em uma prova específica — a lótus vai diagnosticar suas dificuldades e priorizar o que importa.",
+              "Create a focused study plan for a specific exam — lótus diagnoses your gaps and prioritizes what matters."
             )}
           </p>
         </div>
@@ -510,8 +510,8 @@ function ExamPrepView({
             </p>
             <p className="mt-1 text-xs text-gray-400 max-w-sm mx-auto">
               {t(
-                "Escolha uma matéria, selecione os arquivos da prova e responda um diagnóstico rápido para a athena entender onde você precisa de mais ajuda.",
-                "Pick a subject, select the exam files and take a quick diagnostic — athena will map where you need the most help."
+                "Escolha uma matéria, selecione os arquivos da prova e responda um diagnóstico rápido para a lótus entender onde você precisa de mais ajuda.",
+                "Pick a subject, select the exam files and take a quick diagnostic — lótus will map where you need the most help."
               )}
             </p>
             {courses.length > 0 && (
@@ -621,7 +621,7 @@ function ExamCard({
   )
 }
 
-function AthenaView({
+function LotusView({
   avg,
   totalActivities,
   rows,
@@ -644,7 +644,7 @@ function AthenaView({
           <BigRing value={avg} />
           <div>
             <h2 className="font-[var(--font-heading)] text-lg font-bold text-[#1a1a2e]">
-              {t("Desempenho na athena", "Performance on athena")}
+              {t("Desempenho na lótus", "Performance on lótus")}
             </h2>
             <p className="mt-0.5 text-xs text-gray-500">
               {avg != null
@@ -672,8 +672,8 @@ function AthenaView({
           <div className="rounded-xl border border-dashed border-gray-200 px-4 py-8 text-center">
             <p className="text-sm text-gray-400">
               {t(
-                "Nenhuma atividade na athena ainda. Entre em uma matéria e comece um estudo ou quiz.",
-                "No athena activity yet. Open a subject and start a study session or quiz."
+                "Nenhuma atividade na lótus ainda. Entre em uma matéria e comece um estudo ou quiz.",
+                "No lótus activity yet. Open a subject and start a study session or quiz."
               )}
             </p>
           </div>

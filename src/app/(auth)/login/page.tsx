@@ -4,7 +4,7 @@ import { signIn, useSession } from "next-auth/react"
 import { SessionProvider } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 
 function LoginContent() {
   const { data: session, status } = useSession()
@@ -36,7 +36,7 @@ function LoginContent() {
         {/* Logo */}
         <div className="space-y-3">
           <div className="flex justify-center">
-            <AthenaLogo variant="full" size="xl" />
+            <LotusLogo variant="full" size="xl" />
           </div>
           <p className="text-sm text-gray-400 font-medium tracking-wide">
             understand the how, not just what

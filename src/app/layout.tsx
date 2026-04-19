@@ -7,7 +7,7 @@ const openSans = Open_Sans({ subsets: ["latin"], variable: "--font-sans" })
 const nunito = Nunito({ subsets: ["latin"], variable: "--font-heading" })
 
 export const metadata: Metadata = {
-  title: "athena — understand the how, not just what",
+  title: "lótus — understand the how, not just what",
   description: "Plataforma de IA educacional ética.",
   verification: {
     google: "W2-at-f5XzdUlTtDXg1QFl4q8J7v3YETTWPOcUfsh8s",

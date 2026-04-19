@@ -17,7 +17,7 @@ function Guard({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-3">
-          <img src="/athena-logo.png" alt="athena" className="h-10 w-auto object-contain" />
+          <img src="/lotus-logo.png" alt="lótus" className="h-10 w-auto object-contain" />
           <p className="text-sm text-gray-400 animate-pulse">Carregando...</p>
         </div>
       </div>

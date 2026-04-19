@@ -3,7 +3,7 @@
 import { signOut, useSession } from "next-auth/react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 
 export function Topbar() {
   const { data: session } = useSession()
@@ -11,7 +11,7 @@ export function Topbar() {
   return (
     <header className="flex py-4 items-center justify-between border-b border-[#E5E7EB] bg-white px-6">
       <div className="md:hidden flex items-center">
-        <AthenaLogo variant="symbol" size="md" />
+        <LotusLogo variant="symbol" size="md" />
       </div>
       <div className="hidden md:block" />
       <div className="flex items-center gap-4">

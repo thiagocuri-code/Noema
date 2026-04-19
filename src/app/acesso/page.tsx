@@ -43,14 +43,14 @@ function FadeIn({ children, className = "" }: { children: React.ReactNode; class
 export default function AcessoPage() {
   return (
     <>
-      <title>Como acessar a athena | Guia de primeiro acesso</title>
-      <meta name="description" content="Guia passo a passo para acessar a athena. Entenda o aviso do Google e como prosseguir com segurança." />
+      <title>Como acessar a lótus | Guia de primeiro acesso</title>
+      <meta name="description" content="Guia passo a passo para acessar a lótus. Entenda o aviso do Google e como prosseguir com segurança." />
 
       <div className="min-h-screen bg-white font-[var(--font-sans)] overflow-x-hidden">
         {/* ── Topbar ── */}
         <nav className="border-b border-[#E5E7EB] bg-white">
           <div className="mx-auto flex py-3 max-w-4xl items-center justify-between px-6">
-            <img src="/athena-logo.png" alt="athena" className="h-16 w-auto object-contain" />
+            <img src="/lotus-logo.png" alt="lótus" className="h-16 w-auto object-contain" />
             <Link href="/landing" className="text-sm font-medium text-gray-500 hover:text-[#071245]">
               ← Voltar
             </Link>
@@ -65,7 +65,7 @@ export default function AcessoPage() {
             </span>
 
             <h1 className="font-[var(--font-heading)] text-2xl sm:text-3xl font-bold text-[#071245] lg:text-[40px] leading-tight">
-              Você está a um passo<br />de acessar a athena
+              Você está a um passo<br />de acessar a lótus
             </h1>
 
             <p className="mx-auto max-w-xl text-base sm:text-lg text-gray-600">
@@ -89,13 +89,13 @@ export default function AcessoPage() {
                       Quando você clicar em &ldquo;Entrar com Google&rdquo;, o Google pode exibir uma tela dizendo que o aplicativo não foi verificado ainda.
                     </p>
                     <p>
-                      Isso acontece porque a athena está em fase de acesso antecipado — o processo de verificação do Google leva semanas e ainda está em andamento.
+                      Isso acontece porque a lótus está em fase de acesso antecipado — o processo de verificação do Google leva semanas e ainda está em andamento.
                     </p>
                     <p className="font-semibold text-[#071245]">
                       Isso NÃO significa que o app é perigoso.
                     </p>
                     <div className="rounded-xl bg-white p-5 border border-[#E5E7EB]">
-                      <p className="font-semibold text-[#071245] mb-3">A athena:</p>
+                      <p className="font-semibold text-[#071245] mb-3">A lótus:</p>
                       <ul className="space-y-2">
                         {[
                           "Não armazena sua senha do Google",
@@ -129,8 +129,8 @@ export default function AcessoPage() {
             <div className="space-y-8">
               {[
                 { step: 1, src: "/prints/aviso-google.jpeg", alt: "Tela de aviso do Google", w: 961, h: 1600, text: "Clique em \"Configurações avançadas\" ou \"Mostrar informações avançadas\"" },
-                { step: 2, src: "/prints/aviso-google-passo2.jpeg", alt: "Link para acessar a athena", w: 888, h: 1600, text: "Clique em \"Ir para athena (não seguro)\" — o aviso é padrão do Google para apps em verificação" },
-                { step: 3, src: "/prints/permissoes-google.jpeg", alt: "Tela de permissões do Google", w: 924, h: 1600, text: "Confirme as permissões — a athena só pede acesso de leitura aos seus cursos do Classroom" },
+                { step: 2, src: "/prints/aviso-google-passo2.jpeg", alt: "Link para acessar a lótus", w: 888, h: 1600, text: "Clique em \"Ir para lótus (não seguro)\" — o aviso é padrão do Google para apps em verificação" },
+                { step: 3, src: "/prints/permissoes-google.jpeg", alt: "Tela de permissões do Google", w: 924, h: 1600, text: "Confirme as permissões — a lótus só pede acesso de leitura aos seus cursos do Classroom" },
               ].map((item) => (
                 <FadeIn key={item.step}>
                   <div className="space-y-4">
@@ -173,7 +173,7 @@ export default function AcessoPage() {
                 href="/login"
                 className="inline-block w-full max-w-sm rounded-2xl bg-[#4169D4] px-10 py-4 font-[var(--font-heading)] text-base font-bold text-white shadow-lg shadow-[#4169D4]/25 transition-all hover:bg-[#071245] active:scale-[0.97]"
               >
-                Acessar a athena agora →
+                Acessar a lótus agora →
               </Link>
 
               <p className="text-sm text-gray-400">
@@ -187,7 +187,7 @@ export default function AcessoPage() {
         <footer className="border-t border-[#E5E7EB] bg-white py-8">
           <div className="mx-auto max-w-4xl px-6 text-center">
             <p className="text-xs text-gray-400">
-              © 2026 athena. Todos os direitos reservados. ·{" "}
+              © 2026 lótus. Todos os direitos reservados. ·{" "}
               <Link href="/privacy" className="hover:text-[#4169D4] underline">Política de Privacidade</Link>
             </p>
           </div>

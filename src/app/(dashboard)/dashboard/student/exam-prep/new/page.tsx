@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { useLang, LangToggle } from "@/lib/lang-context"
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 
 interface Course { id: string; name: string }
 interface DriveFile { id: string; title: string }
@@ -268,7 +268,7 @@ export default function NewExamPage() {
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-4">
-            <AthenaLogo variant="full" size="md" />
+            <LotusLogo variant="full" size="md" />
             <Link href="/dashboard/student" className="text-xs text-gray-400 hover:text-gray-600">
               ← {t("Voltar", "Back")}
             </Link>
@@ -367,8 +367,8 @@ export default function NewExamPage() {
               </label>
               <p className="mb-2 text-xs text-gray-500">
                 {t(
-                  "Selecione os materiais que caem nesta prova. A athena vai usar exclusivamente esse conteúdo.",
-                  "Select the materials that will be covered. Athena will use only this content."
+                  "Selecione os materiais que caem nesta prova. A lótus vai usar exclusivamente esse conteúdo.",
+                  "Select the materials that will be covered. Lótus will use only this content."
                 )}
               </p>
 
@@ -477,7 +477,7 @@ export default function NewExamPage() {
                   {t("Gerando seu diagnóstico…", "Generating your diagnostic…")}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
-                  {t("A athena está lendo os materiais e criando questões personalizadas.", "Athena is reading the materials and crafting personalized questions.")}
+                  {t("A lótus está lendo os materiais e criando questões personalizadas.", "Lótus is reading the materials and crafting personalized questions.")}
                 </p>
               </div>
             ) : diagError ? (
@@ -554,8 +554,8 @@ export default function NewExamPage() {
                   {diagScore >= 70
                     ? t("Boa base! Agora vamos aprofundar nos tópicos que faltam.", "Solid base! Now let's deepen the topics you need.")
                     : diagScore >= 40
-                    ? t("Temos caminho pela frente — a athena vai priorizar suas dificuldades.", "There's work ahead — athena will prioritize your gaps.")
-                    : t("Começamos do zero: sem problema! A athena vai construir a base com você.", "Starting from scratch is fine — athena will build the foundation with you.")}
+                    ? t("Temos caminho pela frente — a lótus vai priorizar suas dificuldades.", "There's work ahead — lótus will prioritize your gaps.")
+                    : t("Começamos do zero: sem problema! A lótus vai construir a base com você.", "Starting from scratch is fine — lótus will build the foundation with you.")}
                 </p>
 
                 <div className="mt-6 text-left">

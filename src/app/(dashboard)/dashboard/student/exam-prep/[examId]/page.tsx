@@ -5,7 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { useLang, LangToggle } from "@/lib/lang-context"
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 import { MarkdownRenderer } from "@/components/shared/markdown-renderer"
 import { computeExamProgress, bandColor, bandLabel } from "@/lib/exam-progress"
 
@@ -294,7 +294,7 @@ export default function ExamHubPage() {
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-4 min-w-0">
-            <AthenaLogo variant="full" size="md" />
+            <LotusLogo variant="full" size="md" />
             <Link href="/dashboard/student" className="text-xs text-gray-400 hover:text-gray-600 whitespace-nowrap">
               ← {t("Voltar", "Back")}
             </Link>
@@ -317,8 +317,8 @@ export default function ExamHubPage() {
             </p>
             <p className="mt-1 text-sm text-gray-600">
               {t(
-                `A athena mapeou ${exam.topicsWeak.length} tópico${exam.topicsWeak.length !== 1 ? "s" : ""} para focar. Para chegar em DE, você precisa revisar todos eles + 20 flashcards + 100% em um simulado. Bora?`,
-                `Athena flagged ${exam.topicsWeak.length} topic${exam.topicsWeak.length !== 1 ? "s" : ""} to focus on. To reach DE, review them all + 20 flashcards + 100% on a simulado. Let's go?`
+                `A lótus mapeou ${exam.topicsWeak.length} tópico${exam.topicsWeak.length !== 1 ? "s" : ""} para focar. Para chegar em DE, você precisa revisar todos eles + 20 flashcards + 100% em um simulado. Bora?`,
+                `Lótus flagged ${exam.topicsWeak.length} topic${exam.topicsWeak.length !== 1 ? "s" : ""} to focus on. To reach DE, review them all + 20 flashcards + 100% on a simulado. Let's go?`
               )}
             </p>
           </div>

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 
 const studentLinks = [
   { href: "/dashboard/student", label: "Minhas Turmas", icon: "📚" },
@@ -30,7 +30,7 @@ export function Sidebar({ role }: { role: string }) {
   return (
     <aside className="hidden md:flex w-64 flex-col border-r border-[#E5E7EB] bg-white">
       <div className="flex py-4 items-center px-6 border-b border-[#E5E7EB]">
-        <AthenaLogo variant="full" size="md" />
+        <LotusLogo variant="full" size="md" />
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {links.map((link) => (

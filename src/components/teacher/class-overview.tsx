@@ -31,7 +31,7 @@ export function ClassOverview({ courses, interactions }: ClassOverviewProps) {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Alunos ativos na athena</span>
+                <span className="text-gray-500">Alunos ativos na lótus</span>
                 <span className="font-medium text-[#0a1a4a]">
                   {uniqueStudents.size}
                 </span>

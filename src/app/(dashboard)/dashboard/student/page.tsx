@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLang, LangToggle } from "@/lib/lang-context"
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 import { StudentOverviewPanel } from "@/components/shared/student-overview-panel"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -416,7 +416,7 @@ export default function StudentDashboard() {
       {/* Topbar */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6 gap-2">
-          <AthenaLogo variant="full" size="md" />
+          <LotusLogo variant="full" size="md" />
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {/* Dynamic profile button */}
             {profile ? (
@@ -467,8 +467,8 @@ export default function StudentDashboard() {
               </p>
               <p className="mt-0.5 text-xs text-gray-500">
                 {t(
-                  "Responda 7 perguntas rápidas e deixe a athena te ensinar do seu jeito.",
-                  "Answer 7 quick questions and let athena teach you your way."
+                  "Responda 7 perguntas rápidas e deixe a lótus te ensinar do seu jeito.",
+                  "Answer 7 quick questions and let lótus teach you your way."
                 )}
               </p>
             </div>

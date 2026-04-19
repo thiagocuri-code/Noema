@@ -1,6 +1,6 @@
 "use client"
 
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 import { useSession, signOut } from "next-auth/react"
 import { useEffect, useState } from "react"
 import {
@@ -118,7 +118,7 @@ export default function TeacherDashboard() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <div className="w-full max-w-xs space-y-6 text-center">
           <div className="flex justify-center">
-            <AthenaLogo variant="full" size="lg" />
+            <LotusLogo variant="full" size="lg" />
           </div>
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#071245]/10">
@@ -230,7 +230,7 @@ export default function TeacherDashboard() {
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <AthenaLogo variant="full" size="md" />
+            <LotusLogo variant="full" size="md" />
 
             <span className="hidden sm:block text-xs text-gray-400 border border-gray-200 rounded-full px-2 py-0.5">Painel do Professor</span>
           </div>

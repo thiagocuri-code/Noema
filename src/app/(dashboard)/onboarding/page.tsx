@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import { AthenaLogo } from "@/components/shared/athena-logo"
+import { LotusLogo } from "@/components/shared/lotus-logo"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Profile {
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
       <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
         <div className="w-full max-w-md space-y-8 text-center">
           <div className="flex flex-col items-center gap-3">
-            <AthenaLogo variant="full" size="lg" />
+            <LotusLogo variant="full" size="lg" />
           </div>
 
           <div className="space-y-3">
@@ -252,7 +252,7 @@ export default function OnboardingPage() {
             <p className="text-base leading-relaxed text-gray-500">
               Responder{" "}
               <span className="font-semibold text-[#0a1a4a]">6 perguntas</span>{" "}
-              permite que a athena personalize completamente o jeito que ela te ensina.
+              permite que a lótus personalize completamente o jeito que ela te ensina.
               Leva menos de 2 minutos.
             </p>
           </div>
@@ -299,7 +299,7 @@ export default function OnboardingPage() {
 
           <div className="space-y-2">
             <h1 className="font-[var(--font-heading)] text-2xl font-bold text-[#1a1a2e]">
-              Pronto! A athena já sabe como te ajudar.
+              Pronto! A lótus já sabe como te ajudar.
             </h1>
             <p className="text-sm text-gray-500">
               Sua experiência foi personalizada com base nas suas respostas.

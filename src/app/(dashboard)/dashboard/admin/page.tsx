@@ -8,7 +8,7 @@ export default function AdminDashboard() {
       <div>
         <h1 className="text-2xl font-bold text-[#1a1a2e]">Relatórios da Escola</h1>
         <p className="text-sm text-gray-500">
-          Visão geral de engajamento e uso da athena.
+          Visão geral de engajamento e uso da lótus.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
