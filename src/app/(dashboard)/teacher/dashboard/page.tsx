@@ -301,6 +301,26 @@ export default function TeacherDashboardReal() {
   const [error, setError] = useState("")
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
   const [filterCourse, setFilterCourse] = useState("all")
+  const [confirmDelete, setConfirmDelete] = useState<Student | null>(null)
+  const [deleting, setDeleting] = useState(false)
+
+  async function handleDelete(student: Student) {
+    setDeleting(true)
+    try {
+      const res = await fetch(
+        `/api/teacher/students/${student.id}?code=TRIX2026`,
+        { method: "DELETE" }
+      )
+      if (!res.ok) throw new Error()
+      setStudents(prev => prev.filter(s => s.id !== student.id))
+      if (selectedStudent?.id === student.id) setSelectedStudent(null)
+      setConfirmDelete(null)
+    } catch {
+      alert("Erro ao remover aluno. Tente novamente.")
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("teacher_unlocked") === "1") {
@@ -411,6 +431,40 @@ export default function TeacherDashboardReal() {
           student={selectedStudent}
           onClose={() => setSelectedStudent(null)}
         />
+      )}
+
+      {/* Confirm delete modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !deleting && setConfirmDelete(null)} />
+          <div className="relative z-10 w-full max-w-sm mx-4 rounded-2xl bg-white p-6 shadow-xl space-y-4">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+            <h3 className="text-center text-base font-bold text-[#1a1a2e]">Remover aluno?</h3>
+            <p className="text-center text-sm text-gray-500">
+              <span className="font-semibold text-[#1a1a2e]">{confirmDelete.name}</span> será removido da plataforma. Todos os dados (perfil, simulados, revisões, histórico) serão excluídos permanentemente. O aluno precisará refazer o login e o onboarding para voltar.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                disabled={deleting}
+                className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => handleDelete(confirmDelete)}
+                disabled={deleting}
+                className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 active:scale-[0.98] disabled:opacity-50"
+              >
+                {deleting ? "Removendo..." : "Remover"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Header */}
@@ -565,7 +619,7 @@ export default function TeacherDashboardReal() {
 
                   <div className="overflow-x-auto">
                   {/* Table header */}
-                  <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_auto] gap-3 border-b border-gray-50 bg-gray-50 px-4 sm:px-6 py-3 text-xs font-semibold uppercase tracking-wide text-gray-400 min-w-[640px]">
+                  <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_140px] gap-3 border-b border-gray-50 bg-gray-50 px-4 sm:px-6 py-3 text-xs font-semibold uppercase tracking-wide text-gray-400 min-w-[640px]">
                     <span>Aluno</span>
                     <span>Ano</span>
                     <span>Objetivo</span>
@@ -598,7 +652,7 @@ export default function TeacherDashboardReal() {
                       return (
                         <div
                           key={student.id}
-                          className="grid grid-cols-1 gap-3 px-4 sm:px-6 py-4 sm:grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_auto] sm:items-center sm:min-w-[640px]"
+                          className="grid grid-cols-1 gap-3 px-4 sm:px-6 py-4 sm:grid-cols-[2fr_1fr_1fr_80px_80px_80px_80px_140px] sm:items-center sm:min-w-[640px]"
                         >
                           {/* Identity */}
                           <div className="flex items-center gap-3">
@@ -661,13 +715,21 @@ export default function TeacherDashboardReal() {
                             {darwinMsgs > 0 ? darwinMsgs : <span className="text-xs font-normal text-gray-300">0</span>}
                           </p>
 
-                          {/* Ver button */}
-                          <button
-                            onClick={() => setSelectedStudent(student)}
-                            className="rounded-xl border border-[#0a1a4a]/30 px-3 py-1.5 text-xs font-semibold text-[#0a1a4a] transition-all hover:bg-[#0a1a4a]/8 w-full sm:w-auto"
-                          >
-                            Ver
-                          </button>
+                          {/* Actions */}
+                          <div className="flex gap-2 w-full sm:w-auto">
+                            <button
+                              onClick={() => setSelectedStudent(student)}
+                              className="flex-1 sm:flex-none rounded-xl border border-[#0a1a4a]/30 px-3 py-1.5 text-xs font-semibold text-[#0a1a4a] transition-all hover:bg-[#0a1a4a]/8"
+                            >
+                              Ver
+                            </button>
+                            <button
+                              onClick={() => setConfirmDelete(student)}
+                              className="flex-1 sm:flex-none rounded-xl border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-50"
+                            >
+                              Remover
+                            </button>
+                          </div>
                         </div>
                       )
                     })}
